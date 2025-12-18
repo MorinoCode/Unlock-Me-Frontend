@@ -14,18 +14,18 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="register-container">
-      <div className="register-card">
-        <h2 className="register-title">UnlockMe</h2>
-        <p className="register-subtitle">Create your profile and start unlocking!</p>
-        <form onSubmit={handleSubmit} className="register-form">
+    <div className="login-page">
+      <div className="card register-card">
+        <h2 className="login-title">UnlockMe</h2>
+        <p className="login-subtitle">Create your profile and start unlocking!</p>
+        <form className="login-form" onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="register-input"
+            className="login-input"
           />
           <input
             type="email"
@@ -33,7 +33,7 @@ const SignupPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="register-input"
+            className="login-input"
           />
           <input
             type="password"
@@ -41,14 +41,14 @@ const SignupPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="register-input"
+            className="login-input"
           />
 
           <select
             value={gender}
             onChange={(e) => setGender(e.target.value)}
             required
-            className="register-select"
+            className="login-input"
           >
             <option value="">Select Your Gender</option>
             <option value="Female">Female</option>
@@ -60,7 +60,7 @@ const SignupPage = () => {
             value={lookingFor}
             onChange={(e) => setLookingFor(e.target.value)}
             required
-            className="register-select"
+            className="login-input"
           >
             <option value="">Looking For</option>
             <option value="Female">Female</option>
@@ -68,9 +68,9 @@ const SignupPage = () => {
             <option value="Other">Other</option>
           </select>
 
-          <button type="submit" className="register-button">Sign Up</button>
+          <button type="submit" className="login-button">Sign Up</button>
         </form>
-        <div className="register-footer">
+        <div className="login-footer">
           <p>
             Already have an account? <a href="/login">Sign In</a>
           </p>

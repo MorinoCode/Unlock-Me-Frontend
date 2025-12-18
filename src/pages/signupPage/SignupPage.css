@@ -1,82 +1,99 @@
-/* Register page styles for UnlockMe */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #200c00;
+    background-image: 
+        radial-gradient(at 47% 33%, hsl(224, 74%, 82%) 0, transparent 59%), 
+        radial-gradient(at 82% 65%, hsl(216.55, 63%, 65%) 0, transparent 55%);
+    background-size: cover;
 }
 
-.register-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+/* Glassmorphism card */
+.card, .register-card {
+    backdrop-filter: blur(21px) saturate(143%);
+    -webkit-backdrop-filter: blur(21px) saturate(143%);
+    background-color: rgba(111, 135, 148, 0.59);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    padding: 2.5rem;
+    width: 360px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
 }
 
-.register-card {
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  width: 350px;
-  text-align: center;
+/* Titles */
+.login-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: white;
 }
 
-.register-title {
-  font-size: 1.8rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-.register-subtitle {
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-  color: #666;
+.login-subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    color: rgba(255,255,255,0.8);
 }
 
-.register-form {
-  display: flex;
-  flex-direction: column;
-}
-.register-input,
-.register-select {
-  padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-}
-.register-input:focus,
-.register-select:focus {
-  border-color: #6c5ce7;
-  outline: none;
-  box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
+/* Form */
+.login-form {
+    display: flex;
+    flex-direction: column;
 }
 
-.register-button {
-  padding: 0.8rem 1rem;
-  border: none;
-  border-radius: 12px;
-  background: #6c5ce7;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.register-button:hover {
-  background: #341f97;
-  transform: scale(1.05);
+.login-input, select {
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    background: rgba(89, 86, 86, 0.2);
+    color: #fff;
+    font-size: 1rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
 }
 
-.register-footer {
-  margin-top: 1rem;
-  font-size: 0.85rem;
-  color: #666;
+.login-input::placeholder, select {
+    color: rgba(255,255,255,0.7);
 }
-.register-footer a {
-  color: #6c5ce7;
-  text-decoration: none;
+
+.login-input:focus, select:focus {
+    background: rgba(141, 135, 135, 0.35);
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    transform: scale(1.03);
 }
-.register-footer a:hover {
-  text-decoration: underline;
+
+/* Button */
+.login-button {
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: none;
+    background: #68f468;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-button:hover {
+    background: #3ef534;
+    transform: scale(1.03);
+}
+
+/* Footer */
+.login-footer {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.login-footer a {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: underline;
 }
