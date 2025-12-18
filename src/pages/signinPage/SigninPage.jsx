@@ -64,7 +64,7 @@ const SigninPage = () => {
             name: data.user.name,
           })
         );
-        navigate("/Home");
+        navigate("/initial-quizzes");
       } else {
         setServerMessage(data.message || "Invalid credentials");
       }
