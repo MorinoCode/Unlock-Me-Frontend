@@ -1,82 +1,110 @@
-/* Register page styles for UnlockMe */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-.register-container {
+.signup-page {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+  padding: 1rem;
+  background: radial-gradient(at 40% 30%, #b7c9ff, transparent 60%),
+    radial-gradient(at 80% 70%, #8fd3f4, transparent 55%);
 }
 
-.register-card {
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  width: 350px;
+.signup-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+
+.signup-title {
+  font-size: 2rem;
+  font-weight: 700;
   text-align: center;
+  margin-bottom: 1rem;
 }
 
-.register-title {
-  font-size: 1.8rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-.register-subtitle {
-  font-size: 0.9rem;
+.signup-subtitle {
+  font-size: 0.95rem;
+  font-weight: 400;
+  opacity: 0.85;
   margin-bottom: 1.5rem;
-  color: #666;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 0px 0px 12px black;
 }
 
-.register-form {
+.signup-form {
   display: flex;
   flex-direction: column;
 }
-.register-input,
-.register-select {
-  padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-}
-.register-input:focus,
-.register-select:focus {
-  border-color: #6c5ce7;
-  outline: none;
-  box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
-}
 
-.register-button {
-  padding: 0.8rem 1rem;
+.signup-input {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
   border: none;
-  border-radius: 12px;
-  background: #6c5ce7;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  margin-bottom: 0.8rem;
+  background: rgba(255, 255, 255, 0.25);
+  color: #121111;
 }
-.register-button:hover {
-  background: #341f97;
-  transform: scale(1.05);
+.signup-input:focus {
+  transform: scale(1.04);
 }
 
-.register-footer {
+.signup-input::placeholder {
+  color: #1e1d1d;
+}
+
+.signup-button {
   margin-top: 1rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  border: none;
+  background: #4ade80;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+.signup-button:hover {
+  transform: scale(1.04);
+}
+
+.signup-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-text {
+  font-size: 0.75rem;
+  color: #f86771;
+  margin-bottom: 0.6rem;
+}
+
+.server-message {
   font-size: 0.85rem;
-  color: #666;
+  margin-top: 0.5rem;
+  color: red;
+ 
 }
-.register-footer a {
-  color: #6c5ce7;
-  text-decoration: none;
+.signup-footer {
+  text-align: center;
+  margin-top: 5px;
+
+  a {
+    color: blue;
+  }
 }
-.register-footer a:hover {
-  text-decoration: underline;
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+  .signup-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .signup-title {
+    font-size: 1.7rem;
+  }
 }
