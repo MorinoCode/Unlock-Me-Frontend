@@ -27,13 +27,9 @@ const SignupPage = () => {
   const validate = () => {
     const newErrors = {};
 
-    if (
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)
-    ) {
-      newErrors.password =
-        "Min 6 chars, uppercase, lowercase, number & symbol";
-    }
-
+    if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password))
+      newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
     if (confirmPassword !== password)
       newErrors.confirmPassword = "Passwords do not match";
 
@@ -61,13 +57,22 @@ const SignupPage = () => {
       const response = await fetch(`${API_URL}/api/users/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", 
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        navigate("/signin");
+        localStorage.setItem(
+          "unlock-me-user",
+          JSON.stringify({
+            id: data.user.id,
+            name: data.user.name,
+          })
+        );
+
+        navigate("/initial-quizes");
       } else {
         setServerMessage(data.message || "Signup failed");
       }
@@ -174,7 +179,7 @@ const SignupPage = () => {
         </form>
 
         <div className="signup-footer">
-          Already have an account? <a href="/login">Sign In</a>
+          Already have an account? <a href="/signin">Sign In</a>
         </div>
       </div>
     </div>
