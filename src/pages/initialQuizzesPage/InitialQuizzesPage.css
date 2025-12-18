@@ -1,0 +1,126 @@
+.onboarding-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: radial-gradient(at 40% 30%, #b7c9ff, transparent 60%),
+    radial-gradient(at 80% 70%, #8fd3f4, transparent 55%);
+}
+
+.onboarding-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.birthday-inputs {
+  display: flex;
+  justify-content: center;
+}
+.birthday-inputs input {
+  width: 60px;
+  margin: 15px 5px;
+  padding: 0.6rem;
+  border-radius: 12px;
+  border: none;
+}
+
+.interests-grid {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.interest-item {
+  padding: 0.7rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  span:nth-child(1){
+    margin-right: 5px;
+  }
+}
+
+.interest-item.selected {
+  background: rgba(76, 175, 80, 0.8);
+  transform: scale(1.05);
+}
+
+.avatar-preview {
+  margin-top: 10px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.onboarding-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.next-btn, .skip-btn {
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.error-text{
+  display: block;
+}
+.error-text-age{
+  color: red;
+  
+}
+
+.upload-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.upload-wrapper {
+  cursor: pointer;
+}
+
+.upload-btn {
+  padding: 12px 20px;
+  background-color: #6c5ce7;
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.upload-btn:hover {
+  background-color: #5a4bdc;
+}
+
+.avatar-preview-wrapper {
+  margin-top: 12px;
+}
+
+.avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eee;
+}
+
+
+.next-btn { background: #4ade80; color: #fff; }
+.skip-btn { background: rgba(255,255,255,0.3); color: #fff; }
