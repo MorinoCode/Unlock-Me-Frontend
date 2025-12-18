@@ -21,9 +21,8 @@ const SigninPage = () => {
   // ---------- Validation ----------
   const validate = () => {
     const newErrors = {};
-    
-    if (!/\S+@\S+\.\S+/.test(email))
-      newErrors.email = "Invalid email format";
+
+    if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
 
     if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password))
       newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
@@ -51,12 +50,20 @@ const SigninPage = () => {
       const response = await fetch(`${API_URL}/api/users/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+        
+        localStorage.setItem(
+          "unlock-me-user",
+          JSON.stringify({
+            id: data.user.id,
+            name: data.user.name,
+          })
+        );
         navigate("/Home");
       } else {
         setServerMessage(data.message || "Invalid credentials");
