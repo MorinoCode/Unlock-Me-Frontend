@@ -1,4 +1,4 @@
-.signup-page {
+.signin-page {
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -8,7 +8,7 @@
     radial-gradient(at 80% 70%, #8fd3f4, transparent 55%);
 }
 
-.signup-card {
+.signin-card {
   width: 100%;
   max-width: 420px;
   padding: 2.5rem;
@@ -20,14 +20,14 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
 }
 
-.signup-title {
+.signin-title {
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
   margin-bottom: 1rem;
 }
 
-.signup-subtitle {
+.signin-subtitle {
   font-size: 0.95rem;
   font-weight: 400;
   opacity: 0.85;
@@ -37,12 +37,12 @@
   text-shadow: 0px 0px 12px black;
 }
 
-.signup-form {
+.signin-form {
   display: flex;
   flex-direction: column;
 }
 
-.signup-input {
+.signin-input {
   padding: 0.85rem 1rem;
   border-radius: 12px;
   border: none;
@@ -50,15 +50,15 @@
   background: rgba(255, 255, 255, 0.25);
   color: #121111;
 }
-.signup-input:focus {
+.signin-input:focus {
   transform: scale(1.04);
 }
 
-.signup-input::placeholder {
+.signin-input::placeholder {
   color: #1e1d1d;
 }
 
-.signup-button {
+.signin-button {
   margin-top: 1rem;
   padding: 0.9rem;
   border-radius: 12px;
@@ -68,11 +68,11 @@
   font-weight: 600;
   cursor: pointer;
 }
-.signup-button:hover {
+.signin-button:hover {
   transform: scale(1.04);
 }
 
-.signup-button:disabled {
+.signin-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -87,24 +87,24 @@
   font-size: 0.85rem;
   margin-top: 0.5rem;
   color: red;
- 
 }
-.signup-footer {
+
+.signin-footer {
   text-align: center;
   margin-top: 5px;
+}
 
-  a {
-    color: blue;
-  }
+.signin-footer a {
+  color: blue;
 }
 
 /* 📱 Mobile */
 @media (max-width: 480px) {
-  .signup-card {
+  .signin-card {
     padding: 2rem 1.5rem;
   }
 
-  .signup-title {
+  .signin-title {
     font-size: 1.7rem;
   }
 }
