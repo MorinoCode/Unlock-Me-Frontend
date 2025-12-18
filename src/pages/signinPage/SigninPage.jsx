@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import "./SigninPage.css";
 
-const Login = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Login submitted:", { email, password });
-    // اینجا API login صدا زده میشه
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
+    <div className="login-page">
+      <div className="card login-card">
         <h2 className="login-title">UnlockMe</h2>
         <p className="login-subtitle">Sign in and unlock connections!</p>
         <form onSubmit={handleSubmit} className="login-form">
@@ -47,4 +46,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
