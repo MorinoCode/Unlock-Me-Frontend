@@ -11,7 +11,6 @@ const SignupPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Register submitted:", { name, email, password, gender, lookingFor });
-    // اینجا API register صدا زده میشه
   };
 
   return (
