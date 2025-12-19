@@ -6,7 +6,7 @@ const MultiStepOnboarding = () => {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // Step 1: Birthday, Step 2: avatar
+  // Step 1: Birthday, Step 2: Avatar
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
