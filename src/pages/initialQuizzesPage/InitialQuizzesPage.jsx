@@ -30,9 +30,8 @@ const MultiStepOnboarding = () => {
 const capitalizeFirstLetter = (str = "") =>
   str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 
-const [name, setName] = useState(
-  parsedUser?.name ? capitalizeFirstLetter(parsedUser.name) : ""
-);
+const [name, setName] = useState("");
+setName(parsedUser?.name ? capitalizeFirstLetter(parsedUser.name) : "")
 
   /* -------------------- Birthday Validation -------------------- */
   const validateBirthday = (birthday) => {
