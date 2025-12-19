@@ -160,7 +160,7 @@ const name = parsedUser?.name ? capitalizeFirstLetter(parsedUser.name) : "User";
       if (!res.ok) throw new Error("Request failed");
 
       if (step < 3) setStep(step + 1);
-      else navigate("/initial-quizzes/questions");
+      else navigate("/initial-quizzes/questionsbycategory");
     } catch (err) {
       console.error(err);
     } finally {
