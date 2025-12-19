@@ -1,0 +1,126 @@
+/* Unique wrapper to prevent conflicts with other pages */
+.onboarding-interests-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: radial-gradient(at 40% 30%, #b7c9ff, transparent 60%),
+    radial-gradient(at 80% 70%, #8fd3f4, transparent 55%);
+}
+
+/* Specific card for interests step */
+.onboarding-interests-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 2.5rem;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.onboarding-interests-card h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.interests-subtitle {
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Grid layout for items */
+.interests-grid {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+/* Scrollbar styling for the grid */
+.interests-grid::-webkit-scrollbar {
+  width: 5px;
+}
+.interests-grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* Individual item styling */
+.interest-item {
+  padding: 0.8rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.interest-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.interest-icon {
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
+
+.interest-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Selected state - using the green from your theme */
+.interest-item.selected {
+  background: #4ade80;
+  border-color: #4ade80;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+
+/* Action section and buttons */
+.onboarding-interests-actions {
+  margin-top: 2rem;
+}
+
+.next-btn {
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.next-btn.full-width {
+  width: 100%;
+}
+
+.next-btn:not(:disabled) {
+  background: #4ade80;
+  color: #fff;
+}
+
+.next-btn:not(:disabled):hover {
+  background: #3bc971;
+  transform: translateY(-1px);
+}
+
+/* Disabled state */
+.next-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}

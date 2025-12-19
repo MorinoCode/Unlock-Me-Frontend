@@ -7,12 +7,13 @@
   padding: 1rem;
   background: radial-gradient(at 40% 30%, #b7c9ff, transparent 60%),
     radial-gradient(at 80% 70%, #8fd3f4, transparent 55%);
+  font-family: 'Inter', sans-serif;
 }
 
 /* Glassmorphism Card Style */
 .onboarding-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 450px; /* Slightly wider for interests grid */
   padding: 2.5rem;
   border-radius: 16px;
   backdrop-filter: blur(20px);
@@ -42,31 +43,41 @@
 /* Step 2: Avatar Upload Styles */
 .upload-foto {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: flex-start;
+  transition: all 0.3s ease;
+  user-select: none;
 }
 
-.upload-wrapper {
-  cursor: pointer;
+.interest-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
 }
 
-.upload-btn {
-  padding: 12px 20px;
-  background-color: #6c5ce7;
-  color: white;
-  border-radius: 8px;
+.interest-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.interest-label {
+  font-size: 0.95rem;
   font-weight: 500;
   display: inline-block;
   transition: background 0.3s ease;
 }
 
-.upload-btn:hover {
-  background-color: #5a4bdc;
+/* Selected State */
+.interest-item.selected {
+  background: #4ade80; /* Vibrant green from your next-btn */
+  color: #fff;
+  border-color: #4ade80;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+  transform: scale(1.02);
 }
 
-.avatar-preview-wrapper {
-  margin-top: 12px;
+/* Action Buttons */
+.onboarding-actions {
+  margin-top: 2rem;
 }
 
 .avatar-preview {
