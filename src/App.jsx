@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import SignupPage from './pages/signupPage/SignupPage'
 import Login from './pages/signinPage/SigninPage'
 import InitialQuizzesPage from './pages/initialQuizzesPage/InitialQuizzesPage'
+import InitialQuizzesInterestsPage from './pages/initialQuizzesInterestsPage/InitialQuizzesInterestsPage'
 import HomePage from './pages/homePage/HomePage'
 
 const App = () => {
@@ -13,6 +14,7 @@ const App = () => {
         <Route path='/signup' element={<SignupPage />}  />
         <Route path='/signin'  element={<Login />}  />
         <Route path='/initial-quizzes'  element={<InitialQuizzesPage />}  />
+        <Route path='/initial-quizzes/interests'  element={<InitialQuizzesInterestsPage />}  />
       </Routes>
     </BrowserRouter>
     </>
