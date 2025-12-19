@@ -3,6 +3,7 @@ import SignupPage from './pages/signupPage/SignupPage'
 import Login from './pages/signinPage/SigninPage'
 import InitialQuizzesPage from './pages/initialQuizzesPage/InitialQuizzesPage'
 import InitialQuizzesInterestsPage from './pages/initialQuizzesInterestsPage/InitialQuizzesInterestsPage'
+import InitialQuizzesQuestionsPage from './pages/initialQuizzesQuestionsPage/InitialQuizzesQuestionsPage.jsx'
 import HomePage from './pages/homePage/HomePage'
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
         <Route path='/signin'  element={<Login />}  />
         <Route path='/initial-quizzes'  element={<InitialQuizzesPage />}  />
         <Route path='/initial-quizzes/interests'  element={<InitialQuizzesInterestsPage />}  />
+        <Route path='/initial-quizzes/questionsbycategory'  element={<InitialQuizzesQuestionsPage />}  />
       </Routes>
     </BrowserRouter>
     </>
