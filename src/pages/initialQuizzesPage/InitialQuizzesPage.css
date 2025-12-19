@@ -1,3 +1,4 @@
+/* Container and Page Background */
 .onboarding-page {
   min-height: 100vh;
   display: flex;
@@ -6,11 +7,13 @@
   padding: 1rem;
   background: radial-gradient(at 40% 30%, #b7c9ff, transparent 60%),
     radial-gradient(at 80% 70%, #8fd3f4, transparent 55%);
+  font-family: 'Inter', sans-serif;
 }
 
+/* Glassmorphism Card Style */
 .onboarding-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 450px; /* Slightly wider for interests grid */
   padding: 2.5rem;
   border-radius: 16px;
   backdrop-filter: blur(20px);
@@ -21,106 +24,117 @@
   text-align: center;
 }
 
+/* Step 1: Birthday Input Styles */
 .birthday-inputs {
   display: flex;
   justify-content: center;
 }
+
 .birthday-inputs input {
   width: 60px;
   margin: 15px 5px;
   padding: 0.6rem;
   border-radius: 12px;
   border: none;
+  text-align: center;
+  outline: none;
 }
 
-.interests-grid {
-  margin-top: 15px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+/* Step 2: Avatar Upload Styles */
+.upload-foto {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: all 0.3s ease;
+  user-select: none;
 }
 
-.interest-item {
-  padding: 0.7rem;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
-  span:nth-child(1){
-    margin-right: 5px;
-  }
+.interest-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
 }
 
+.interest-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.interest-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-block;
+  transition: background 0.3s ease;
+}
+
+/* Selected State */
 .interest-item.selected {
-  background: rgba(76, 175, 80, 0.8);
-  transform: scale(1.05);
+  background: #4ade80; /* Vibrant green from your next-btn */
+  color: #fff;
+  border-color: #4ade80;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+  transform: scale(1.02);
+}
+
+/* Action Buttons */
+.onboarding-actions {
+  margin-top: 2rem;
 }
 
 .avatar-preview {
-  margin-top: 10px;
   width: 120px;
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
+/* Action Buttons Logic */
 .onboarding-actions {
-  margin-top: 1rem;
+  margin-top: 2rem;
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 }
 
-.next-btn, .skip-btn {
+.next-btn,
+.skip-btn {
   padding: 0.8rem 1.2rem;
   border-radius: 12px;
   border: none;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.2s ease;
 }
-.error-text{
+
+.next-btn {
+  background: #4ade80;
+  color: #fff;
+  flex: 1;
+}
+
+.next-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.skip-btn {
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+/* Error Message Styles */
+.error-text {
   display: block;
-}
-.error-text-age{
-  color: red;
-  
-}
-
-.upload-foto {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  font-size: 0.8rem;
+  color: #ffcfcf;
+  margin-top: 4px;
 }
 
-.upload-wrapper {
-  cursor: pointer;
+.error-text-age {
+  color: #ff4d4d;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 10px;
 }
-
-.upload-btn {
-  padding: 12px 20px;
-  background-color: #6c5ce7;
-  color: white;
-  border-radius: 8px;
-  font-weight: 500;
-  display: inline-block;
-}
-
-.upload-btn:hover {
-  background-color: #5a4bdc;
-}
-
-.avatar-preview-wrapper {
-  margin-top: 12px;
-}
-
-.avatar-preview {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #eee;
-}
-
-
-.next-btn { background: #4ade80; color: #fff; }
-.skip-btn { background: rgba(255,255,255,0.3); color: #fff; }
