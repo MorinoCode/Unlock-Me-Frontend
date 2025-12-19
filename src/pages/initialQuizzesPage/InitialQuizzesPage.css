@@ -1,4 +1,4 @@
-/* Container and Background */
+/* Container and Page Background */
 .onboarding-page {
   min-height: 100vh;
   display: flex;
@@ -10,7 +10,7 @@
   font-family: 'Inter', sans-serif;
 }
 
-/* Glassmorphism Card */
+/* Glassmorphism Card Style */
 .onboarding-card {
   width: 100%;
   max-width: 450px; /* Slightly wider for interests grid */
@@ -24,44 +24,24 @@
   text-align: center;
 }
 
-.onboarding-card h2 {
-  margin-bottom: 0.5rem;
-  font-size: 1.8rem;
+/* Step 1: Birthday Input Styles */
+.birthday-inputs {
+  display: flex;
+  justify-content: center;
 }
 
-.subtitle {
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* Interests Grid Layout */
-.interests-grid {
-  margin-top: 15px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  max-height: 400px; /* Scrollable if there are many items */
-  overflow-y: auto;
-  padding: 5px;
-}
-
-/* Custom Scrollbar for the grid */
-.interests-grid::-webkit-scrollbar {
-  width: 4px;
-}
-.interests-grid::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-}
-
-/* Individual Interest Item */
-.interest-item {
-  padding: 0.8rem;
+.birthday-inputs input {
+  width: 60px;
+  margin: 15px 5px;
+  padding: 0.6rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
+  border: none;
+  text-align: center;
+  outline: none;
+}
+
+/* Step 2: Avatar Upload Styles */
+.upload-foto {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -82,6 +62,8 @@
 .interest-label {
   font-size: 0.95rem;
   font-weight: 500;
+  display: inline-block;
+  transition: background 0.3s ease;
 }
 
 /* Selected State */
@@ -98,32 +80,61 @@
   margin-top: 2rem;
 }
 
-.next-btn {
-  width: 100%; /* Full width as requested */
-  padding: 1rem;
+.avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Action Buttons Logic */
+.onboarding-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.next-btn,
+.skip-btn {
+  padding: 0.8rem 1.2rem;
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.next-btn {
   background: #4ade80;
   color: #fff;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  flex: 1;
 }
 
-.next-btn:hover:not(:disabled) {
-  background: #3bc971;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-/* Disabled State for Button */
 .next-btn:disabled {
   background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.3);
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skip-btn {
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+/* Error Message Styles */
+.error-text {
+  display: block;
+  font-size: 0.8rem;
+  color: #ffcfcf;
+  margin-top: 4px;
+}
+
+.error-text-age {
+  color: #ff4d4d;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 10px;
 }
