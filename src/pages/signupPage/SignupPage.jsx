@@ -72,7 +72,7 @@ const SignupPage = () => {
           })
         );
 
-        navigate("/initial-quizes");
+        navigate("/initial-quizzes");
       } else {
         setServerMessage(data.message || "Signup failed");
       }

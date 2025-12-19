@@ -11,10 +11,10 @@ const HomePage = () => {
         </p>
 
         <div className="home-actions">
-          <Link to="/register" className="primary-btn">
+          <Link to="/signup" className="primary-btn">
             Get Started
           </Link>
-          <Link to="/login" className="secondary-btn">
+          <Link to="/signin" className="secondary-btn">
             Login
           </Link>
         </div>
