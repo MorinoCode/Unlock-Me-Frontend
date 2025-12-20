@@ -15,36 +15,58 @@ const SignupPage = () => {
     lookingFor: "",
   });
 
+  // Track which fields have been interacted with
+  const [touched, setTouched] = useState({});
+
   const [errors, setErrors] = useState({});
   const [serverMessage, setServerMessage] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { name, email, password, confirmPassword, gender, lookingFor } =
-    formData;
+  const { name, email, password, confirmPassword, gender, lookingFor } = formData;
 
   // ---------- Validation ----------
-  const validate = () => {
-    const newErrors = {};
+const validate = () => {
+  const newErrors = {};
 
-    if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password))
-      newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
-    if (confirmPassword !== password)
-      newErrors.confirmPassword = "Passwords do not match";
+  // Visual error logic (only shows after user interacts)
+  if (touched.name && name.trim().length < 2) newErrors.name = "Name is too short";
+  if (touched.email && !/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
+  if (touched.password && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password))
+    newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
+  if (touched.confirmPassword && confirmPassword !== password)
+    newErrors.confirmPassword = "Passwords do not match";
+  
+  // Errors for Select fields
+  if (touched.gender && !gender) newErrors.gender = "Gender is required";
+  if (touched.lookingFor && !lookingFor) newErrors.lookingFor = "This field is required";
 
-    setErrors(newErrors);
-    setIsFormValid(Object.keys(newErrors).length === 0);
-  };
+  setErrors(newErrors);
+
+  // CRITICAL: Button activation logic
+  const isValid = 
+    name.trim().length >= 2 &&
+    /\S+@\S+\.\S+/.test(email) &&
+    /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password) &&
+    confirmPassword === password &&
+    password !== "" &&
+    gender !== "" &&       // Checks if a gender is selected
+    lookingFor !== "";     // Checks if a lookingFor option is selected
+
+  setIsFormValid(isValid);
+};
 
   useEffect(() => {
     validate();
-  }, [formData]);
+  }, [formData, touched]);
 
-  // ---------- Handlers ----------
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setServerMessage("");
+  };
+
+  const handleBlur = (e) => {
+    setTouched({ ...touched, [e.target.name]: true });
   };
 
   const handleSubmit = async (e) => {
@@ -52,7 +74,6 @@ const SignupPage = () => {
     if (!isFormValid) return;
 
     setLoading(true);
-
     try {
       const response = await fetch(`${API_URL}/api/users/signup`, {
         method: "POST",
@@ -66,12 +87,8 @@ const SignupPage = () => {
       if (response.ok) {
         localStorage.setItem(
           "unlock-me-user",
-          JSON.stringify({
-            id: data.user.id,
-            name: data.user.name,
-          })
+          JSON.stringify({ id: data.user.id, name: data.user.name })
         );
-
         navigate("/initial-quizzes");
       } else {
         setServerMessage(data.message || "Signup failed");
@@ -84,14 +101,11 @@ const SignupPage = () => {
     }
   };
 
-  // ---------- UI ----------
   return (
     <div className="signup-page">
       <div className="signup-card">
         <h2 className="signup-title">UnlockMe</h2>
-        <p className="signup-subtitle">
-          Create your profile and start unlocking!
-        </p>
+        <p className="signup-subtitle">Create your profile and start unlocking!</p>
 
         <form className="signup-form" onSubmit={handleSubmit} noValidate>
           <input
@@ -99,7 +113,9 @@ const SignupPage = () => {
             placeholder="Name"
             value={name}
             onChange={handleChange}
+            onBlur={handleBlur}
             className="signup-input"
+            autoFocus
           />
           {errors.name && <span className="error-text">{errors.name}</span>}
 
@@ -109,6 +125,7 @@ const SignupPage = () => {
             placeholder="Email"
             value={email}
             onChange={handleChange}
+            onBlur={handleBlur}
             className="signup-input"
           />
           {errors.email && <span className="error-text">{errors.email}</span>}
@@ -119,11 +136,10 @@ const SignupPage = () => {
             placeholder="Password"
             value={password}
             onChange={handleChange}
+            onBlur={handleBlur}
             className="signup-input"
           />
-          {errors.password && (
-            <span className="error-text">{errors.password}</span>
-          )}
+          {errors.password && <span className="error-text">{errors.password}</span>}
 
           <input
             name="confirmPassword"
@@ -131,16 +147,16 @@ const SignupPage = () => {
             placeholder="Confirm Password"
             value={confirmPassword}
             onChange={handleChange}
+            onBlur={handleBlur}
             className="signup-input"
           />
-          {errors.confirmPassword && (
-            <span className="error-text">{errors.confirmPassword}</span>
-          )}
+          {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
 
           <select
             name="gender"
             value={gender}
             onChange={handleChange}
+            onBlur={handleBlur}
             className="signup-input"
           >
             <option value="">Select Your Gender</option>
@@ -154,6 +170,7 @@ const SignupPage = () => {
             name="lookingFor"
             value={lookingFor}
             onChange={handleChange}
+            onBlur={handleBlur}
             className="signup-input"
           >
             <option value="">Looking For</option>
@@ -161,13 +178,9 @@ const SignupPage = () => {
             <option value="Male">Male</option>
             <option value="Other">Other</option>
           </select>
-          {errors.lookingFor && (
-            <span className="error-text">{errors.lookingFor}</span>
-          )}
+          {errors.lookingFor && <span className="error-text">{errors.lookingFor}</span>}
 
-          {serverMessage && (
-            <div className="server-message">{serverMessage}</div>
-          )}
+          {serverMessage && <div className="server-message">{serverMessage}</div>}
 
           <button
             type="submit"

@@ -1,5 +1,6 @@
 import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Cropper from "react-easy-crop";
 import "./InitialQuizzesPage.css";
 
 const MultiStepOnboarding = () => {
@@ -9,7 +10,6 @@ const MultiStepOnboarding = () => {
   // Step 1: Birthday, Step 2: Avatar
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     birthday: { day: "", month: "", year: "" },
     avatar: null,
@@ -40,7 +40,6 @@ const MultiStepOnboarding = () => {
     return newErrors;
   };
 
-  /* -------------------- Handlers -------------------- */
   const handleBirthdayChange = (e) => {
     const { name, value } = e.target;
     if (value !== "" && !/^\d+$/.test(value)) return;
@@ -50,9 +49,9 @@ const MultiStepOnboarding = () => {
     setErrors(validateBirthday(updatedBirthday));
   };
 
-  const handleAvatarChange = (e) => {
-    setFormData({ ...formData, avatar: e.target.files[0] });
-  };
+  const onCropComplete = useCallback((_, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
 
   /* -------------------- Submit Logic -------------------- */
   const handleNext = async () => {
@@ -71,7 +70,7 @@ const MultiStepOnboarding = () => {
         body = JSON.stringify({ birthday: formData.birthday });
       } else {
         body = new FormData();
-        if (formData.avatar) body.append("avatar", formData.avatar);
+        body.append("avatar", formData.avatar);
       }
 
       const res = await fetch(`${API_URL}/api/user/onboarding/${endpoint}`, {
@@ -108,13 +107,16 @@ const MultiStepOnboarding = () => {
           <>
             <h2>{`${name}, When were you born?`}</h2>
             <div className="birthday-inputs">
-              {["day", "month", "year"].map((field) => (
-                <div key={field}>
+              {["day", "month", "year"].map((f) => (
+                <div key={f}>
                   <input
                     name={field}
                     placeholder={field.toUpperCase()}
                     value={formData.birthday[field]}
                     onChange={handleBirthdayChange}
+                    onBlur={() => setTouched({ ...touched, [f]: true })}
+                    className="onboarding-input"
+                    autoFocus={f === "day"}
                   />
                   {touched[field] && errors[field] && <span className="error-text">{errors[field]}</span>}
                 </div>
