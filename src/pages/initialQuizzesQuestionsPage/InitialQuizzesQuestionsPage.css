@@ -1,114 +1,130 @@
-/* Container consistent with the onboarding theme */
+/* Container: Dark Indigo Theme */
 .quiz-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
-  background: radial-gradient(at 40% 30%, #b7c9ff, transparent 60%),
-    radial-gradient(at 80% 70%, #8fd3f4, transparent 55%);
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  font-family: 'Inter', sans-serif;
+  color: #e5e7eb;
 }
 
-/* Progress Bar at the top */
+/* Progress Bar styling */
 .progress-bar {
   width: 100%;
-  max-width: 420px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  max-width: 480px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .progress-fill {
   height: 100%;
-  background: #4ade80; /* Green color for progress */
-  transition: width 0.4s ease-out;
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
-/* Question Card - Glassmorphism style */
+/* Question Card - Dark Glassmorphism */
 .question-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   padding: 2.5rem;
-  border-radius: 16px;
-  backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #fff;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   text-align: center;
   position: relative;
 }
 
-/* Category Tag (Music, Travel, etc.) */
+/* Category Tag */
 .category-tag {
   display: inline-block;
-  padding: 4px 12px;
-  background: rgba(108, 92, 231, 0.6);
+  padding: 8px 18px;
+  background: #4ade80;
+  color: white;
+  border: 1px solid rgba(99, 102, 241, 0.3);
   border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: bold;
+  font-size: 0.8rem;
+  font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 15px;
-  letter-spacing: 1px;
+  margin-bottom: 20px;
+  letter-spacing: 1.5px;
 }
 
 .question-card h2 {
-  font-size: 1.4rem;
-  margin-bottom: 2rem;
+  font-size: 1.6rem;
+  margin-bottom: 2.5rem;
   line-height: 1.4;
-  font-weight: 600;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 /* Options List */
 .options-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
-/* Option Buttons */
+/* Option Buttons - Indigo Focus */
 .option-btn {
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  padding: 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.6);
+  color: #cbd5e1;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   text-align: center;
 }
 
 .option-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(99, 102, 241, 0.1);
+  border-color: #6366f1;
+  color: #ffffff;
   transform: translateY(-2px);
-  border-color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .option-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 /* Counter at the bottom */
 .question-counter {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #64748b;
+  font-weight: 500;
 }
 
-/* Loader Style */
+/* Loader Styling */
 .loader {
-  color: white;
+  background: #020617;
+  color: #6366f1;
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 600;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  letter-spacing: 1px;
+}
+
+/* Animation for loader */
+.loader::after {
+  content: "...";
+  display: inline-block;
+  width: 20px;
+  text-align: left;
 }

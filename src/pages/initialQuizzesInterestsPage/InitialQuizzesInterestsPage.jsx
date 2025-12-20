@@ -65,7 +65,7 @@ const InitialQuizzesInterestsPage = () => {
       if (!res.ok) throw new Error("Request failed");
 
       // Navigate to the next onboarding step
-      navigate("/initial-quizzes/questions");
+      navigate("/initial-quizzes/questionsbycategory");
     } catch (err) {
       console.error("Submission error:", err);
       alert("Failed to save interests. Please try again.");
