@@ -1,4 +1,3 @@
-/* Container and Page Background */
 .onboarding-page {
   min-height: 100vh;
   display: flex;
@@ -10,7 +9,6 @@
   color: #e5e7eb;
 }
 
-/* Glassmorphism Card Style */
 .onboarding-card {
   width: 100%;
   max-width: 480px;
@@ -23,29 +21,58 @@
   text-align: center;
 }
 
-/* Step 1: Birthday Input Styles */
+.onboarding-card h2 {
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #6366f1;
+}
+
 .birthday-inputs {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr;
+  gap: 12px;
+  margin-bottom: 1.5rem;
 }
 
-.birthday-inputs input {
-  width: 60px;
-  margin: 15px 5px;
-  padding: 0.6rem;
+.onboarding-input {
+  width: 100%;
+  padding: 1rem;
   border-radius: 12px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.6);
+  color: #ffffff;
   text-align: center;
-  outline: none;
+  transition: 0.3s;
 }
 
-/* Step 2: Avatar Upload Styles */
-.upload-foto {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  transition: all 0.3s ease;
-  user-select: none;
+.onboarding-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.error-text {
+  font-size: 0.75rem;
+  color: #fb7185;
+  margin-top: 5px;
+  display: block;
+}
+
+.error-text-age {
+  color: #fb7185;
+  font-weight: 600;
+}
+
+.upload-btn {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: rgba(99, 102, 241, 0.1);
+  border: 2px dashed #6366f1;
+  border-radius: 15px;
+  color: #a5b4fc;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .avatar-preview {
@@ -64,11 +91,13 @@
   text-decoration: underline;
 }
 
-.interest-label {
-  font-size: 0.95rem;
-  font-weight: 500;
-  display: inline-block;
-  transition: background 0.3s ease;
+.cropper-container {
+  width: 100%;
+  height: 380px;
+  position: relative;
+  background: #000;
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 .crop-area {
@@ -105,61 +134,25 @@
   margin-top: 2rem;
 }
 
-.avatar-preview {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-}
-
-/* Action Buttons Logic */
-.onboarding-actions {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.next-btn,
-.skip-btn {
-  padding: 0.8rem 1.2rem;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
 .next-btn {
-  background: #4ade80;
-  color: #fff;
-  flex: 1;
+  width: 100%;
+  padding: 1.1rem;
+  border-radius: 14px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .next-btn:disabled {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.3);
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-.skip-btn {
-  background: rgba(255, 255, 255, 0.3);
-  color: #fff;
-}
-
-/* Error Message Styles */
-.error-text {
-  display: block;
-  font-size: 0.8rem;
-  color: #ffcfcf;
-  margin-top: 4px;
-}
-
-.error-text-age {
-  color: #ff4d4d;
-  font-weight: bold;
-  font-size: 0.9rem;
-  display: block;
-  margin-top: 10px;
+@media (max-width: 480px) {
+  .birthday-inputs {
+    grid-template-columns: 1fr;
+  }
 }
