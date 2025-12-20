@@ -11,6 +11,12 @@ const SigninPage = () => {
     password: "",
   });
 
+  // Track which fields the user has touched
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false,
+  });
+
   const [errors, setErrors] = useState({});
   const [serverMessage, setServerMessage] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
@@ -18,27 +24,40 @@ const SigninPage = () => {
 
   const { email, password } = formData;
 
-  // ---------- Validation ----------
   const validate = () => {
     const newErrors = {};
 
-    if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
+    // Only set errors if the field has been touched
+    if (touched.email && !/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Invalid email format";
+    }
 
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password))
+    if (touched.password && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)) {
       newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
+    }
 
     setErrors(newErrors);
-    setIsFormValid(Object.keys(newErrors).length === 0);
+
+    // Form validity for the button should check the actual logic, regardless of "touched"
+    const logicValid = 
+      /\S+@\S+\.\S+/.test(email) && 
+      /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password);
+    
+    setIsFormValid(logicValid);
   };
 
   useEffect(() => {
     validate();
-  }, [formData]);
+  }, [formData, touched]); // Re-run when formData OR touched state changes
 
-  // ---------- Handlers ----------
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setServerMessage("");
+  };
+
+  // Set field to touched when user clicks out of the input
+  const handleBlur = (e) => {
+    setTouched({ ...touched, [e.target.name]: true });
   };
 
   const handleSubmit = async (e) => {
@@ -56,7 +75,6 @@ const SigninPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        
         localStorage.setItem(
           "unlock-me-user",
           JSON.stringify({
@@ -76,7 +94,6 @@ const SigninPage = () => {
     }
   };
 
-  // ---------- UI ----------
   return (
     <div className="signin-page">
       <div className="signin-card">
@@ -90,7 +107,9 @@ const SigninPage = () => {
             placeholder="Email"
             value={email}
             onChange={handleChange}
+            onBlur={handleBlur} // <--- Trigger touched state
             className="signin-input"
+            autoFocus
           />
           {errors.email && <span className="error-text">{errors.email}</span>}
 
@@ -100,6 +119,7 @@ const SigninPage = () => {
             placeholder="Password"
             value={password}
             onChange={handleChange}
+            onBlur={handleBlur} // <--- Trigger touched state
             className="signin-input"
           />
           {errors.password && (
