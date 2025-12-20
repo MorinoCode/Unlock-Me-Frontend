@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import Cropper from "react-easy-crop";
 import "./InitialQuizzesPage.css";
 
 const MultiStepOnboarding = () => {
@@ -8,146 +9,107 @@ const MultiStepOnboarding = () => {
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     birthday: { day: "", month: "", year: "" },
-    interests: [],
     avatar: null,
   });
 
   const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({
-    day: false,
-    month: false,
-    year: false,
-  });
+  const [touched, setTouched] = useState({ day: false, month: false, year: false });
 
-  const [interestOptions, setInterestOptions] = useState([]);
+  const [image, setImage] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
 
   const storedUser = localStorage.getItem("unlock-me-user");
   const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+  const name = parsedUser?.name ? parsedUser.name.charAt(0).toUpperCase() + parsedUser.name.slice(1) : "User";
 
-const capitalizeFirstLetter = (str = "") =>
-  str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
+  const getCroppedImg = async (imageSrc, pixelCrop) => {
+    const image = new Image();
+    image.src = imageSrc;
+    await new Promise((resolve) => (image.onload = resolve));
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+    return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), "image/jpeg"));
+  };
 
-const name = parsedUser?.name ? capitalizeFirstLetter(parsedUser.name) : "User";
-
-  /* -------------------- Birthday Validation -------------------- */
   const validateBirthday = (birthday) => {
     const { day, month, year } = birthday;
     const newErrors = {};
-
-    if (!/^\d+$/.test(day) || Number(day) < 1 || Number(day) > 31) {
-      newErrors.day = "Day must be between 1 and 31";
-    }
-
-    if (!/^\d+$/.test(month) || Number(month) < 1 || Number(month) > 12) {
-      newErrors.month = "Month must be between 1 and 12";
-    }
-
-    if (!/^\d{4}$/.test(year)) {
-      newErrors.year = "Year must be 4 digits";
-    }
+    if (!/^\d+$/.test(day) || Number(day) < 1 || Number(day) > 31) newErrors.day = "Invalid Day";
+    if (!/^\d+$/.test(month) || Number(month) < 1 || Number(month) > 12) newErrors.month = "Invalid Month";
+    if (!/^\d{4}$/.test(year)) newErrors.year = "Invalid Year";
 
     if (Object.keys(newErrors).length === 0) {
       const birthDate = new Date(year, month - 1, day);
-
-      if (
-        birthDate.getFullYear() !== Number(year) ||
-        birthDate.getMonth() !== Number(month) - 1 ||
-        birthDate.getDate() !== Number(day)
-      ) {
-        newErrors.age = "Invalid date";
-      } else {
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-        }
-
-        if (age < 12 || age > 100) {
-          newErrors.age = "Age must be between 12 and 100";
-        }
-      }
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+      if (age < 12 || age > 100) newErrors.age = "Age must be 12-100";
     }
-
     return newErrors;
   };
 
-  /* -------------------- Handlers -------------------- */
   const handleBirthdayChange = (e) => {
     const { name, value } = e.target;
-
     if (value !== "" && !/^\d+$/.test(value)) return;
-
-    const updatedBirthday = {
-      ...formData.birthday,
-      [name]: value,
-    };
-
+    const updatedBirthday = { ...formData.birthday, [name]: value };
     setFormData({ ...formData, birthday: updatedBirthday });
     setTouched({ ...touched, [name]: true });
-
-    const validationErrors = validateBirthday(updatedBirthday);
-    setErrors(validationErrors);
+    setErrors(validateBirthday(updatedBirthday));
   };
 
-  const toggleInterest = (label) => {
-    setFormData((prev) => ({
-      ...prev,
-      interests: prev.interests.includes(label)
-        ? prev.interests.filter((i) => i !== label)
-        : [...prev.interests, label],
-    }));
-  };
-
-  const handleAvatarChange = (e) => {
-    setFormData({ ...formData, avatar: e.target.files[0] });
-  };
-
-  /* -------------------- Fetch Interests -------------------- */
-  useEffect(() => {
-    if (step === 2 && interestOptions.length === 0) {
-      fetch(`${API_URL}/api/user/onboarding/interests-options`, {
-        credentials: "include",
-      })
-        .then((res) => res.json())
-        .then((data) => setInterestOptions(data))
-        .catch(console.error);
+  const onFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        setImage(reader.result);
+        setShowCropper(true);
+      });
+      reader.readAsDataURL(e.target.files[0]);
     }
-  }, [step]);
+  };
 
-  /* -------------------- Submit Step -------------------- */
+  const onCropComplete = useCallback((_, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleConfirmCrop = async () => {
+    try {
+      const croppedImageBlob = await getCroppedImg(image, croppedAreaPixels);
+      setFormData({ ...formData, avatar: croppedImageBlob });
+      setShowCropper(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleNext = async () => {
     setLoading(true);
-
     try {
-      let endpoint = "";
+      let endpoint = step === 1 ? "birthday" : "avatar";
       let body;
-
-      if (step === 1) {
-        const validationErrors = validateBirthday(formData.birthday);
-        setErrors(validationErrors);
-
-        if (Object.keys(validationErrors).length > 0) {
-          setLoading(false);
-          return;
-        }
-
-        endpoint = "birthday";
-        body = JSON.stringify({ birthday: formData.birthday });
-      }
-
-      if (step === 2) {
-        endpoint = "interests";
-        body = JSON.stringify({ interests: formData.interests });
-      }
-
-      if (step === 3) {
-        endpoint = "avatar";
+      if (step === 1) body = JSON.stringify({ birthday: formData.birthday });
+      else {
         body = new FormData();
-        if (formData.avatar) body.append("avatar", formData.avatar);
+        body.append("avatar", formData.avatar);
       }
 
       const res = await fetch(`${API_URL}/api/user/onboarding/${endpoint}`, {
@@ -157,10 +119,9 @@ const name = parsedUser?.name ? capitalizeFirstLetter(parsedUser.name) : "User";
         body,
       });
 
-      if (!res.ok) throw new Error("Request failed");
-
-      if (step < 3) setStep(step + 1);
-      else navigate("/initial-quizzes/questions");
+      if (!res.ok) throw new Error("Failed");
+      if (step === 1) setStep(2);
+      else navigate("/initial-quizzes/interests");
     } catch (err) {
       console.error(err);
     } finally {
@@ -168,96 +129,81 @@ const name = parsedUser?.name ? capitalizeFirstLetter(parsedUser.name) : "User";
     }
   };
 
-  /* -------------------- Disable Logic -------------------- */
   const isNextDisabled =
     loading ||
-    (step === 1 && Object.keys(errors).length > 0) ||
-    (step === 2 && formData.interests.length === 0);
+    (step === 1 && Object.keys(validateBirthday(formData.birthday)).length > 0) ||
+    (step === 2 && !formData.avatar);
 
-  /* -------------------- UI -------------------- */
   return (
     <div className="onboarding-page">
       <div className="onboarding-card">
         {step === 1 && (
-          <>
-        <h2>{`${name}, When were you born?`} </h2>
+          <div className="step-content">
+            <h2>{`${name}, When were you born?`}</h2>
             <div className="birthday-inputs">
-              {["day", "month", "year"].map((field) => (
-                <div key={field}>
+              {["day", "month", "year"].map((f) => (
+                <div key={f}>
                   <input
-                    name={field}
-                    placeholder={field === "day" ? "DD" : field === "month" ? "MM" : "YYYY"}
-                    value={formData.birthday[field]}
+                    name={f}
+                    placeholder={f === "day" ? "DD" : f === "month" ? "MM" : "YYYY"}
+                    value={formData.birthday[f]}
                     onChange={handleBirthdayChange}
+                    onBlur={() => setTouched({ ...touched, [f]: true })}
+                    className="onboarding-input"
+                    autoFocus={f === "day"}
                   />
-                  {touched[field] && errors[field] && (
-                    <span className="error-text">{errors[field]}</span>
-                  )}
+                  {touched[f] && errors[f] && <span className="error-text">{errors[f]}</span>}
                 </div>
               ))}
-              
             </div>
             {errors.age && <span className="error-text-age">{errors.age}</span>}
-          </>
+          </div>
         )}
 
         {step === 2 && (
-          <>
-            <h2>What are your interests?</h2>
-            <div className="interests-grid">
-              {interestOptions.map((opt) => (
-                <div
-                  key={opt._id}
-                  className={`interest-item ${
-                    formData.interests.includes(opt.label) ? "selected" : ""
-                  }`}
-                  onClick={() => toggleInterest(opt.label)}
-                >
-                  <span>{opt.icon}</span>
-                  <span>{opt.label}</span>
+          <div className="step-content">
+            <h2>Upload profile picture</h2>
+            {showCropper ? (
+              <div className="cropper-container">
+                <div className="crop-area">
+                  <Cropper
+                    image={image}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={1}
+                    onCropChange={setCrop}
+                    onCropComplete={onCropComplete}
+                    onZoomChange={setZoom}
+                  />
                 </div>
-              ))}
-            </div>
-          </>
+                <div className="cropper-controls">
+                  <input type="range" value={zoom} min={1} max={3} step={0.1} onChange={(e) => setZoom(e.target.value)} />
+                  <button className="confirm-btn" onClick={handleConfirmCrop}>Confirm Crop</button>
+                </div>
+              </div>
+            ) : (
+              <label className="upload-wrapper">
+                <input type="file" accept="image/*" onChange={onFileChange} hidden />
+                {!formData.avatar ? (
+                  <span className="upload-btn">Choose Photo</span>
+                ) : (
+                  <div className="avatar-preview-wrapper">
+                    <img src={URL.createObjectURL(formData.avatar)} alt="Preview" className="avatar-preview" />
+                    <span className="change-photo">Change Photo</span>
+                  </div>
+                )}
+              </label>
+            )}
+          </div>
         )}
 
-        {step === 3 && (
-  <div className="upload-foto">
-    <h2>Upload your profile picture</h2>
-
-    <label className="upload-wrapper">
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleAvatarChange}
-        hidden
-      />
-      <span className="upload-btn">Choose Photo</span>
-    </label>
-
-    {formData.avatar && (
-      <div className="avatar-preview-wrapper">
-        <img
-          src={URL.createObjectURL(formData.avatar)}
-          alt="Avatar Preview"
-          className="avatar-preview"
-        />
-      </div>
-    )}
-  </div>
-)}
-
-
-        <div className="onboarding-actions">
-          {step >= 1 && (
-            <button onClick={() => setStep(step + 1)} className="skip-btn">
-              Skip
+        {!showCropper && (
+          <div className="onboarding-actions">
+            <button onClick={handleNext} disabled={isNextDisabled} className="next-btn">
+              {loading ? "Saving..." : step === 2 ? "Finish" : "Next"}
             </button>
-          )}
-          <button onClick={handleNext} disabled={isNextDisabled} className="next-btn">
-            {loading ? "Saving..." : "Next"}
-          </button>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
