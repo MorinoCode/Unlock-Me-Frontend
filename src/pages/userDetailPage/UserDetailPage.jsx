@@ -15,7 +15,6 @@ const UserDetailPage = () => {
     const fetchUserDetails = async () => {
       try {
         setLoading(true);
-        // Fetch specific user details from backend
         const res = await fetch(`${API_URL}/api/user/details/${userId}`, {
           credentials: "include",
         });
@@ -30,7 +29,6 @@ const UserDetailPage = () => {
     fetchUserDetails();
   }, [userId, API_URL]);
 
-  // Combined function for Like and Dislike actions
   const handleAction = async (type) => {
     if (isProcessing) return;
     setIsProcessing(true);
@@ -51,7 +49,6 @@ const UserDetailPage = () => {
         alert("Profile Liked! ❤️");
       }
       
-      // Navigate back to explore page after action is complete
       navigate("/explore");
     } catch (err) {
       console.error(`${type} action failed:`, err);
@@ -69,22 +66,18 @@ const UserDetailPage = () => {
 
   if (!user) return <div className="error-screen">User profile not found.</div>;
 
-  // Calculate age safely
   const age = user.birthday?.year
     ? new Date().getFullYear() - parseInt(user.birthday.year)
     : "N/A";
 
-  // Safeguard for Traits/Interests mapping
   const displayTraits = (user.traits && user.traits.length > 0) 
     ? user.traits.slice(0, 4) 
     : (user.interests || []).slice(0, 4);
 
   return (
     <div className="profile-detail-page">
-      {/* Top Navigation */}
       <button className="back-nav-btn" onClick={() => navigate(-1)}>✕</button>
 
-      {/* Hero Section */}
       <div className="profile-hero-header">
         <div className="profile-image-main">
           <img src={user.avatar || "/default-avatar.png"} alt={user.name} />
@@ -101,7 +94,6 @@ const UserDetailPage = () => {
         </div>
       </div>
 
-      {/* Profile Details Content */}
       <div className="profile-body-content">
         <section className="content-block">
           <h3>Personal Bio</h3>
@@ -123,7 +115,6 @@ const UserDetailPage = () => {
           </div>
         </section>
 
-        {/* Compatibility & Traits Section */}
         <section className="content-block">
           <h3>Compatibility Vibes</h3>
           <div className="personality-traits">
@@ -146,7 +137,6 @@ const UserDetailPage = () => {
         </section>
       </div>
 
-      {/* Fixed Footer Action Bar */}
       <footer className="action-bar-fixed">
         <button 
           className="circle-action dislike-btn" 
@@ -159,7 +149,7 @@ const UserDetailPage = () => {
         
         <button 
           className="main-action chat-btn" 
-          onClick={() => alert("Chat feature is coming in the next update!")}
+          onClick={() => navigate(`/chat/${userId}`)}
         >
           Start Chat
         </button>
