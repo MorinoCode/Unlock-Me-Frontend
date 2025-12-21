@@ -1,0 +1,213 @@
+.explore-page-v2 {
+  min-height: 100vh;
+  background: #020617;
+  color: #f8fafc;
+  padding: 2rem 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.explore-hero {
+  padding: 0 4rem;
+  margin-bottom: 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.explore-hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(to bottom, #fff, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.user-plan-badge {
+  background: rgba(99, 102, 241, 0.1);
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  font-size: 0.9rem;
+}
+
+.user-plan-badge span {
+  color: #818cf8;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Section Layout */
+.explore-section {
+  margin-bottom: 4rem;
+}
+
+.section-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.title-area h2 {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.view-all {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Horizontal Scroll Logic */
+.horizontal-scroll-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 4rem 25px 4rem;
+  scroll-behavior: smooth;
+}
+
+.horizontal-scroll-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.horizontal-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 10px;
+}
+
+/* Match Cards */
+.match-card-v2 {
+  min-width: 240px;
+  max-width: 240px;
+  height: 340px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  position: relative;
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.match-card-v2:hover:not(.is-locked) {
+  transform: translateY(-10px) scale(1.02);
+  border-color: #6366f1;
+}
+
+.image-wrapper {
+  height: 220px;
+  width: 100%;
+  position: relative;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.match-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: #6366f1;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.info-wrapper {
+  padding: 15px;
+}
+
+.info-wrapper h3 {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.city-name {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.mini-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.mini-tags span {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: #cbd5e1;
+}
+
+/* Locked Overlay */
+.is-locked {
+  filter: grayscale(0.8);
+}
+
+.lock-overlay-v2 {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  padding: 20px;
+  text-align: center;
+}
+
+.lock-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.lock-overlay-v2 p {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+/* Loading States */
+.explore-loading-screen {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(99, 102, 241, 0.1);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .explore-hero, .section-info, .horizontal-scroll-container { padding: 0 1.5rem; }
+  .explore-hero h1 { font-size: 2rem; }
+}
