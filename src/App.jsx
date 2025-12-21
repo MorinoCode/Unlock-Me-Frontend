@@ -5,6 +5,7 @@ import InitialQuizzesPage from './pages/initialQuizzesPage/InitialQuizzesPage'
 import InitialQuizzesInterestsPage from './pages/initialQuizzesInterestsPage/InitialQuizzesInterestsPage'
 import InitialQuizzesQuestionsPage from './pages/initialQuizzesQuestionsPage/InitialQuizzesQuestionsPage.jsx'
 import HomePage from './pages/homePage/HomePage'
+import ExplorePage from './pages/explorePage/ExplorePage'
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path='/initial-quizzes'  element={<InitialQuizzesPage />}  />
         <Route path='/initial-quizzes/interests'  element={<InitialQuizzesInterestsPage />}  />
         <Route path='/initial-quizzes/questionsbycategory'  element={<InitialQuizzesQuestionsPage />}  />
+        <Route path='/explore'  element={<ExplorePage />}  />
       </Routes>
     </BrowserRouter>
     </>
