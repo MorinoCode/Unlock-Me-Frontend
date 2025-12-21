@@ -94,8 +94,8 @@ const InitialQuizzesQuestionsPage = () => {
       });
 
       if (res.ok) {
-        // Success! Move to dashboard or next onboarding step
-        navigate("/dashboard"); 
+        // Success! Move to Explore or next onboarding step
+        navigate("/Explore"); 
       } else {
         throw new Error("Failed to save results");
       }
