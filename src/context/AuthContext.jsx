@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       setCurrentUser(null);
+      console.log(err);
     } finally {
       setLoading(false);
     }
