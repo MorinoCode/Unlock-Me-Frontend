@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { socket } from "../../socket";
 import "./ChatPage.css";
 
 const ChatPage = () => {
   const { receiverId } = useParams();
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -16,11 +17,15 @@ const ChatPage = () => {
   useEffect(() => {
     const fetchChatData = async () => {
       try {
-        const userRes = await fetch(`${API_URL}/api/users/user/${receiverId}`, { credentials: "include" });
+        const userRes = await fetch(`${API_URL}/api/users/user/${receiverId}`, {
+          credentials: "include",
+        });
         const userData = await userRes.json();
         setReceiverUser(userData);
 
-        const msgRes = await fetch(`${API_URL}/api/chat/${receiverId}`, { credentials: "include" });
+        const msgRes = await fetch(`${API_URL}/api/chat/${receiverId}`, {
+          credentials: "include",
+        });
         const msgData = await msgRes.json();
         setMessages(msgData);
       } catch (err) {
@@ -68,36 +73,72 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="chat-page">
-      <div className="chat-header">
-        <img src={receiverUser?.avatar || "/default-avatar.png"} alt="avatar" />
-        <h3>{receiverUser?.name || "Loading..."}</h3>
-      </div>
+    <div className="chat-page-v2">
+      <header className="chat-header-v2">
+        <button
+          className="chat-v2-unique-back-btn"
+          onClick={() => navigate(-1)}
+        >
+          ←
+        </button>
 
-      <div className="messages-container">
+        <div
+          className="header-user-info"
+          onClick={() => navigate(`/user-profile/${receiverId}`)}
+        >
+          <div className="header-avatar-wrapper">
+            <img
+              src={receiverUser?.avatar || "/default-avatar.png"}
+              alt="avatar"
+            />
+            <div className="online-indicator"></div>
+          </div>
+          <div className="header-text-info">
+            <h3>{receiverUser?.name || "Loading..."}</h3>
+            <p>Online</p>
+          </div>
+        </div>
+      </header>
+
+      <div className="messages-scroll-area">
         {messages.map((msg, index) => (
           <div
             key={msg._id || index}
-            className={`message-bubble ${msg.sender === currentUser._id ? "sent" : "received"}`}
+            className={`msg-row ${
+              msg.sender === currentUser._id ? "own-msg" : "their-msg"
+            }`}
           >
-            <p>{msg.text}</p>
-            <span className="message-time">
-              {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
+            <div className="msg-bubble-v2">
+              <p>{msg.text}</p>
+              <span className="msg-meta">
+                {new Date(msg.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </div>
           </div>
         ))}
         <div ref={scrollRef} />
       </div>
 
-      <form className="chat-input-area" onSubmit={handleSendMessage}>
-        <input
-          type="text"
-          placeholder="Type a message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-        />
-        <button type="submit">Send</button>
-      </form>
+      <footer className="chat-input-container">
+        <form className="input-form-v2" onSubmit={handleSendMessage}>
+          <input
+            type="text"
+            placeholder="Type a message..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="send-btn-v2"
+            disabled={!newMessage.trim()}
+          >
+            <span className="send-icon">✦</span>
+          </button>
+        </form>
+      </footer>
     </div>
   );
 };

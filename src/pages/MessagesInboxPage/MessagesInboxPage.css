@@ -1,0 +1,150 @@
+.inbox-page {
+  min-height: 100vh;
+  background: #020617; /* همان رنگ پس‌زمینه Explore */
+  color: #f8fafc;
+  padding-bottom: 5rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Header Match with Explore Hero */
+.inbox-hero {
+  padding: 4rem 4rem 2rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inbox-hero h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(to bottom, #fff, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.inbox-hero p {
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.inbox-container {
+  padding: 0 4rem;
+  margin-top: 2rem;
+}
+
+/* Conversation Cards */
+.conversations-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inbox-card {
+  display: flex;
+  align-items: center;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 1.2rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+  position: relative;
+}
+
+.inbox-card:hover {
+  transform: translateX(10px);
+  border-color: #6366f1;
+  background: rgba(30, 41, 59, 0.6);
+}
+
+.inbox-card-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(99, 102, 241, 0.2);
+}
+
+.inbox-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.inbox-card-content {
+  flex: 1;
+  margin-left: 1.5rem;
+  overflow: hidden;
+}
+
+.inbox-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.inbox-card-header h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.msg-time {
+  font-size: 0.8rem;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.msg-preview {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.card-arrow {
+  color: #6366f1;
+  font-size: 1.5rem;
+  margin-left: 1rem;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.inbox-card:hover .card-arrow {
+  opacity: 1;
+  transform: translateX(5px);
+}
+
+/* Loading State Match */
+.inbox-loading-screen {
+  min-height: 100vh;
+  background: #020617;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #94a3b8;
+}
+
+/* Responsive Match */
+@media (max-width: 1024px) {
+  .inbox-hero, .inbox-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .inbox-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding-top: 2rem;
+  }
+  .inbox-hero h1 { font-size: 2.5rem; }
+  .inbox-card-image { width: 60px; height: 60px; }
+}
