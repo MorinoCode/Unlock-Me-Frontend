@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import UserCard from "../../components/userCard/UserCard"; 
+import UserCard from "../../components/UserCard/UserCard"; // Ensure path is correct
 import "./ExplorePage.css";
 
 const ExplorePage = () => {
@@ -20,17 +20,17 @@ const ExplorePage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // 1. Fetch current user context
+        // 1. Fetch current user context (Plan, Location, etc.)
         const userRes = await fetch(`${API_URL}/api/user/location`, { credentials: "include" });
         const userData = await userRes.json();
         setCurrentUser(userData);
 
-        // 2. Fetch matches based on country
-        if (userData.location?.country) {
-          const exploreRes = await fetch(
-            `${API_URL}/api/user/explore?country=${userData.location.country}`,
-            { credentials: "include" }
-          );
+        // 2. Fetch matches based on user preference and country
+        const country = userData.location?.country;
+        if (country) {
+          const exploreRes = await fetch(`${API_URL}/api/user/explore?country=${country}`, { 
+            credentials: "include" 
+          });
           const exploreData = await exploreRes.json();
           setSections(exploreData);
         }
@@ -46,7 +46,7 @@ const ExplorePage = () => {
   const renderSection = (title, data, limitKey, subtitle) => {
     const userPlan = currentUser?.subscription?.plan || "free";
     
-    // Limits for the horizontal preview
+    // Define visibility limits based on plan
     const previewLimits = {
       free: { city: 15, interest: 12, country: 20 },
       premium: { city: 50, interest: 40, country: 100 },
@@ -54,8 +54,7 @@ const ExplorePage = () => {
     };
     
     const currentLimit = previewLimits[userPlan][limitKey] || 10;
-    // Show only first 20 in horizontal scroll
-    const displayData = data.slice(0, 20);
+    const displayData = data.slice(0, 20); // Always show max 20 in horizontal scroll
 
     return (
       <section className="explore-section">
@@ -64,10 +63,7 @@ const ExplorePage = () => {
             <h2>{title}</h2>
             <p className="subtitle">{subtitle}</p>
           </div>
-          <button 
-            className="view-all" 
-            onClick={() => navigate(`/explore/view-all/${limitKey}`)}
-          >
+          <button className="view-all" onClick={() => navigate(`/explore/view-all/${limitKey}`)}>
             See More
           </button>
         </div>
@@ -83,7 +79,7 @@ const ExplorePage = () => {
               />
             ))
           ) : (
-            <div className="empty-state">No matches found here yet.</div>
+            <div className="empty-state">No new profiles found in this category.</div>
           )}
         </div>
       </section>
@@ -93,7 +89,7 @@ const ExplorePage = () => {
   if (loading) return (
     <div className="explore-loading-screen">
       <div className="spinner"></div>
-      <p>Building your social circle...</p>
+      <p>Analyzing your social vibe...</p>
     </div>
   );
 
@@ -104,16 +100,16 @@ const ExplorePage = () => {
       <header className="explore-hero">
         <div className="hero-text">
           <h1>Explore</h1>
-          <p>Discover people in {currentUser?.location?.country}</p>
+          <p>Finding the best matches in {currentUser?.location?.country}</p>
         </div>
         <div className="plan-pill">Plan: <span>{userPlan}</span></div>
       </header>
 
       <div className="sections-wrapper">
-        {/* Row 1: Nearby Users */}
+        {/* Nearby Row */}
         {renderSection(`Near You`, sections.cityMatches, "city", `People in ${currentUser?.location?.city}`)}
 
-        {/* PROMO: Engagement */}
+        {/* Promo: Engagement */}
         <div className="promo-banner info-promo">
           <div className="promo-text">
             <h3>Boost Your Matches! 🚀</h3>
@@ -122,15 +118,15 @@ const ExplorePage = () => {
           <button className="promo-btn" onClick={() => navigate("/initial-quizzes/interests")}>Answer More</button>
         </div>
 
-        {/* Row 2: Interests */}
+        {/* Interest Row */}
         {renderSection("Common Interests", sections.interestMatches, "interest", "Shared hobbies and passions")}
 
-        {/* Row 3: Soulmates (Conditional) */}
+        {/* Soulmates Row (Conditional) */}
         <section className="explore-section soulmates-container">
           <div className="section-info">
             <div className="title-area">
               <h2>The Soulmates</h2>
-              <p className="subtitle">Compatibility scores above 80%</p>
+              <p className="subtitle">Highest compatibility scores (80%+)</p>
             </div>
           </div>
           
@@ -139,7 +135,7 @@ const ExplorePage = () => {
               <div className="lock-glow"></div>
               <span className="lock-emoji">💎</span>
               <h3>Premium Discovery</h3>
-              <p>Your top 5 matches are hidden. Upgrade to reveal them.</p>
+              <p>Your top matches are hidden. Upgrade to Premium to reveal them.</p>
               <button className="upgrade-action-btn">Unlock Now</button>
             </div>
           ) : (
@@ -151,18 +147,18 @@ const ExplorePage = () => {
           )}
         </section>
 
-        {/* PROMO: Upgrade */}
+        {/* Promo: Upgrade */}
         {userPlan !== "gold" && (
           <div className="promo-banner gold-promo">
             <div className="promo-text">
-              <h3>Experience Gold 🏆</h3>
-              <p>Unlimited unlocks, priority messaging, and hidden profile mode.</p>
+              <h3>Unlock Everything with Gold 🏆</h3>
+              <p>Unlimited city unlocks and see who liked you.</p>
             </div>
             <button className="promo-btn gold-bg" onClick={() => navigate("/upgrade")}>Go Gold</button>
           </div>
         )}
 
-        {/* Row 4: Country-wide */}
+        {/* Global Row */}
         {renderSection("Across the Country", sections.countryMatches, "country", `Everyone in ${currentUser?.location?.country}`)}
       </div>
     </div>
