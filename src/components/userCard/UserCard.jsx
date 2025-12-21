@@ -22,8 +22,8 @@ const UserCard = ({ user, isLocked, userPlan }) => {
   };
 
   return (
-    <div 
-      className={`user-card-component ${isLocked ? "is-locked" : ""}`} 
+    <div
+      className={`user-card-component ${isLocked ? "is-locked" : ""}`}
       onClick={handleCardClick}
     >
       {isLocked ? (
@@ -35,16 +35,24 @@ const UserCard = ({ user, isLocked, userPlan }) => {
         <div className="card-inner-content">
           <div className="image-container">
             <img src={user.avatar || "/default-avatar.png"} alt={user.name} />
-            <div className={`score-badge ${user.matchScore >= 80 ? "high-match" : ""}`}>
+            <div
+              className={`score-badge ${
+                user.matchScore >= 80 ? "high-match" : ""
+              }`}
+            >
               {user.matchScore}% Match
             </div>
           </div>
           <div className="user-details">
-            <h3>{user.name}, {calculateAge(user.birthday)}</h3>
+            <h3>
+              {user.name}, {calculateAge(user.birthday)}
+            </h3>
             <p className="location-text">📍 {user.location?.city}</p>
             <div className="tags-preview">
               {user.interests?.slice(0, 2).map((tag, i) => (
-                <span key={i} className="mini-tag">{tag}</span>
+                <span key={i} className="mini-tag">
+                  {tag}
+                </span>
               ))}
             </div>
           </div>

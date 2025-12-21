@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import UserCard from "../../components/UserCard/UserCard"; // Make sure the path is correct
+import UserCard from "../../components/userCard/UserCard"; 
 import "./ExplorePage.css";
 
 const ExplorePage = () => {
