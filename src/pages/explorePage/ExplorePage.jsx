@@ -22,7 +22,7 @@ const ExplorePage = () => {
         });
         const userData = await userRes.json();
         setCurrentUser(userData);
-        const country = userData.location.country
+        const country = userData.location.country;
         console.log(country);
 
         const exploreRes = await fetch(
@@ -92,7 +92,7 @@ const ExplorePage = () => {
                           alt={match.name}
                         />
                         <div className="match-badge">
-                          {Math.floor(Math.random() * 20 + 80)}%
+                          {match.matchScore}% Match
                         </div>
                       </div>
                       <div className="info-wrapper">
