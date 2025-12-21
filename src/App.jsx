@@ -6,6 +6,7 @@ import InitialQuizzesInterestsPage from './pages/initialQuizzesInterestsPage/Ini
 import InitialQuizzesQuestionsPage from './pages/initialQuizzesQuestionsPage/InitialQuizzesQuestionsPage.jsx'
 import HomePage from './pages/homePage/HomePage'
 import ExplorePage from './pages/explorePage/ExplorePage'
+import ViewAllMatchedUsersPage from './pages/viewAllMatchedUsersPage/ViewAllMatchedUsersPage.jsx'
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path='/initial-quizzes/interests'  element={<InitialQuizzesInterestsPage />}  />
         <Route path='/initial-quizzes/questionsbycategory'  element={<InitialQuizzesQuestionsPage />}  />
         <Route path='/explore'  element={<ExplorePage />}  />
+        <Route path="/explore/view-all/:category" element={<ViewAllMatchedUsersPage />} />
       </Routes>
     </BrowserRouter>
     </>

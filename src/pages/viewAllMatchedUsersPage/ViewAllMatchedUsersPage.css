@@ -1,0 +1,137 @@
+.view-all-container {
+  min-height: 100vh;
+  background: #020617;
+  padding: 2rem 4rem;
+  color: white;
+}
+
+.view-all-header {
+  margin-bottom: 3rem;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.view-all-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+.view-all-header p {
+  color: #94a3b8;
+}
+
+/* Grid Layout */
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+.grid-card {
+  background: #1e293b;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: 0.3s;
+  height: 320px;
+}
+
+.grid-card:hover:not(.locked-grid-card) {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.grid-image-hold {
+  height: 220px;
+  position: relative;
+}
+
+.grid-image-hold img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.grid-score {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #6366f1;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.grid-info {
+  padding: 1rem;
+}
+
+.grid-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
+.grid-info p { color: #94a3b8; font-size: 0.85rem; }
+
+/* Locked Grid State */
+.locked-grid-card {
+  background: #0f172a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-lock-content {
+  text-align: center;
+  filter: none !important;
+}
+
+.grid-lock-content .lock-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.grid-lock-content button {
+  background: #f59e0b;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Footer Promo */
+.grid-upgrade-footer {
+  margin-top: 4rem;
+  text-align: center;
+  padding: 3rem;
+  background: linear-gradient(to top, #1e1b4b, transparent);
+  border-radius: 30px;
+}
+
+.grid-upgrade-footer h2 { font-size: 2rem; margin-bottom: 1rem; }
+.grid-upgrade-footer p { color: #cbd5e1; margin-bottom: 2rem; }
+
+.grid-upgrade-footer button {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .view-all-container { padding: 1.5rem; }
+  .matches-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+  .grid-card { height: 280px; }
+  .grid-image-hold { height: 180px; }
+}
