@@ -95,7 +95,7 @@ const InitialQuizzesQuestionsPage = () => {
 
       if (res.ok) {
         // Success! Move to Explore or next onboarding step
-        navigate("/Explore"); 
+        navigate("/explore"); 
       } else {
         throw new Error("Failed to save results");
       }
