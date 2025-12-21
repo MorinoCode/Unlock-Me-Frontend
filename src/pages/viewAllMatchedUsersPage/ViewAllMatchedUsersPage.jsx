@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import UserCard from "../../components/userCard/UserCard"; 
 import "./ViewAllMatchedUsersPage.css";
 
 const ViewAllMatchedUsersPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState({ data: [], title: "" });
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +34,7 @@ const ViewAllMatchedUsersPage = () => {
 
         setUsers(categoryMap[category] || { data: [], title: "Explore" });
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Error fetching all matches:", err);
       } finally {
         setLoading(false);
       }
@@ -42,52 +43,51 @@ const ViewAllMatchedUsersPage = () => {
   }, [category, API_URL]);
 
   const userPlan = currentUser?.subscription?.plan || "free";
-  // Limit for free users in grid view
+  
+  // Quota: Limit for free users in grid view
   const freeLimit = 12; 
 
-  if (loading) return <div className="loading-grid">Loading matches...</div>;
+  if (loading) return (
+    <div className="loading-grid-container">
+      <div className="spinner"></div>
+      <p>Loading your potential matches...</p>
+    </div>
+  );
 
   return (
     <div className="view-all-container">
       <header className="view-all-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
-        <h1>{users.title}</h1>
-        <p>{users.data.length} potential matches found</p>
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          <span className="arrow">←</span> Back to Explore
+        </button>
+        <div className="header-text-content">
+          <h1>{users.title}</h1>
+          <p>{users.data.length} amazing people found</p>
+        </div>
       </header>
 
       <div className="matches-grid">
-        {users.data.map((match, index) => {
-          const isLocked = userPlan === "free" && index >= freeLimit;
-
-          return (
-            <div key={match._id} className={`grid-card ${isLocked ? "locked-grid-card" : ""}`}>
-              {isLocked ? (
-                <div className="grid-lock-content">
-                  <span className="lock-icon">🔒</span>
-                  <button onClick={() => navigate("/upgrade")}>Unlock All</button>
-                </div>
-              ) : (
-                <div className="grid-card-inner">
-                  <div className="grid-image-hold">
-                    <img src={match.avatar || "/default-avatar.png"} alt={match.name} />
-                    <div className="grid-score">{match.matchScore}%</div>
-                  </div>
-                  <div className="grid-info">
-                    <h3>{match.name}, {new Date().getFullYear() - (match.birthday?.year || 2000)}</h3>
-                    <p>{match.location?.city}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {users.data.map((match, index) => (
+          <UserCard 
+            key={match._id} 
+            user={match} 
+            isLocked={userPlan === "free" && index >= freeLimit} 
+            userPlan={userPlan} 
+          />
+        ))}
       </div>
 
+      {/* Promotion Footer for Free Users */}
       {userPlan === "free" && users.data.length > freeLimit && (
         <div className="grid-upgrade-footer">
-          <h2>Want to see more?</h2>
-          <p>Upgrade to Premium or Gold to see all matches in this category.</p>
-          <button onClick={() => navigate("/upgrade")}>Upgrade Plan</button>
+          <div className="footer-glow"></div>
+          <h2>Explore Without Limits</h2>
+          <p>You've reached the limit for the Free plan. Upgrade to see every single match in this category.</p>
+          <div className="footer-actions">
+            <button className="upgrade-btn-primary" onClick={() => navigate("/upgrade")}>
+              Unlock All Matches
+            </button>
+          </div>
         </div>
       )}
     </div>
