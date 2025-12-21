@@ -9,6 +9,7 @@ import ExplorePage from './pages/explorePage/ExplorePage'
 import ViewAllMatchedUsersPage from './pages/viewAllMatchedUsersPage/ViewAllMatchedUsersPage.jsx'
 import UserDetailPage from './pages/userDetailPage/UserDetailPage.jsx'
 import MyMatchesPage from './pages/myMatchesPag/MyMatchesPage.jsx'
+import ViewAllMatchesPage from './pages/viewAllMatchesPage/ViewAllMatchesPage.jsx'
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/explore/view-all/:category" element={<ViewAllMatchedUsersPage />} />
         <Route path="/user-profile/:userId" element={<UserDetailPage />} />
         <Route path="/mymatches" element={<MyMatchesPage />} />
+        <Route path="/mymatches/view-all/:type" element={<ViewAllMatchesPage />} />
       </Routes>
     </BrowserRouter>
     </>

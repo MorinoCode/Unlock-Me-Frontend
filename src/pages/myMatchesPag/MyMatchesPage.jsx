@@ -51,7 +51,7 @@ const MyMatchesPage = () => {
             <h2>{title}</h2>
             <p className="subtitle">{subtitle}</p>
           </div>
-          <button className="see-more-btn" onClick={() => navigate(`/matches/view-all/${type}`)}>See More</button>
+          <button className="see-more-btn" onClick={() => navigate(`/mymatches/view-all/${type}`)}>See More</button>
         </div>
 
         <div className="horizontal-scroll">
