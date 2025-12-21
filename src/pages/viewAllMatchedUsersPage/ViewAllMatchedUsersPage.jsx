@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import UserCard from "../../components/UserCard/UserCard";
+import UserCard from "../../components/UserCard/UserCard.jsx";
 import "./ViewAllMatchedUsersPage.css";
 
 const ViewAllMatchedUsersPage = () => {
