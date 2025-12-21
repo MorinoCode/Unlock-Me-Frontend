@@ -1,0 +1,82 @@
+.matches-dashboard {
+  min-height: 100vh;
+  background: #020617;
+  padding: 4rem;
+  color: white;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.dashboard-header h1 { font-size: 3rem; font-weight: 900; }
+
+.match-section { margin-bottom: 4rem; }
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 5px; }
+
+.see-more-btn {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.horizontal-scroll {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+
+/* Locked Card for Who Liked Me */
+.locked-section-card {
+  min-width: 300px;
+  height: 200px;
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  border: 2px dashed #4f46e5;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.locked-section-card span { font-size: 2rem; margin-bottom: 10px; }
+
+/* Promo Banner */
+.match-promo {
+  margin: 3rem 0;
+  padding: 2rem;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e293b;
+}
+
+.blue-promo { background: linear-gradient(90deg, #4338ca, #1e1b4b); }
+
+.match-promo button {
+  background: #f59e0b;
+  color: black;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
