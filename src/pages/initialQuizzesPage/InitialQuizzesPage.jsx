@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
+import { Country, City } from "country-state-city";
 import "./InitialQuizzesPage.css";
 
 const MultiStepOnboarding = () => {
@@ -9,23 +10,40 @@ const MultiStepOnboarding = () => {
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  
   const [formData, setFormData] = useState({
     birthday: { day: "", month: "", year: "" },
+    country: "",
+    countryCode: "",
+    city: "",
+    bio: "",
     avatar: null,
   });
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({ day: false, month: false, year: false });
 
+  // Cropper States
   const [image, setImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
 
+  // Location Data
+  const [countries] = useState(Country.getAllCountries());
+  const [cities, setCities] = useState([]);
+
   const storedUser = localStorage.getItem("unlock-me-user");
   const parsedUser = storedUser ? JSON.parse(storedUser) : null;
   const name = parsedUser?.name ? parsedUser.name.charAt(0).toUpperCase() + parsedUser.name.slice(1) : "User";
+
+  useEffect(() => {
+    if (formData.countryCode) {
+      const countryCities = City.getCitiesOfCountry(formData.countryCode);
+      setCities(countryCities);
+    }
+  }, [formData.countryCode]);
 
   const getCroppedImg = async (imageSrc, pixelCrop) => {
     const image = new Image();
@@ -104,10 +122,20 @@ const MultiStepOnboarding = () => {
   const handleNext = async () => {
     setLoading(true);
     try {
-      let endpoint = step === 1 ? "birthday" : "avatar";
+      let endpoint = "";
       let body;
-      if (step === 1) body = JSON.stringify({ birthday: formData.birthday });
-      else {
+
+      if (step === 1) {
+        endpoint = "birthday";
+        body = JSON.stringify({ birthday: formData.birthday });
+      } else if (step === 2) {
+        endpoint = "location";
+        body = JSON.stringify({ country: formData.country, city: formData.city });
+      } else if (step === 3) {
+        endpoint = "bio";
+        body = JSON.stringify({ bio: formData.bio });
+      } else {
+        endpoint = "avatar";
         body = new FormData();
         body.append("avatar", formData.avatar);
       }
@@ -120,7 +148,8 @@ const MultiStepOnboarding = () => {
       });
 
       if (!res.ok) throw new Error("Failed");
-      if (step === 1) setStep(2);
+      
+      if (step < 4) setStep(step + 1);
       else navigate("/initial-quizzes/interests");
     } catch (err) {
       console.error(err);
@@ -132,11 +161,14 @@ const MultiStepOnboarding = () => {
   const isNextDisabled =
     loading ||
     (step === 1 && Object.keys(validateBirthday(formData.birthday)).length > 0) ||
-    (step === 2 && !formData.avatar);
+    (step === 2 && (!formData.country || !formData.city)) ||
+    (step === 3 && formData.bio.length < 10) ||
+    (step === 4 && !formData.avatar);
 
   return (
     <div className="onboarding-page">
       <div className="onboarding-card">
+        
         {step === 1 && (
           <div className="step-content">
             <h2>{`${name}, When were you born?`}</h2>
@@ -145,7 +177,7 @@ const MultiStepOnboarding = () => {
                 <div key={f}>
                   <input
                     name={f}
-                    placeholder={f === "day" ? "DD" : f === "month" ? "MM" : "YYYY"}
+                    placeholder={f.toUpperCase()}
                     value={formData.birthday[f]}
                     onChange={handleBirthdayChange}
                     onBlur={() => setTouched({ ...touched, [f]: true })}
@@ -161,6 +193,49 @@ const MultiStepOnboarding = () => {
         )}
 
         {step === 2 && (
+          <div className="step-content">
+            <h2>Where do you live?</h2>
+            <div className="location-inputs">
+              <select 
+                className="onboarding-input"
+                value={formData.country}
+                onChange={(e) => {
+                  const selected = countries.find(c => c.name === e.target.value);
+                  setFormData({...formData, country: e.target.value, countryCode: selected?.isoCode || "", city: ""});
+                }}
+              >
+                <option value="">Select Country</option>
+                {countries.map(c => <option key={c.isoCode} value={c.name}>{c.flag} {c.name}</option>)}
+              </select>
+
+              <select 
+                className="onboarding-input"
+                disabled={!formData.country}
+                value={formData.city}
+                onChange={(e) => setFormData({...formData, city: e.target.value})}
+              >
+                <option value="">Select City</option>
+                {cities.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="step-content">
+            <h2>About You</h2>
+            <textarea 
+              className="onboarding-input bio-textarea"
+              placeholder="Tell us something interesting about yourself (min 10 chars)..."
+              value={formData.bio}
+              maxLength={150}
+              onChange={(e) => setFormData({...formData, bio: e.target.value})}
+            />
+            <p className="char-count">{formData.bio.length}/150</p>
+          </div>
+        )}
+
+        {step === 4 && (
           <div className="step-content">
             <h2>Upload profile picture</h2>
             {showCropper ? (
@@ -199,8 +274,11 @@ const MultiStepOnboarding = () => {
 
         {!showCropper && (
           <div className="onboarding-actions">
+            {step > 1 && (
+                <button className="skip-btn" onClick={() => setStep(step - 1)}>Back</button>
+            )}
             <button onClick={handleNext} disabled={isNextDisabled} className="next-btn">
-              {loading ? "Saving..." : step === 2 ? "Finish" : "Next"}
+              {loading ? "Saving..." : step === 4 ? "Finish" : "Next"}
             </button>
           </div>
         )}
