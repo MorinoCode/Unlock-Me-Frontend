@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth.js"; 
 import "./SigninPage.css";
 
 const SigninPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
+  const { setCurrentUser } = useAuth(); 
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  // Track which fields the user has touched
   const [touched, setTouched] = useState({
     email: false,
     password: false,
@@ -27,7 +28,6 @@ const SigninPage = () => {
   const validate = () => {
     const newErrors = {};
 
-    // Only set errors if the field has been touched
     if (touched.email && !/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Invalid email format";
     }
@@ -38,7 +38,6 @@ const SigninPage = () => {
 
     setErrors(newErrors);
 
-    // Form validity for the button should check the actual logic, regardless of "touched"
     const logicValid = 
       /\S+@\S+\.\S+/.test(email) && 
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password);
@@ -48,14 +47,13 @@ const SigninPage = () => {
 
   useEffect(() => {
     validate();
-  }, [formData, touched]); // Re-run when formData OR touched state changes
+  }, [formData, touched]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setServerMessage("");
   };
 
-  // Set field to touched when user clicks out of the input
   const handleBlur = (e) => {
     setTouched({ ...touched, [e.target.name]: true });
   };
@@ -75,14 +73,17 @@ const SigninPage = () => {
       const data = await response.json();
 
       if (response.ok) {
+        setCurrentUser(data.user); 
+
         localStorage.setItem(
           "unlock-me-user",
           JSON.stringify({
-            id: data.user.id,
+            id: data.user.id || data.user._id,
             name: data.user.name,
           })
         );
-        navigate("/initial-quizzes");
+        
+        navigate("/explore"); 
       } else {
         setServerMessage(data.message || "Invalid credentials");
       }
@@ -107,7 +108,7 @@ const SigninPage = () => {
             placeholder="Email"
             value={email}
             onChange={handleChange}
-            onBlur={handleBlur} // <--- Trigger touched state
+            onBlur={handleBlur}
             className="signin-input"
             autoFocus
           />
@@ -119,7 +120,7 @@ const SigninPage = () => {
             placeholder="Password"
             value={password}
             onChange={handleChange}
-            onBlur={handleBlur} // <--- Trigger touched state
+            onBlur={handleBlur}
             className="signin-input"
           />
           {errors.password && (
