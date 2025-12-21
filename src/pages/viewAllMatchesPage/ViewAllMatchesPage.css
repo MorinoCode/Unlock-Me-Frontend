@@ -1,0 +1,44 @@
+.view-all-matches {
+  min-height: 100vh;
+  background: #020617;
+  padding: 3rem 4rem;
+  color: white;
+}
+
+.view-all-header { margin-bottom: 3rem; }
+
+.back-btn {
+  background: none;
+  border: 1px solid #6366f1;
+  color: #6366f1;
+  padding: 8px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 30px;
+  justify-items: center;
+}
+
+.upsell-footer {
+  margin-top: 5rem;
+  text-align: center;
+  padding: 4rem;
+  background: linear-gradient(to top, #1e1b4b, transparent);
+  border-radius: 40px;
+}
+
+.upsell-footer button {
+  background: #f59e0b;
+  color: black;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 15px;
+  font-weight: 800;
+  margin-top: 20px;
+  cursor: pointer;
+}
