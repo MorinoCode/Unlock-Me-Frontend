@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Country, City } from 'country-state-city';
+import Cropper from "react-easy-crop"; // ایمپورت Cropper
 import styles from "./ProfilePage.module.css";
 
 const ProfilePage = () => {
@@ -13,6 +14,13 @@ const ProfilePage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
+
+  // --- استیت‌های مربوط به Cropper ---
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "", bio: "", phone: "", country: "", city: "", countryCode: "",
@@ -28,6 +36,61 @@ const ProfilePage = () => {
 
   const countries = Country.getAllCountries();
   const [cities, setCities] = useState([]);
+
+  // --- توابع مربوط به Cropper (مشابه Onboarding) ---
+  const onFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        setImageSrc(reader.result);
+        setShowCropper(true); // نمایش مودال برش
+      });
+      reader.readAsDataURL(e.target.files[0]);
+      e.target.value = ''; // ریست کردن اینپوت فایل
+    }
+  };
+
+  const onCropComplete = useCallback((_, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const getCroppedImg = async (imageSrc, pixelCrop) => {
+    const image = new Image();
+    image.src = imageSrc;
+    await new Promise((resolve) => (image.onload = resolve));
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+    return canvas.toDataURL("image/jpeg"); // بازگرداندن Base64
+  };
+
+  const handleConfirmCrop = async () => {
+    try {
+      const croppedImageBase64 = await getCroppedImg(imageSrc, croppedAreaPixels);
+      setFormData({ ...formData, avatar: croppedImageBase64 }); // ست کردن عکس برش‌خورده
+      setShowCropper(false); // بستن مودال
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const closeCropper = () => {
+    setShowCropper(false);
+    setImageSrc(null);
+  };
+  // ------------------------------------
 
   const validateBirthday = (birthday) => {
     const { day, month, year } = birthday;
@@ -178,16 +241,46 @@ const ProfilePage = () => {
 
   return (
     <div className={styles.rootContainer}>
+      {/* --- مودال برش عکس --- */}
+      {showCropper && (
+        <div className={styles.cropperModal}>
+          <div className={styles.cropperContent}>
+            <div className={styles.cropArea}>
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            <div className={styles.cropperControls}>
+              <input
+                type="range"
+                value={zoom}
+                min={1}
+                max={3}
+                step={0.1}
+                onChange={(e) => setZoom(e.target.value)}
+                className={styles.zoomSlider}
+              />
+              <div className={styles.cropperButtons}>
+                <button className={styles.cancelBtn} onClick={closeCropper}>Cancel</button>
+                <button className={styles.confirmBtn} onClick={handleConfirmCrop}>Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.layout}>
         <aside className={styles.sidebar}>
           <div className={styles.avatarContainer}>
             <img src={formData.avatar || "/default-avatar.png"} alt="User" />
             <label className={styles.avatarUploadOverlay}>
-              📷 <input type="file" hidden accept="image/*" onChange={(e) => {
-                const reader = new FileReader();
-                reader.onloadend = () => setFormData({...formData, avatar: reader.result});
-                reader.readAsDataURL(e.target.files[0]);
-              }} />
+              📷 <input type="file" hidden accept="image/*" onChange={onFileChange} />
             </label>
           </div>
           <h3 className={styles.userName}>{formData.name}</h3>
@@ -298,16 +391,16 @@ const ProfilePage = () => {
           {activeTab === "categories" && (
             <div className={styles.card}>
               <h2 className={styles.sectionTitleWhite}>My Interests</h2>
-              <div style={{display:'flex', flexDirection:'column', gap:'15px'}}>
+              <div className={styles.categoryContainer}>
                 {Object.keys(formData.categories).length > 0 ? Object.keys(formData.categories).map(cat => (
                   <div key={cat} className={styles.catRow}>
-                     <div>
-                       <h4 style={{color:'white', margin:0}}>{cat}</h4>
+                     <div className={styles.catInfo}>
+                       <h4>{cat}</h4>
                        <span className={styles.statusBadge}>{formData.categories[cat].length} Answers</span>
                      </div>
                      <button className={styles.editBtn} onClick={()=>navigate(`/onboarding?category=${cat}`)}>Edit</button>
                   </div>
-                )) : <p style={{color:'#94a3b8'}}>No interests found.</p>}
+                )) : <p style={{color:'#94a3b8', textAlign:'center', padding:'20px'}}>No interests found.</p>}
               </div>
             </div>
           )}

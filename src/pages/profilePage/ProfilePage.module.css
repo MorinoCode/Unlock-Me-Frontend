@@ -1,7 +1,5 @@
-/* ProfilePage.module.css */
-
 .rootContainer {
-    position: fixed !important; /* تضمین تمام صفحه بودن */
+    position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
@@ -9,7 +7,7 @@
     background-color: #020617 !important;
     box-sizing: border-box !important;
     font-family: 'Inter', sans-serif !important;
-    overflow-y: auto !important; /* اسکرول خوردن در صورت نیاز */
+    overflow-y: auto !important;
     z-index: 9999 !important;
     display: flex !important;
     justify-content: center !important;
@@ -23,7 +21,6 @@
     gap: 30px !important;
 }
 
-/* --- سایدبار --- */
 .sidebar {
     width: 320px !important;
     min-width: 320px !important;
@@ -53,7 +50,6 @@
     background: #1e293b !important;
 }
 
-/* آیکون دوربین دقیقاً روی عکس */
 .avatarUploadOverlay {
     position: absolute !important;
     bottom: 0px !important;
@@ -81,7 +77,6 @@
     font-weight: 700 !important;
 }
 
-/* بج اشتراک */
 .subscriptionBadge {
     padding: 6px 16px !important;
     border-radius: 20px !important;
@@ -94,7 +89,6 @@
 .plan-free { background: rgba(148, 163, 184, 0.2) !important; color: #94a3b8 !important; border: 1px solid rgba(148, 163, 184, 0.3) !important; }
 .plan-premium { background: linear-gradient(135deg, #6366f1, #4f46e5) !important; color: #fff !important; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important; }
 
-/* منوی ناوبری */
 .navMenu {
     width: 100% !important;
     display: flex !important;
@@ -122,7 +116,6 @@
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2) !important;
 }
 
-/* --- محتوای اصلی --- */
 .contentArea {
     flex: 1 !important;
     display: flex !important;
@@ -139,7 +132,6 @@
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* تایتل سفید */
 .sectionTitleWhite {
     color: #ffffff !important;
     margin-bottom: 30px !important;
@@ -148,7 +140,6 @@
     padding-left: 20px !important;
 }
 
-/* گرید فرم */
 .formGrid {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
@@ -181,12 +172,10 @@
     background: #253045 !important;
 }
 
-/* تاریخ تولد */
 .birthdayRow { display: flex !important; gap: 15px !important; }
-.birthdayRow input { text-align: center !important; }
+.birthdayRow input { text-align: center !important; flex: 1; }
 .errorText { color: #ef4444 !important; font-size: 0.8rem !important; margin-top: 5px !important; }
 
-/* دکمه ذخیره */
 .saveBtn {
     margin-top: 35px !important;
     background: #6366f1 !important;
@@ -202,7 +191,6 @@
 .saveBtn:hover { background: #4f46e5 !important; transform: translateY(-2px) !important; }
 .saveBtn:disabled { background: #475569 !important; cursor: not-allowed !important; transform: none !important; }
 
-/* گالری */
 .galleryGrid {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
@@ -242,7 +230,131 @@
 }
 .addPlaceholder:hover { border-color: #6366f1 !important; color: #6366f1 !important; background: rgba(99, 102, 241, 0.1) !important; }
 
-/* ریسپانسیو */
+/* --- استایل‌های جدید Interests --- */
+.categoryContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+}
+
+.catRow {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: #1e293b !important;
+    padding: 20px !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    transition: 0.2s !important;
+}
+
+.catRow:hover {
+    background: #253045 !important;
+    border-color: #6366f1 !important;
+}
+
+.catInfo h4 {
+    margin: 0 !important;
+    color: #fff !important;
+    font-size: 1.1rem !important;
+    margin-bottom: 5px !important;
+}
+
+.statusBadge {
+    display: inline-block !important;
+    font-size: 0.75rem !important;
+    color: #4ade80 !important;
+    background: rgba(74, 222, 128, 0.1) !important;
+    padding: 4px 10px !important;
+    border-radius: 20px !important;
+}
+
+.editBtn {
+    background: transparent !important;
+    color: #6366f1 !important;
+    border: 1px solid #6366f1 !important;
+    padding: 8px 20px !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    transition: 0.2s !important;
+    font-weight: 600 !important;
+}
+
+.editBtn:hover {
+    background: #6366f1 !important;
+    color: #fff !important;
+}
+
+/* --- استایل‌های Cropper --- */
+.cropperModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(2, 6, 23, 0.95) !important;
+    z-index: 10000 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.cropperContent {
+    width: 90% !important;
+    max-width: 500px !important;
+    background: #0f172a !important;
+    border-radius: 24px !important;
+    padding: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.cropArea {
+    position: relative !important;
+    width: 100% !important;
+    height: 400px !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    margin-bottom: 20px !important;
+}
+
+.cropperControls {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+}
+
+.zoomSlider {
+    width: 100% !important;
+    accent-color: #6366f1 !important;
+}
+
+.cropperButtons {
+    display: flex !important;
+    gap: 15px !important;
+}
+
+.confirmBtn, .cancelBtn {
+    flex: 1 !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
+    border: none !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: 0.2s !important;
+}
+
+.confirmBtn {
+    background: #6366f1 !important;
+    color: white !important;
+}
+.confirmBtn:hover { background: #4f46e5 !important; }
+
+.cancelBtn {
+    background: #334155 !important;
+    color: white !important;
+}
+.cancelBtn:hover { background: #475569 !important; }
+
 @media (max-width: 1024px) {
     .rootContainer { position: relative !important; height: auto !important; }
     .layout { flex-direction: column !important; padding: 20px !important; }
