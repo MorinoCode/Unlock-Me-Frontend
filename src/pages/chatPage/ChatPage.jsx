@@ -16,11 +16,25 @@ const ChatPage = () => {
   const [isSyncing, setIsSyncing] = useState(true);
   const [replyingTo, setReplyingTo] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [selectedImg, setSelectedImg] = useState(null);
 
   const scrollRef = useRef(null);
+  const msgRefs = useRef({});
   const mediaRecorder = useRef(null);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const myId = currentUser?._id || currentUser?.id;
+
+  const formatDividerDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) return "Today";
+    if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+    
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  };
 
   useEffect(() => {
     setIsSyncing(true);
@@ -32,6 +46,8 @@ const ChatPage = () => {
         ]);
         if (uRes.ok) setReceiverUser(await uRes.json());
         if (mRes.ok) setMessages(await mRes.json());
+        
+        fetch(`${API_URL}/api/chat/read/${receiverId}`, { method: "PUT", credentials: "include" });
       } finally { setTimeout(() => setIsSyncing(false), 500); }
     };
     if (currentUser) loadChat();
@@ -41,8 +57,19 @@ const ChatPage = () => {
     if (!myId) return;
     socket.emit("join_room", myId);
 
-    socket.on("receive_message", (m) => setMessages(prev => [...prev, m]));
-    
+    socket.on("receive_message", (m) => {
+      setMessages(prev => [...prev, m]);
+      if (String(m.sender) === String(receiverId)) {
+        fetch(`${API_URL}/api/chat/read/${receiverId}`, { method: "PUT", credentials: "include" });
+      }
+    });
+
+    socket.on("messages_seen", ({ seenBy }) => {
+      if (String(seenBy) === String(receiverId)) {
+        setMessages(prev => prev.map(msg => ({ ...msg, isRead: true })));
+      }
+    });
+
     socket.on("display_typing", ({ senderId }) => {
       if (String(senderId) === String(receiverId)) {
         setIsReceiverTyping(true);
@@ -58,13 +85,23 @@ const ChatPage = () => {
 
     return () => { 
       socket.off("receive_message"); 
+      socket.off("messages_seen");
       socket.off("display_typing");
       socket.off("hide_typing");
       socket.off("reaction_updated"); 
     };
-  }, [myId, receiverId]);
+  }, [myId, receiverId, API_URL]);
 
   useEffect(() => { scrollRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
+
+  const scrollToOriginal = (msgId) => {
+    const target = msgRefs.current[msgId];
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.classList.add("highlight-msg");
+      setTimeout(() => target.classList.remove("highlight-msg"), 1000);
+    }
+  };
 
   const handleSend = async (fileData = null, type = "text") => {
     if (!newMessage.trim() && !fileData) return;
@@ -109,7 +146,7 @@ const ChatPage = () => {
         };
         mediaRecorder.current.start();
         setIsRecording(true);
-      } catch (err) { alert("Mic access denied",err); }
+      } catch (err) { alert("Mic access denied" , err); }
     } else {
       mediaRecorder.current.stop();
       setIsRecording(false);
@@ -145,43 +182,67 @@ const ChatPage = () => {
       </header>
 
       <div className="messages-scroll-area">
-        {messages.map((m) => {
+        {messages.map((m, index) => {
           const isOwn = String(m.sender) === String(myId);
+          const currentDate = new Date(m.createdAt).toDateString();
+          const prevDate = index > 0 ? new Date(messages[index - 1].createdAt).toDateString() : null;
+          const showDivider = currentDate !== prevDate;
+
           return (
-            <div key={m._id} className={`msg-row ${isOwn ? "own-msg" : "their-msg"}`}>
-              <div className="msg-bubble-v2">
-                <div className="msg-actions">
-                  <span onClick={() => addReaction(m._id, "❤️")}>❤️</span>
-                  <span onClick={() => addReaction(m._id, "👍")}>👍</span>
-                  <span onClick={() => setReplyingTo(m)}>Reply</span>
+            <React.Fragment key={m._id}>
+              {showDivider && (
+                <div className="date-divider">
+                  <span>{formatDividerDate(m.createdAt)}</span>
                 </div>
-                {m.parentMessage && (
-                  <div className="replied-message-box">
-                    <small>{m.parentMessage.senderName}</small>
-                    <p>{m.parentMessage.text}</p>
+              )}
+              <div ref={el => msgRefs.current[m._id] = el} className={`msg-row ${isOwn ? "own-msg" : "their-msg"}`}>
+                <div className="msg-wrapper-v2">
+                  <div className="msg-bubble-v2">
+                    {m.parentMessage && (
+                      <div className="replied-message-box" onClick={() => scrollToOriginal(m.parentMessage.messageId)}>
+                        <small>{m.parentMessage.senderName}</small>
+                        <p>{m.parentMessage.text || "Media"}</p>
+                      </div>
+                    )}
+                    {m.fileType === "image" && <img src={m.fileUrl} className="chat-img" alt="sent" onClick={() => setSelectedImg(m.fileUrl)} />}
+                    {m.fileType === "audio" && <audio src={m.fileUrl} controls className="chat-audio" />}
+                    {m.text && <p className="msg-text-p">{m.text}</p>}
+                    
+                    <div className="msg-info-footer">
+                       {m.reactions?.length > 0 && (
+                        <div className="reactions-display">
+                          {m.reactions.map((r, i) => <span key={i}>{r.emoji}</span>)}
+                        </div>
+                      )}
+                      {isOwn && <span className="read-status">{m.isRead ? "✓✓" : "✓"}</span>}
+                    </div>
                   </div>
-                )}
-                {m.fileType === "image" && <img src={m.fileUrl} className="chat-img" alt="sent" />}
-                {m.fileType === "audio" && <audio src={m.fileUrl} controls className="chat-audio" />}
-                {m.text && <p className="msg-text-p">{m.text}</p>}
-                {m.reactions?.length > 0 && (
-                  <div className="reactions-display">
-                    {m.reactions.map((r, i) => <span key={i}>{r.emoji}</span>)}
+
+                  <div className="msg-actions">
+                    <span onClick={() => addReaction(m._id, "❤️")}>❤️</span>
+                    <span onClick={() => addReaction(m._id, "👍")}>👍</span>
+                    <span onClick={() => setReplyingTo(m)}>Reply</span>
                   </div>
-                )}
+                </div>
               </div>
-            </div>
+            </React.Fragment>
           );
         })}
         <div ref={scrollRef} />
       </div>
+
+      {selectedImg && (
+        <div className="lightbox" onClick={() => setSelectedImg(null)}>
+          <img src={selectedImg} alt="Enlarged" />
+        </div>
+      )}
 
       <footer className="chat-input-container">
         {replyingTo && (
           <div className="reply-preview-bar">
             <div className="reply-content">
               <span>Replying to {String(replyingTo.sender) === String(myId) ? "yourself" : receiverUser?.name}</span>
-              <p>{replyingTo.text}</p>
+              <p>{replyingTo.text || "Media"}</p>
             </div>
             <button className="cancel-reply" onClick={() => setReplyingTo(null)}>×</button>
           </div>
