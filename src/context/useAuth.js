@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AuthContext } from "./AuthContextInstance"; // ایمپورت از فایل جدید
+import { AuthContext } from "./AuthContextInstance"; 
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
