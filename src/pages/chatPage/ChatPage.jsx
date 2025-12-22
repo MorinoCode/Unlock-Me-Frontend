@@ -14,22 +14,19 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isSyncing, setIsSyncing] = useState(true);
+  const [replyingTo, setReplyingTo] = useState(null);
 
   const scrollRef = useRef(null);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+  const myId = currentUser?._id || currentUser?.id;
 
-  // Global ID Fix: Using the property name found in your debug logs
-  const myId = currentUser?._id || currentUser?.id; //
-
-  /* -----------------------------
-     1. Initial Fetch
-  ----------------------------- */
   useEffect(() => {
     setIsSyncing(true);
     setMessages([]);
     setReceiverUser(null);
+    setReplyingTo(null);
 
-    if (!currentUser && !authLoading) return; 
+    if (!currentUser && !authLoading) return;
 
     const loadChat = async () => {
       try {
@@ -53,13 +50,10 @@ const ChatPage = () => {
     if (currentUser) loadChat();
   }, [receiverId, currentUser, authLoading, API_URL]);
 
-  /* -----------------------------
-     2. Socket setup
-  ----------------------------- */
   useEffect(() => {
-    if (!myId) return; //
+    if (!myId) return;
     
-    socket.emit("join_room", myId); //
+    socket.emit("join_room", myId);
 
     const onMessage = (m) => {
       if (String(m.sender) === String(receiverId) || String(m.receiver) === String(receiverId)) {
@@ -78,18 +72,41 @@ const ChatPage = () => {
     };
   }, [myId, receiverId]);
 
-  /* -----------------------------
-     3. Scroll to bottom
-  ----------------------------- */
   useEffect(() => {
     if (!isSyncing) {
       scrollRef.current?.scrollIntoView({ behavior: "auto" });
     }
   }, [messages.length, isSyncing]);
 
-  /* -----------------------------
-     4. Guards
-  ----------------------------- */
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !myId) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/chat/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ 
+          receiverId, 
+          text: newMessage,
+          parentMessage: replyingTo ? {
+            text: replyingTo.text,
+            senderName: String(replyingTo.sender) === String(myId) ? "You" : receiverUser?.name,
+            messageId: replyingTo._id
+          } : null
+        }),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        setMessages(prev => [...prev, saved]);
+        setNewMessage("");
+        setReplyingTo(null);
+        socket.emit("stop_typing", { receiverId, senderId: myId });
+      }
+    } catch (err) { console.error(err); }
+  };
+
   if (isSyncing || authLoading) {
     return (
       <div className="inbox-loading-screen">
@@ -103,29 +120,6 @@ const ChatPage = () => {
     navigate("/signin");
     return null;
   }
-
-  /* -----------------------------
-     5. Event Handlers
-  ----------------------------- */
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !myId) return; //
-
-    try {
-      const res = await fetch(`${API_URL}/api/chat/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ receiverId, text: newMessage }),
-      });
-      if (res.ok) {
-        const saved = await res.json();
-        setMessages(prev => [...prev, saved]);
-        setNewMessage("");
-        socket.emit("stop_typing", { receiverId, senderId: myId }); //
-      }
-    } catch (err) { console.error(err); }
-  };
 
   return (
     <div className="chat-page-v2">
@@ -142,12 +136,21 @@ const ChatPage = () => {
 
       <div className="messages-scroll-area">
         {messages.map((m, i) => {
-          // Comparing as Strings ensures 100% accuracy
           const isOwn = String(m.sender) === String(myId);
 
           return (
-            <div key={m._id || i} className={`msg-row ${isOwn ? "own-msg" : "their-msg"}`}>
+            <div 
+              key={m._id || i} 
+              className={`msg-row ${isOwn ? "own-msg" : "their-msg"}`}
+              onDoubleClick={() => setReplyingTo(m)}
+            >
               <div className="msg-bubble-v2">
+                {m.parentMessage && (
+                  <div className="replied-message-box">
+                    <small>{m.parentMessage.senderName}</small>
+                    <p>{m.parentMessage.text}</p>
+                  </div>
+                )}
                 <p>{m.text}</p>
                 <span className="msg-meta-time">
                   {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -160,13 +163,22 @@ const ChatPage = () => {
       </div>
 
       <footer className="chat-input-container">
+        {replyingTo && (
+          <div className="reply-preview-bar">
+            <div className="reply-content">
+              <span>Replying to {String(replyingTo.sender) === String(myId) ? "yourself" : receiverUser?.name}</span>
+              <p>{replyingTo.text}</p>
+            </div>
+            <button className="cancel-reply" onClick={() => setReplyingTo(null)}>×</button>
+          </div>
+        )}
         <form className="input-form-v2" onSubmit={handleSend}>
           <input
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => {
               setNewMessage(e.target.value);
-              socket.emit("typing", { senderId: myId, receiverId }); //
+              socket.emit("typing", { senderId: myId, receiverId });
             }}
           />
           <button type="submit" className="send-btn-v2">✦</button>
