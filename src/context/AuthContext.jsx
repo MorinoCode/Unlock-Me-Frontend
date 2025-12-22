@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { socket } from "../socket";
-import { AuthContext } from "./AuthContextInstance"; // ایمپورت از فایل جدید
+import { AuthContext } from "./AuthContextInstance"; 
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
