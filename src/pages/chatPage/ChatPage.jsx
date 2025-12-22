@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { socket } from "../../socket";
@@ -7,52 +7,109 @@ import "./ChatPage.css";
 const ChatPage = () => {
   const { receiverId } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, authLoading } = useAuth();
+
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
   const [receiverUser, setReceiverUser] = useState(null);
-  const scrollRef = useRef();
+  const [newMessage, setNewMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(true);
+
+  const scrollRef = useRef(null);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
+  // Global ID Fix: Using the property name found in your debug logs
+  const myId = currentUser?._id || currentUser?.id; //
+
+  /* -----------------------------
+     1. Initial Fetch
+  ----------------------------- */
   useEffect(() => {
-    const fetchChatData = async () => {
+    setIsSyncing(true);
+    setMessages([]);
+    setReceiverUser(null);
+
+    if (!currentUser && !authLoading) return; 
+
+    const loadChat = async () => {
       try {
-        const userRes = await fetch(`${API_URL}/api/users/user/${receiverId}`, {
-          credentials: "include",
-        });
-        const userData = await userRes.json();
-        setReceiverUser(userData);
+        const [userRes, msgRes] = await Promise.all([
+          fetch(`${API_URL}/api/users/user/${receiverId}`, { credentials: "include" }),
+          fetch(`${API_URL}/api/chat/${receiverId}`, { credentials: "include", cache: "no-store" }),
+        ]);
 
-        const msgRes = await fetch(`${API_URL}/api/chat/${receiverId}`, {
-          credentials: "include",
-        });
-        const msgData = await msgRes.json();
-        setMessages(msgData);
+        if (userRes.ok) setReceiverUser(await userRes.json());
+        if (msgRes.ok) {
+          const data = await msgRes.json();
+          setMessages(Array.isArray(data) ? data : []);
+        }
       } catch (err) {
-        console.error("Error loading chat data:", err);
-      }
-    };
-    if (receiverId) fetchChatData();
-  }, [receiverId, API_URL]);
-
-  useEffect(() => {
-    const handleReceiveMessage = (message) => {
-      if (message.sender === receiverId || message.receiver === receiverId) {
-        setMessages((prev) => [...prev, message]);
+        console.error("Chat load error:", err);
+      } finally {
+        setTimeout(() => setIsSyncing(false), 600);
       }
     };
 
-    socket.on("receive_message", handleReceiveMessage);
-    return () => socket.off("receive_message", handleReceiveMessage);
-  }, [receiverId]);
+    if (currentUser) loadChat();
+  }, [receiverId, currentUser, authLoading, API_URL]);
 
+  /* -----------------------------
+     2. Socket setup
+  ----------------------------- */
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (!myId) return; //
+    
+    socket.emit("join_room", myId); //
 
-  const handleSendMessage = async (e) => {
+    const onMessage = (m) => {
+      if (String(m.sender) === String(receiverId) || String(m.receiver) === String(receiverId)) {
+        setMessages((prev) => [...prev, m]);
+      }
+    };
+
+    socket.on("receive_message", onMessage);
+    socket.on("display_typing", (d) => d.senderId === receiverId && setIsTyping(true));
+    socket.on("hide_typing", () => setIsTyping(false));
+
+    return () => {
+      socket.off("receive_message", onMessage);
+      socket.off("display_typing");
+      socket.off("hide_typing");
+    };
+  }, [myId, receiverId]);
+
+  /* -----------------------------
+     3. Scroll to bottom
+  ----------------------------- */
+  useEffect(() => {
+    if (!isSyncing) {
+      scrollRef.current?.scrollIntoView({ behavior: "auto" });
+    }
+  }, [messages.length, isSyncing]);
+
+  /* -----------------------------
+     4. Guards
+  ----------------------------- */
+  if (isSyncing || authLoading) {
+    return (
+      <div className="inbox-loading-screen">
+        <div className="spinner" />
+        <p>Establishing secure connection...</p>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    navigate("/signin");
+    return null;
+  }
+
+  /* -----------------------------
+     5. Event Handlers
+  ----------------------------- */
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !myId) return; //
 
     try {
       const res = await fetch(`${API_URL}/api/chat/send`, {
@@ -61,82 +118,58 @@ const ChatPage = () => {
         credentials: "include",
         body: JSON.stringify({ receiverId, text: newMessage }),
       });
-
       if (res.ok) {
-        const savedMsg = await res.json();
-        setMessages((prev) => [...prev, savedMsg]);
+        const saved = await res.json();
+        setMessages(prev => [...prev, saved]);
         setNewMessage("");
+        socket.emit("stop_typing", { receiverId, senderId: myId }); //
       }
-    } catch (err) {
-      console.error("Error sending message:", err);
-    }
+    } catch (err) { console.error(err); }
   };
 
   return (
     <div className="chat-page-v2">
       <header className="chat-header-v2">
-        <button
-          className="chat-v2-unique-back-btn"
-          onClick={() => navigate(-1)}
-        >
-          ←
-        </button>
-
-        <div
-          className="header-user-info"
-          onClick={() => navigate(`/user-profile/${receiverId}`)}
-        >
-          <div className="header-avatar-wrapper">
-            <img
-              src={receiverUser?.avatar || "/default-avatar.png"}
-              alt="avatar"
-            />
-            <div className="online-indicator"></div>
-          </div>
+        <button className="chat-v2-unique-back-btn" onClick={() => navigate(-1)}>←</button>
+        <div className="header-user-info">
+          <img src={receiverUser?.avatar || "/default-avatar.png"} alt="avatar" className="header-avatar" />
           <div className="header-text-info">
-            <h3>{receiverUser?.name || "Loading..."}</h3>
-            <p>Online</p>
+            <h3>{receiverUser?.name}</h3>
+            <p className={isTyping ? "typing-text" : "status-text"}>{isTyping ? "typing..." : "online"}</p>
           </div>
         </div>
       </header>
 
       <div className="messages-scroll-area">
-        {messages.map((msg, index) => (
-          <div
-            key={msg._id || index}
-            className={`msg-row ${
-              msg.sender === currentUser._id ? "own-msg" : "their-msg"
-            }`}
-          >
-            <div className="msg-bubble-v2">
-              <p>{msg.text}</p>
-              <span className="msg-meta">
-                {new Date(msg.createdAt).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
+        {messages.map((m, i) => {
+          // Comparing as Strings ensures 100% accuracy
+          const isOwn = String(m.sender) === String(myId);
+
+          return (
+            <div key={m._id || i} className={`msg-row ${isOwn ? "own-msg" : "their-msg"}`}>
+              <div className="msg-bubble-v2">
+                <p>{m.text}</p>
+                <span className="msg-meta-time">
+                  {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={scrollRef} />
       </div>
 
       <footer className="chat-input-container">
-        <form className="input-form-v2" onSubmit={handleSendMessage}>
+        <form className="input-form-v2" onSubmit={handleSend}>
           <input
-            type="text"
             placeholder="Type a message..."
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => {
+              setNewMessage(e.target.value);
+              socket.emit("typing", { senderId: myId, receiverId }); //
+            }}
           />
-          <button
-            type="submit"
-            className="send-btn-v2"
-            disabled={!newMessage.trim()}
-          >
-            <span className="send-icon">✦</span>
-          </button>
+          <button type="submit" className="send-btn-v2">✦</button>
         </form>
       </footer>
     </div>
