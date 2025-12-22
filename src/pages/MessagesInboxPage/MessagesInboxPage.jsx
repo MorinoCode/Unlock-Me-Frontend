@@ -9,7 +9,7 @@ const MessagesInboxPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-//
+
   useEffect(() => {
     const fetchConversations = async () => {
       try {
@@ -36,7 +36,7 @@ const MessagesInboxPage = () => {
 
   return (
     <div className="inbox-page">
-      {/* Hero Section Style Header */}
+      {/* Hero Section */}
       <header className="inbox-hero">
         <div className="hero-text">
           <h1>Messages</h1>
@@ -70,9 +70,19 @@ const MessagesInboxPage = () => {
                         {conv.lastMessage?.createdAt && new Date(conv.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <p className="msg-preview">
-                      {conv.lastMessage?.text || "Started a new connection"}
-                    </p>
+
+                    <div className="inbox-card-bottom">
+                      <p className={`msg-preview ${conv.unreadCount > 0 ? "unread-bold" : ""}`}>
+                        {conv.lastMessage?.text || "Started a new connection"}
+                      </p>
+                      
+                      {/* Badge for unread messages */}
+                      {conv.unreadCount > 0 && (
+                        <div className="unread-badge">
+                          {conv.unreadCount}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="card-arrow">→</div>
                 </div>
