@@ -1,12 +1,12 @@
 .inbox-page {
   min-height: 100vh;
-  background: #020617; /* همان رنگ پس‌زمینه Explore */
+  background: #020617; /* همان رنگ پس‌زمینExplore */
   color: #f8fafc;
   padding-bottom: 5rem;
   font-family: 'Inter', sans-serif;
 }
 
-/* Header Match with Explore Hero */
+/* Header Match with Explore Hero */ 
 .inbox-hero {
   padding: 4rem 4rem 2rem 4rem;
   display: flex;
