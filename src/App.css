@@ -1,0 +1,26 @@
+/* --- Global Scrollbar Styling --- */
+
+/* 1. استاندارد جدید برای فایرفاکس */
+html {
+  scrollbar-width: thin; /* باریک کردن اسکرول */
+  scrollbar-color: #1e293b #020617; /* رنگ دسته و رنگ پس‌زمینه */
+}
+
+/* 2. استایل برای کروم، اج و سافاری (Webkit) */
+::-webkit-scrollbar {
+  width: 6px; /* عرض اسکرول عمودی */
+  height: 6px; /* ارتفاع اسکرول افقی */
+}
+
+::-webkit-scrollbar-track {
+  background: #020617; /* رنگ ریل (Track) */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b; /* رنگ دسته (Thumb) */
+  border-radius: 10px; /* گرد کردن لبه‌ها */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6366f1; /* رنگ بنفش برند هنگام هاور */
+}

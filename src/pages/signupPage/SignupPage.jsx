@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FormInput from "../../components/formInput/FormInput";
 import FormSelect from "../../components/formSelect/FormSelect";
 import "./SignupPage.css";
+import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
 
 const SignupPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -112,6 +113,7 @@ const SignupPage = () => {
   };
 
   return (
+    <BackgroundLayout>
     <div className="signup-page">
       <div className="signup-card">
         <h2 className="signup-title">UnlockMe</h2>
@@ -195,6 +197,7 @@ const SignupPage = () => {
         </div>
       </div>
     </div>
+    </BackgroundLayout>
   );
 };
 
