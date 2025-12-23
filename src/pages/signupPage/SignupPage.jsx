@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import FormInput from "../../components/formInput/FormInput";
+import FormSelect from "../../components/formSelect/FormSelect";
 import "./SignupPage.css";
 
 const SignupPage = () => {
@@ -15,9 +17,7 @@ const SignupPage = () => {
     lookingFor: "",
   });
 
-  // Track which fields have been interacted with
   const [touched, setTouched] = useState({});
-
   const [errors, setErrors] = useState({});
   const [serverMessage, setServerMessage] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
@@ -25,44 +25,54 @@ const SignupPage = () => {
 
   const { name, email, password, confirmPassword, gender, lookingFor } = formData;
 
-  // ---------- Validation ----------
-const validate = () => {
-  const newErrors = {};
+  const genderOptions = [
+    { value: "Female", label: "Female" },
+    { value: "Male", label: "Male" },
+    { value: "Other", label: "Other" },
+  ];
 
-  // Visual error logic (only shows after user interacts)
-  if (touched.name && name.trim().length < 2) newErrors.name = "Name is too short";
-  if (touched.email && !/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
-  if (touched.password && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password))
-    newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
-  if (touched.confirmPassword && confirmPassword !== password)
-    newErrors.confirmPassword = "Passwords do not match";
-  
-  // Errors for Select fields
-  if (touched.gender && !gender) newErrors.gender = "Gender is required";
-  if (touched.lookingFor && !lookingFor) newErrors.lookingFor = "This field is required";
-
-  setErrors(newErrors);
-
-  // CRITICAL: Button activation logic
-  const isValid = 
-    name.trim().length >= 2 &&
-    /\S+@\S+\.\S+/.test(email) &&
-    /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password) &&
-    confirmPassword === password &&
-    password !== "" &&
-    gender !== "" &&       // Checks if a gender is selected
-    lookingFor !== "";     // Checks if a lookingFor option is selected
-
-  setIsFormValid(isValid);
-};
-
+  // ---------- Validation Logic ----------
   useEffect(() => {
-    validate();
-  }, [formData, touched]);
+    const newErrors = {};
 
+    
+    if (touched.name && name.trim().length < 2) 
+      newErrors.name = "Name is too short";
+    
+    if (touched.email && !/\S+@\S+\.\S+/.test(email)) 
+      newErrors.email = "Invalid email format";
+    
+    if (touched.password && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password))
+      newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
+    
+    if (touched.confirmPassword && confirmPassword !== password)
+      newErrors.confirmPassword = "Passwords do not match";
+    
+    if (touched.gender && !gender) 
+      newErrors.gender = "Gender is required";
+    
+    if (touched.lookingFor && !lookingFor) 
+      newErrors.lookingFor = "This field is required";
+
+    setErrors(newErrors);
+
+    const isValid = 
+      name.trim().length >= 2 &&
+      /\S+@\S+\.\S+/.test(email) &&
+      /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password) &&
+      confirmPassword === password &&
+      password !== "" &&
+      gender !== "" && 
+      lookingFor !== "";
+
+    setIsFormValid(isValid);
+
+  }, [formData, touched]); 
+
+  // ---------- Handlers ----------
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setServerMessage("");
+    setServerMessage(""); 
   };
 
   const handleBlur = (e) => {
@@ -108,77 +118,66 @@ const validate = () => {
         <p className="signup-subtitle">Create your profile and start unlocking!</p>
 
         <form className="signup-form" onSubmit={handleSubmit} noValidate>
-          <input
+          
+          <FormInput
             name="name"
             placeholder="Name"
             value={name}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="signup-input"
+            error={touched.name && errors.name}
             autoFocus
           />
-          {errors.name && <span className="error-text">{errors.name}</span>}
 
-          <input
+          <FormInput
             name="email"
             type="email"
             placeholder="Email"
             value={email}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="signup-input"
+            error={touched.email && errors.email}
           />
-          {errors.email && <span className="error-text">{errors.email}</span>}
 
-          <input
+          <FormInput
             name="password"
             type="password"
             placeholder="Password"
             value={password}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="signup-input"
+            error={touched.password && errors.password}
           />
-          {errors.password && <span className="error-text">{errors.password}</span>}
 
-          <input
+          <FormInput
             name="confirmPassword"
             type="password"
             placeholder="Confirm Password"
             value={confirmPassword}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="signup-input"
+            error={touched.confirmPassword && errors.confirmPassword}
           />
-          {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
 
-          <select
+          <FormSelect
             name="gender"
             value={gender}
+            options={genderOptions}
+            defaultText="Select Your Gender"
             onChange={handleChange}
             onBlur={handleBlur}
-            className="signup-input"
-          >
-            <option value="">Select Your Gender</option>
-            <option value="Female">Female</option>
-            <option value="Male">Male</option>
-            <option value="Other">Other</option>
-          </select>
-          {errors.gender && <span className="error-text">{errors.gender}</span>}
+            error={touched.gender && errors.gender}
+          />
 
-          <select
+          <FormSelect
             name="lookingFor"
             value={lookingFor}
+            options={genderOptions}
+            defaultText="Looking For"
             onChange={handleChange}
             onBlur={handleBlur}
-            className="signup-input"
-          >
-            <option value="">Looking For</option>
-            <option value="Female">Female</option>
-            <option value="Male">Male</option>
-            <option value="Other">Other</option>
-          </select>
-          {errors.lookingFor && <span className="error-text">{errors.lookingFor}</span>}
+            error={touched.lookingFor && errors.lookingFor}
+          />
 
           {serverMessage && <div className="server-message">{serverMessage}</div>}
 
