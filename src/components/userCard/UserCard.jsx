@@ -1,18 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UserCard.css";
 
-const UserCard = ({ user, isLocked, userPlan }) => {
+const UserCard = ({ user, isLocked }) => {
   const navigate = useNavigate();
+  const [liked, setLiked] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // Handle click on card
-  const handleCardClick = () => {
-    if (isLocked) {
-      navigate("/upgrade");
-    } else {
-      // Navigate to the specific user's detail page
-      navigate(`/user-profile/${user._id}`);
-    }
+  // فقط وقتی روی دکمه پروفایل کلیک شد اجرا میشه
+  const goToProfile = (e) => {
+    e.stopPropagation();
+    navigate(`/user-profile/${user._id}`);
+  };
+
+  // هندلر برای وقتی که کارت قفله
+  const handleUnlockClick = () => {
+    navigate("/upgrade");
   };
 
   const calculateAge = (birthday) => {
@@ -21,42 +25,103 @@ const UserCard = ({ user, isLocked, userPlan }) => {
     return currentYear - parseInt(birthday.year);
   };
 
+  const handleLikeClick = async (e) => {
+    e.stopPropagation();
+    if (isLiking || isLocked) return;
+
+    setIsLiking(true);
+    const newStatus = !liked;
+    setLiked(newStatus);
+
+    try {
+      if (newStatus) {
+         await fetch(`${API_URL}/api/user/like`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ targetUserId: user._id }),
+          credentials: "include",
+        });
+      }
+    } catch (err) {
+      console.error("Like error:", err);
+      setLiked(!newStatus);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  const score = user.matchScore || 0;
+  
+  const getMatchStyle = (s) => {
+    if (s >= 80) return { class: "match-high", icon: "🔥", label: "SUPER" };
+    if (s >= 60) return { class: "match-mid", icon: "✨", label: "GOOD" };
+    return { class: "match-low", icon: "•", label: "MATCH" };
+  };
+  
+  const matchStyle = getMatchStyle(score);
+
   return (
-    <div
-      className={`user-card-component ${isLocked ? "is-locked" : ""}`}
-      onClick={handleCardClick}
-    >
+    <div className={`compact-user-card ${isLocked ? "is-locked" : ""}`}>
+      
       {isLocked ? (
-        <div className="card-lock-overlay">
-          <span className="lock-icon">🔒</span>
-          <p>Unlock with {userPlan === "free" ? "Premium" : "Gold"}</p>
+        <div className="card-lock-overlay" onClick={handleUnlockClick}>
+          <div className="lock-content">
+            <span className="lock-emoji">🔒</span>
+            <h3>Premium</h3>
+            <p>Tap to unlock</p>
+          </div>
         </div>
       ) : (
-        <div className="card-inner-content">
-          <div className="image-container">
-            <img src={user.avatar || "/default-avatar.png"} alt={user.name} />
-            <div
-              className={`score-badge ${
-                user.matchScore >= 80 ? "high-match" : ""
-              }`}
+        <>
+          {/* --- بخش بالای کارت (عکس) --- */}
+          <div className="card-media-wrapper">
+            <img 
+              src={user.avatar || "/default-avatar.png"} 
+              alt={user.name} 
+              className="user-img-cover"
+            />
+            
+            {/* دکمه لایک (بالا راست) */}
+            <button 
+              className={`like-btn-compact ${liked ? "is-liked" : ""}`} 
+              onClick={handleLikeClick}
             >
-              {user.matchScore}% Match
+              <svg className="heart-svg" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            </button>
+            
+            {/* بج درصد مچ (پایین راست) */}
+            <div className={`match-badge-compact ${matchStyle.class}`}>
+              <span className="match-val">{score}%</span>
+              <span className="match-lbl">{matchStyle.label}</span>
             </div>
+            
+            <div className="gradient-shadow"></div>
           </div>
-          <div className="user-details">
-            <h3>
-              {user.name}, {calculateAge(user.birthday)}
-            </h3>
-            <p className="location-text">📍 {user.location?.city}</p>
-            <div className="tags-preview">
+
+          {/* --- بخش پایین کارت (محتوا) --- */}
+          <div className="card-body-compact">
+            <div className="info-header">
+              <h3 className="user-name-age">{user.name}, {calculateAge(user.birthday)}</h3>
+              <span className="location-tiny">📍 {user.location?.city || "N/A"}</span>
+            </div>
+
+            {/* تگ‌ها (فقط ۲ تا برای شلوغ نشدن) */}
+            <div className="tags-compact">
               {user.interests?.slice(0, 2).map((tag, i) => (
-                <span key={i} className="mini-tag">
-                  {tag}
+                <span key={i} className="tiny-tag">
+                  <span className="star-symbol">✦</span> {tag}
                 </span>
               ))}
             </div>
+
+            {/* دکمه مشاهده پروفایل */}
+            <button className="view-profile-compact" onClick={goToProfile}>
+              View Profile
+            </button>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

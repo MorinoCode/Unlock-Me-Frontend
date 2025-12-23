@@ -1,166 +1,285 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UserCard from "../../components/userCard/UserCard.jsx"; 
+// Components
+import UserCard from "../../components/userCard/UserCard";
+import EmptyStateCard from "../../components/emptyState/EmptyStateCard";
+import PromoBanner from "../../components/promoBanner/PromoBanner";
+import PremiumLockCard from "../../components/premiumLock/PremiumLockCard";
+// Utils & Rules
+import { 
+  getSoulmatePermissions, 
+  getPromoBannerConfig, 
+  getVisibilityThreshold 
+} from "../../utils/subscriptionRules"; 
 import "./ExplorePage.css";
 
 const ExplorePage = () => {
-  const navigate = useNavigate();
   const [sections, setSections] = useState({
-    exactMatches: [],
+    soulmates: [],
+    freshFaces: [],
     cityMatches: [],
     interestMatches: [],
-    countryMatches: [],
+    countryMatches: []
   });
-  const [currentUser, setCurrentUser] = useState(null);
+  const [userPlan, setUserPlan] = useState("free");
+  const [userLocation, setUserLocation] = useState({ country: "", city: "" });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // 1. Fetch current user context (Plan, Location, etc.)
-        const userRes = await fetch(`${API_URL}/api/user/location`, { credentials: "include" });
-        const userData = await userRes.json();
-        setCurrentUser(userData);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // 1. دریافت لوکیشن کاربر از API
+      const locationRes = await fetch(`${API_URL}/api/user/location`, {
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      if (!locationRes.ok) throw new Error("Location fetch failed");
+      const locData = await locationRes.json();
+      
+      const country = locData.location?.country;
+      const city = locData.location?.city;
 
-        // 2. Fetch matches based on user preference and country
-        const country = userData.location?.country;
-        if (country) {
-          const exploreRes = await fetch(`${API_URL}/api/user/explore?country=${country}`, { 
-            credentials: "include" 
-          });
-          const exploreData = await exploreRes.json();
-          setSections(exploreData);
-        }
-      } catch (err) {
-        console.error("Error fetching explore data:", err);
-      } finally {
+      if (!country) {
+        setError("Please update your location in profile settings.");
         setLoading(false);
+        return;
       }
-    };
-    fetchData();
-  }, [API_URL]);
+      setUserLocation({ country, city });
 
-  const renderSection = (title, data, limitKey, subtitle) => {
-    const userPlan = currentUser?.subscription?.plan || "free";
+      // 2. دریافت مچ‌ها و پلن واقعی کاربر
+      const matchesRes = await fetch(`${API_URL}/api/explore/matches?country=${country}`, {
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      if (!matchesRes.ok) throw new Error("Matches fetch failed");
+      
+      const data = await matchesRes.json();
+      
+      // آپدیت استیت‌ها با دیتای بک‌اندر
+      setSections(data.sections || {});
+      setUserPlan(data.userPlan || "free"); 
+
+    } catch (err) {
+      console.error(err);
+      setError("Could not load matches. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // دریافت تنظیمات بنرها بر اساس پلن از فایل Rules
+  const banners = getPromoBannerConfig(userPlan);
+
+  // --- Helper: Render Section Logic ---
+  const RenderSection = ({ title, subtitle, users, type, emptyType = "default", link }) => {
+    let displayedUsers = users || [];
     
-    // Define visibility limits based on plan
-    const previewLimits = {
-      free: { city: 15, interest: 12, country: 20 },
-      premium: { city: 50, interest: 40, country: 100 },
-      gold: { city: 999, interest: 999, country: 999 }
-    };
-    
-    const currentLimit = previewLimits[userPlan][limitKey] || 10;
-    const displayData = data.slice(0, 20); // Always show max 20 in horizontal scroll
+    // دریافت سقف امتیاز مجاز برای این کاربر (80, 90 یا 100)
+    const scoreThreshold = getVisibilityThreshold(userPlan);
+
+    // 🔒 ۱. منطق بخش VIP (The Soulmates)
+    if (type === "soulmates") {
+      const { isLocked, limit } = getSoulmatePermissions(userPlan);
+
+      // اگر کاربر Free باشد
+      if (isLocked) {
+        return (
+          <div className="explore-section">
+            <div className="section-header-wrapper">
+               <div className="section-header-group">
+                  <h2 className="section-title">{title}</h2>
+                  <p className="section-subtitle">{subtitle}</p>
+               </div>
+            </div>
+            <PremiumLockCard onUnlock={() => navigate("/upgrade")} />
+          </div>
+        );
+      }
+
+      // اگر کاربر Gold (محدود) یا Platinum (کامل) باشد
+      const visibleUsers = displayedUsers.slice(0, limit);
+      const remainingCount = Math.max(0, displayedUsers.length - limit);
+
+      return (
+        <div className="explore-section">
+          <div className="section-header-wrapper">
+              <div className="section-header-group">
+                <h2 className="section-title">
+                  {title} <span className="count">({displayedUsers.length})</span>
+                </h2>
+                <p className="section-subtitle">{subtitle}</p>
+              </div>
+              {link && <button className="see-all-btn" onClick={() => navigate(link)}>See All</button>}
+          </div>
+
+          <div className="horizontal-scroll">
+            {displayedUsers.length > 0 ? (
+              <>
+                {visibleUsers.map((user) => (
+                  <UserCard key={user._id} user={user} isLocked={false} userPlan={userPlan} />
+                ))}
+
+                {/* کارت قفل برای مچ‌های بالای 90% مخصوص کاربران Gold */}
+                {userPlan === "gold" && remainingCount > 0 && (
+                  <div className="locked-more-card" onClick={() => navigate("/upgrade")}>
+                    <div className="lock-circle">💎</div>
+                    <h3>+{remainingCount} More</h3>
+                    <p>Upgrade to Platinum for 90%+ matches</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <EmptyStateCard type={emptyType} />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // 🛡️ ۲. فیلترینگ داینامیک برای بخش‌های عمومی (Near You, Fresh, etc.)
+    // کاربران Free فقط تا 80%، Gold تا 90% و Platinum کل لیست را می‌بینند
+    displayedUsers = displayedUsers.filter(u => (u.matchScore || 0) <= scoreThreshold);
+
+    const hasUsers = displayedUsers.length > 0;
 
     return (
-      <section className="explore-section">
-        <div className="section-info">
-          <div className="title-area">
-            <h2>{title}</h2>
-            <p className="subtitle">{subtitle}</p>
-          </div>
-          <button className="view-all" onClick={() => navigate(`/explore/view-all/${limitKey}`)}>
-            See More
-          </button>
+      <div className="explore-section">
+        <div className="section-header-wrapper">
+            <div className="section-header-group">
+              <h2 className="section-title">
+                {title} <span className="count">({displayedUsers.length})</span>
+              </h2>
+              <p className="section-subtitle">{subtitle}</p>
+            </div>
+            {link && <button className="see-all-btn" onClick={() => navigate(link)}>See All</button>}
         </div>
-
-        <div className="horizontal-scroll-container">
-          {displayData.length > 0 ? (
-            displayData.map((match, index) => (
+        
+        <div className="horizontal-scroll">
+          {hasUsers ? (
+            displayedUsers.map((user) => (
               <UserCard 
-                key={match._id} 
-                user={match} 
-                isLocked={index >= currentLimit} 
+                key={user._id} 
+                user={user} 
+                isLocked={false} 
                 userPlan={userPlan}
               />
             ))
           ) : (
-            <div className="empty-state">No new profiles found in this category.</div>
+            <EmptyStateCard type={emptyType} />
           )}
         </div>
-      </section>
+      </div>
     );
   };
 
-  if (loading) return (
-    <div className="explore-loading-screen">
-      <div className="spinner"></div>
-      <p>Analyzing your social vibe...</p>
-    </div>
-  );
-
-  const userPlan = currentUser?.subscription?.plan || "free";
+  if (loading) return <div className="loading-container">Finding your matches... 🔮</div>;
+  if (error) return <div className="loading-container" style={{color: '#ef4444'}}>{error}</div>;
 
   return (
-    <div className="explore-page-v2">
-      <header className="explore-hero">
-        <div className="hero-text">
+    <div className="explore-page-container">
+      
+      {/* Header اصلی صفحه */}
+      <div className="explore-header">
+        <div className="header-text">
           <h1>Explore</h1>
-          <p>Finding the best matches in {currentUser?.location?.country}</p>
+          <p>Finding the best matches in {userLocation.country || "Your Area"}</p>
         </div>
-        <div className="plan-pill">Plan: <span>{userPlan}</span></div>
-      </header>
-
-      <div className="sections-wrapper">
-        {/* Nearby Row */}
-        {renderSection(`Near You`, sections.cityMatches, "city", `People in ${currentUser?.location?.city}`)}
-
-        {/* Promo: Engagement */}
-        <div className="promo-banner info-promo">
-          <div className="promo-text">
-            <h3>Boost Your Matches! 🚀</h3>
-            <p>Users who answer more than 20 questions get 5x more visibility.</p>
-          </div>
-          <button className="promo-btn" onClick={() => navigate("/initial-quizzes/interests")}>Answer More</button>
+        <div className="plan-badge">
+          Plan: <span>{userPlan?.toUpperCase()}</span>
         </div>
-
-        {/* Interest Row */}
-        {renderSection("Common Interests", sections.interestMatches, "interest", "Shared hobbies and passions")}
-
-        {/* Soulmates Row (Conditional) */}
-        <section className="explore-section soulmates-container">
-          <div className="section-info">
-            <div className="title-area">
-              <h2>The Soulmates</h2>
-              <p className="subtitle">Highest compatibility scores (80%+)</p>
-            </div>
-          </div>
-          
-          {userPlan === "free" ? (
-            <div className="soulmate-locked-card" onClick={() => navigate("/upgrade")}>
-              <div className="lock-glow"></div>
-              <span className="lock-emoji">💎</span>
-              <h3>Premium Discovery</h3>
-              <p>Your top matches are hidden. Upgrade to Premium to reveal them.</p>
-              <button className="upgrade-action-btn">Unlock Now</button>
-            </div>
-          ) : (
-            <div className="horizontal-scroll-container">
-              {sections.exactMatches.slice(0, userPlan === "gold" ? 99 : 5).map(match => (
-                <UserCard key={match._id} user={match} isLocked={false} userPlan={userPlan} />
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Promo: Upgrade */}
-        {userPlan !== "gold" && (
-          <div className="promo-banner gold-promo">
-            <div className="promo-text">
-              <h3>Unlock Everything with Gold 🏆</h3>
-              <p>Unlimited city unlocks and see who liked you.</p>
-            </div>
-            <button className="promo-btn gold-bg" onClick={() => navigate("/upgrade")}>Go Gold</button>
-          </div>
-        )}
-
-        {/* Global Row */}
-        {renderSection("Across the Country", sections.countryMatches, "country", `Everyone in ${currentUser?.location?.country}`)}
       </div>
+
+      {/* ۱. نزدیک شما (فیلتر شده بر اساس سقف پلن) */}
+      <RenderSection 
+        title="Near You"
+        subtitle={`People in ${userLocation.city || "your city"}`}
+        users={sections.cityMatches}
+        type="city"
+        emptyType="cityMatches"
+        link="/explore/view-all/nearby"
+      />
+
+      {/* ۲. چهره‌های جدید */}
+      <RenderSection 
+        title="Fresh Faces"
+        subtitle="New members who just joined this week"
+        users={sections.freshFaces}
+        type="fresh"
+        emptyType="default"
+        link="/explore/view-all/new"
+      />
+
+      {/* بنر مصرفی Boost */}
+      {banners.showBoost && (
+        <PromoBanner 
+          title="Boost Your Matches! 🚀"
+          desc="Get 5x more visibility by answering more questions."
+          btnText="Answer More"
+          onClick={() => navigate("/questions")}
+          gradient="linear-gradient(90deg, #1e1b4b, #312e81)"
+        />
+      )}
+
+      {/* ۳. علایق مشترک (Compatibility) */}
+      <RenderSection 
+        title="Compatibility Vibes"
+        subtitle="People who share your hobbies and interests"
+        users={sections.interestMatches}
+        type="interests"
+        emptyType="interestMatches"
+        link="/explore/view-all/interests"
+      />
+
+      {/* ۴. سولمیت‌ها (بخش VIP با دسترسی پله‌ای) */}
+      <RenderSection 
+        title="The Soulmates"
+        subtitle="Highest compatibility scores (80%+)"
+        users={sections.soulmates}
+        type="soulmates"
+        emptyType="soulmates"
+        link="/explore/view-all/soulmates"
+      />
+
+      {/* بنرهای ارتقا (شرطی) */}
+      {banners.showGold && (
+        <PromoBanner 
+          title="Unlock Everything with Gold 🏆"
+          desc="Unlimited city unlocks and see who liked you."
+          btnText="Go Gold"
+          onClick={() => navigate("/upgrade")}
+          gradient="linear-gradient(90deg, #2e1065, #4c1d95)"
+        />
+      )}
+
+      {banners.showPlatinum && (
+        <PromoBanner 
+          title="Go Platinum for Ultimate Access 💎"
+          desc="Reveal all Soulmates and get priority support."
+          btnText="Upgrade to Platinum"
+          onClick={() => navigate("/upgrade")}
+          gradient="linear-gradient(90deg, #0f172a, #334155)"
+        />
+      )}
+
+      {/* ۵. سراسر کشور */}
+      <RenderSection 
+        title="Across the Country"
+        subtitle={`More matches in ${userLocation.country}`}
+        users={sections.countryMatches}
+        type="country"
+        emptyType="default"
+        link="/explore/view-all/country"
+      />
+
     </div>
   );
 };
