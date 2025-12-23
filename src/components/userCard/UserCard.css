@@ -1,104 +1,246 @@
-.user-card-component {
-  min-width: 250px;
-  max-width: 260px;
-  height: 350px;
-  background: rgba(30, 41, 59, 0.5);
+/* --- کانتینر اصلی کارت (کوچک و جمع‌وجور) --- */
+.compact-user-card {
+  position: relative;
+  width: 240px;      /* عرض کمتر */
+  height: 350px;     /* ارتفاع کمتر */
+  background: rgba(30, 41, 59, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 22px;
+  border-radius: 20px;
   overflow: hidden;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+  margin-right: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* کارت خودش کلیک نمیشه، اما هاور افکت داره */
+.compact-user-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+/* --- بخش عکس --- */
+.card-media-wrapper {
   position: relative;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  height: 62%; /* نسبت تصویر */
 }
 
-.user-card-component:hover:not(.is-locked) {
-  transform: translateY(-8px);
-  border-color: #6366f1;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-}
-
-.image-container {
-  height: 240px;
-  position: relative;
-}
-
-.image-container img {
+.user-img-cover {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.score-badge {
+.gradient-shadow {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: #6366f1;
-  padding: 5px 12px;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: white;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(to top, rgba(15, 23, 42, 1), transparent);
+  pointer-events: none;
 }
 
-.score-badge.high-match {
-  background: #f59e0b;
-  color: #000;
-}
-
-.user-details {
-  padding: 12px 16px;
-}
-
-.user-details h3 {
-  font-size: 1.1rem;
-  margin-bottom: 4px;
-  color: #f1f5f9;
-}
-
-.location-text {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  margin-bottom: 10px;
-}
-
-.tags-preview {
+/* --- دکمه لایک (کوچک و مینیمال) --- */
+.like-btn-compact {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
-  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s;
 }
 
-.mini-tag {
-  background: rgba(99, 102, 241, 0.1);
-  color: #a5b4fc;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 0.7rem;
+.like-btn-compact:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
 }
 
-/* Locked State */
-.is-locked {
-  filter: grayscale(0.6) blur(1px);
+.heart-svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: white;
+  stroke-width: 2;
+  transition: all 0.3s;
 }
 
-.card-lock-overlay {
+.like-btn-compact.is-liked {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: white;
+}
+
+.like-btn-compact.is-liked .heart-svg {
+  fill: #ef4444;
+  stroke: #ef4444;
+}
+
+/* --- بج مچ (پایین سمت راست عکس) --- */
+.match-badge-compact {
   position: absolute;
-  inset: 0;
-  background: rgba(2, 6, 23, 0.85);
+  bottom: 10px;
+  right: 10px;
+  z-index: 5;
+  padding: 4px 10px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 20px;
+  line-height: 1;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.lock-icon {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
+.match-val {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #fff;
 }
-.user-card-component:not(.is-locked) {
+
+.match-lbl {
+  font-size: 0.5rem;
+  font-weight: 700;
+  margin-top: 2px;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.5px;
+}
+
+/* استایل‌های رنگی بج */
+.match-badge-compact.match-high {
+  background: rgba(16, 185, 129, 0.85); /* سبز */
+  border-color: #34d399;
+}
+.match-badge-compact.match-mid {
+  background: rgba(245, 158, 11, 0.85); /* نارنجی */
+  border-color: #fbbf24;
+}
+.match-badge-compact.match-low {
+  background: rgba(100, 116, 139, 0.85); /* خاکستری */
+}
+
+/* --- محتوای پایین --- */
+.card-body-compact {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.info-header {
+  margin-bottom: 5px;
+}
+
+.user-name-age {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.location-tiny {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  display: block;
+  margin-top: 2px;
+}
+
+/* تگ‌های ریز */
+.tags-compact {
+  display: flex;
+  gap: 6px;
+  margin-bottom: auto;
+}
+
+.tiny-tag {
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  color: #cbd5e1;
+  white-space: nowrap;
+}
+
+.star-symbol { color: #8b5cf6; font-size: 0.7rem; }
+
+/* --- دکمه پروفایل --- */
+.view-profile-compact {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 0;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.user-card-component:not(.is-locked):active {
-  transform: scale(0.95); /* A small "press" effect when clicked */
+.view-profile-compact:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* --- قفل --- */
+.card-lock-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+}
+.lock-content { text-align: center; color: white; }
+.lock-emoji { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+
+/* --- مدیا کوئری برای ریسپانسیو بودن در موبایل --- */
+@media (max-width: 480px) {
+  .compact-user-card {
+    width: 160px; /* کارت‌ها در موبایل خیلی جمع‌وجورتر میشن */
+    height: 260px;
+  }
+  
+  .like-btn-compact {
+    width: 28px; height: 28px;
+    top: 6px; right: 6px;
+  }
+  
+  .match-badge-compact {
+    padding: 2px 6px;
+    bottom: 6px; right: 6px;
+  }
+  
+  .match-val { font-size: 0.75rem; }
+  .match-lbl { font-size: 0.4rem; }
+  
+  .user-name-age { font-size: 0.85rem; }
+  .tags-compact { display: none; } /* در سایز خیلی کوچک تگ‌ها رو مخفی می‌کنیم */
+  
+  .view-profile-compact {
+    font-size: 0.75rem;
+    padding: 6px 0;
+  }
 }
