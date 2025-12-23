@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
+import QuizProgressBar from "../../components/quizProgressBar/QuizProgressBar.jsx";
+import QuizCard from "../../components/quizCard/QuizCard.jsx";
 import "./InitialQuizzesQuestionsPage.css";
+//new
 
 const InitialQuizzesQuestionsPage = () => {
   const navigate = useNavigate();
@@ -11,13 +15,11 @@ const InitialQuizzesQuestionsPage = () => {
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* -------------------- 1. Fetch Categories & Questions -------------------- */
   useEffect(() => {
     const fetchAllData = async () => {
       try {
         setLoading(true);
 
-        // Step A: Get user's selected interests from DB
         const interestRes = await fetch(`${API_URL}/api/user/onboarding/get-user-interests`, {
           method: "GET",
           credentials: "include",
@@ -26,12 +28,10 @@ const InitialQuizzesQuestionsPage = () => {
         const categories = interestData.userInterestedCategories;
 
         if (!categories || categories.length === 0) {
-          // If no interests, redirect back to select interests
           navigate("/initial-quizzes/interests");
           return;
         }
 
-        // Step B: Get questions for those categories
         const questionsRes = await fetch(`${API_URL}/api/user/onboarding/questions-by-category`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -41,7 +41,6 @@ const InitialQuizzesQuestionsPage = () => {
         
         const questionsData = await questionsRes.json();
 
-        // Flatten: Convert [{category, questions:[]}] to a flat array of questions
         const flattened = questionsData.flatMap(cat => 
           cat.questions.map(q => ({
             ...q,
@@ -60,7 +59,6 @@ const InitialQuizzesQuestionsPage = () => {
     fetchAllData();
   }, [API_URL, navigate]);
 
-  /* -------------------- 2. Handle Answer Selection -------------------- */
   const handleAnswer = (option) => {
     const currentQuestion = allQuestions[currentIndex];
     
@@ -74,7 +72,6 @@ const InitialQuizzesQuestionsPage = () => {
     const updatedAnswers = [...answers, newAnswer];
     setAnswers(updatedAnswers);
 
-    // If there are more questions, go to next, otherwise Submit
     if (currentIndex < allQuestions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
@@ -82,19 +79,17 @@ const InitialQuizzesQuestionsPage = () => {
     }
   };
 
-  /* -------------------- 3. Final Submit to Backend -------------------- */
   const submitFinalResults = async (finalAnswers) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/user/onboarding/saveUserInterestCategoriesQuestinsAnswer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quizResults: finalAnswers }), // Backend expects 'quizResults' array
+        body: JSON.stringify({ quizResults: finalAnswers }), 
         credentials: "include",
       });
 
       if (res.ok) {
-        // Success! Move to Explore or next onboarding step
         navigate("/explore"); 
       } else {
         throw new Error("Failed to save results");
@@ -107,41 +102,35 @@ const InitialQuizzesQuestionsPage = () => {
     }
   };
 
-  if (loading) return <div className="loader">Preparing your personal quiz...</div>;
+  if (loading) {
+    return (
+      <BackgroundLayout>
+        <div className="quiz-loader-container">
+          <div className="quiz-spinner"></div>
+          <p>Preparing your personal quiz...</p>
+        </div>
+      </BackgroundLayout>
+    );
+  }
+
   if (allQuestions.length === 0) return null;
 
   const currentQuestion = allQuestions[currentIndex];
   const progress = ((currentIndex + 1) / allQuestions.length) * 100;
 
   return (
-    <div className="quiz-container">
-      {/* Progress tracking at the top */}
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+    <BackgroundLayout>
+      <div className="quiz-page-wrapper">
+        <QuizProgressBar progress={progress} />
+        
+        <QuizCard 
+          question={currentQuestion} 
+          onAnswer={handleAnswer} 
+          currentIndex={currentIndex} 
+          totalQuestions={allQuestions.length} 
+        />
       </div>
-      
-      <div className="question-card">
-        <span className="category-tag">{currentQuestion.category}</span>
-        
-        <h2>{currentQuestion.questionText}</h2>
-        
-        <div className="options-list">
-          {currentQuestion.options.map((option, idx) => (
-            <button 
-              key={idx} 
-              className="option-btn"
-              onClick={() => handleAnswer(option)}
-            >
-              {option.text}
-            </button>
-          ))}
-        </div>
-        
-        <p className="question-counter">
-          Question {currentIndex + 1} of {allQuestions.length}
-        </p>
-      </div>
-    </div>
+    </BackgroundLayout>
   );
 };
 
