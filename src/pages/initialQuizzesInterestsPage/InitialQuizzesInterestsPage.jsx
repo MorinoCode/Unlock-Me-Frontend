@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
+import InterestsHeader from "../../components/interestsHeader/InterestsHeader";
+import InterestsGrid from "../../components/interestsGrid/InterestsGrid";
+import InterestsActions from "../../components/interestsActions/InterestsActions";
 import "./InitialQuizzesInterestsPage.css";
 
 const InitialQuizzesInterestsPage = () => {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // States for handling UI and data
   const [loading, setLoading] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [interestOptions, setInterestOptions] = useState([]);
@@ -21,9 +24,6 @@ const InitialQuizzesInterestsPage = () => {
     ? capitalizeFirstLetter(parsedUser.name)
     : "User";
 
-  /**
-   * Fetch available interest categories from the server on component mount
-   */
   useEffect(() => {
     fetch(`${API_URL}/api/user/onboarding/interests-options`, {
       credentials: "include",
@@ -32,24 +32,23 @@ const InitialQuizzesInterestsPage = () => {
         if (!res.ok) throw new Error("Failed to fetch interests");
         return res.json();
       })
-      .then((data) => setInterestOptions(data))
+      .then((data) => {
+        const options = data.categories || data; 
+        setInterestOptions(Array.isArray(options) ? options : []);
+      })
       .catch((err) => console.error("Fetch error:", err));
   }, [API_URL]);
 
-  /**
-   * Toggle interest selection
-   * Adds the label if not present, removes it if it already exists
-   */
   const toggleInterest = (label) => {
-    setSelectedInterests((prev) =>
-      prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label]
-    );
+    if (selectedInterests.includes(label)) {
+      setSelectedInterests((prev) => prev.filter((i) => i !== label));
+    } else {
+      if (selectedInterests.length < 3) {
+        setSelectedInterests((prev) => [...prev, label]);
+      }
+    }
   };
 
-  /**
-   * Handles the submission of selected interests
-   * Only proceeds if at least one interest is selected
-   */
   const handleNext = async () => {
     if (selectedInterests.length === 0) return;
 
@@ -64,7 +63,6 @@ const InitialQuizzesInterestsPage = () => {
 
       if (!res.ok) throw new Error("Request failed");
 
-      // Navigate to the next onboarding step
       navigate("/initial-quizzes/questionsbycategory");
     } catch (err) {
       console.error("Submission error:", err);
@@ -74,43 +72,26 @@ const InitialQuizzesInterestsPage = () => {
     }
   };
 
-  // Button is disabled if loading or if no interests are selected
-  const isNextDisabled = loading || selectedInterests.length === 0;
+  const isNextDisabled = loading || selectedInterests.length < 3;
 
   return (
-    <div className="onboarding-interests-page">
+    <BackgroundLayout>
       <div className="onboarding-interests-card">
-        <h2>{`${name},What are your interests?`}</h2>
-        <p className="interests-subtitle">
-          Choose at least one category to personalize your experience.
-        </p>
+        <InterestsHeader name={name} />
+        
+        <InterestsGrid 
+          options={interestOptions} 
+          selectedInterests={selectedInterests} 
+          onToggle={toggleInterest} 
+        />
 
-        <div className="interests-grid">
-          {interestOptions.map((opt) => (
-            <div
-              key={opt._id}
-              className={`interest-item ${
-                selectedInterests.includes(opt.label) ? "selected" : ""
-              }`}
-              onClick={() => toggleInterest(opt.label)}
-            >
-              <span className="interest-icon">{opt.icon}</span>
-              <span className="interest-label">{opt.label}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="onboarding-interests-actions">
-          <button
-            onClick={handleNext}
-            disabled={isNextDisabled}
-            className="next-btn full-width"
-          >
-            {loading ? "Saving..." : "Continue"}
-          </button>
-        </div>
+        <InterestsActions 
+          loading={loading} 
+          disabled={isNextDisabled} 
+          onNext={handleNext} 
+        />
       </div>
-    </div>
+    </BackgroundLayout>
   );
 };
 

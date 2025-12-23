@@ -1,4 +1,3 @@
-/* Container with Dark Indigo Theme */
 .onboarding-interests-page {
   min-height: 100vh;
   display: flex;
@@ -10,7 +9,6 @@
   color: #e5e7eb;
 }
 
-/* Dark Glassmorphism Card */
 .onboarding-interests-card {
   width: 100%;
   max-width: 480px;
@@ -27,16 +25,16 @@
   margin-bottom: 0.5rem;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #6366f1; /* Indigo Color */
+  color: #6366f1;
 }
 
 .interests-subtitle {
   font-size: 0.95rem;
-  color: #94a3b8; /* Muted Slate */
+  color: #94a3b8;
   margin-bottom: 2rem;
+  line-height: 1.5;
 }
 
-/* Grid Layout */
 .interests-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -46,16 +44,15 @@
   padding: 8px;
 }
 
-/* Modern Scrollbar */
 .interests-grid::-webkit-scrollbar {
   width: 5px;
 }
+
 .interests-grid::-webkit-scrollbar-thumb {
   background: rgba(99, 102, 241, 0.3);
   border-radius: 10px;
 }
 
-/* Interest Item Styling */
 .interest-item {
   padding: 0.9rem;
   border-radius: 14px;
@@ -85,7 +82,6 @@
   font-weight: 500;
 }
 
-/* Selected State - Indigo Theme */
 .interest-item.selected {
   background: #6366f1;
   color: #ffffff;
@@ -93,7 +89,6 @@
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
 }
 
-/* Actions Section */
 .onboarding-interests-actions {
   margin-top: 2.5rem;
 }
@@ -122,4 +117,41 @@
   opacity: 0.3;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+@media (max-width: 480px) {
+  .onboarding-interests-page {
+    padding: 1rem;
+  }
+
+  .onboarding-interests-card {
+    padding: 1.5rem;
+  }
+
+  .interests-grid {
+    gap: 8px;
+    padding: 4px;
+    max-height: 400px;
+  }
+
+  .interest-item {
+    padding: 0.7rem 0.8rem;
+    gap: 6px;
+    border-radius: 12px;
+  }
+
+  .interest-icon {
+    font-size: 1.1rem;
+  }
+
+  .interest-label {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .onboarding-interests-actions {
+    margin-top: 2rem;
+  }
 }
