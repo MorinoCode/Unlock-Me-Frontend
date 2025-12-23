@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/useAuth.js"; 
+import { useAuth } from "../../context/useAuth.js";
+import FormInput from "../../components/formInput/FormInput";
+import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout.jsx";
 import "./SigninPage.css";
 
 const SigninPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-  const { setCurrentUser } = useAuth(); 
+  const { setCurrentUser } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -25,7 +27,7 @@ const SigninPage = () => {
 
   const { email, password } = formData;
 
-  const validate = () => {
+  useEffect(() => {
     const newErrors = {};
 
     if (touched.email && !/\S+@\S+\.\S+/.test(email)) {
@@ -38,16 +40,12 @@ const SigninPage = () => {
 
     setErrors(newErrors);
 
-    const logicValid = 
-      /\S+@\S+\.\S+/.test(email) && 
+    const logicValid =
+      /\S+@\S+\.\S+/.test(email) &&
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password);
-    
-    setIsFormValid(logicValid);
-  };
 
-  useEffect(() => {
-    validate();
-  }, [formData, touched]);
+    setIsFormValid(logicValid);
+  }, [formData, touched, email, password]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -73,7 +71,7 @@ const SigninPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setCurrentUser(data.user); 
+        setCurrentUser(data.user);
 
         localStorage.setItem(
           "unlock-me-user",
@@ -82,8 +80,8 @@ const SigninPage = () => {
             name: data.user.name,
           })
         );
-        
-        navigate("/explore"); 
+
+        navigate("/explore");
       } else {
         setServerMessage(data.message || "Invalid credentials");
       }
@@ -96,36 +94,32 @@ const SigninPage = () => {
   };
 
   return (
-    <div className="signin-page">
+    <BackgroundLayout>
       <div className="signin-card">
         <h2 className="signin-title">UnlockMe</h2>
         <p className="signin-subtitle">Sign in and unlock connections!</p>
 
         <form onSubmit={handleSubmit} className="signin-form" noValidate>
-          <input
+          <FormInput
             name="email"
             type="email"
             placeholder="Email"
             value={email}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="signin-input"
+            error={touched.email && errors.email}
             autoFocus
           />
-          {errors.email && <span className="error-text">{errors.email}</span>}
 
-          <input
+          <FormInput
             name="password"
             type="password"
             placeholder="Password"
             value={password}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="signin-input"
+            error={touched.password && errors.password}
           />
-          {errors.password && (
-            <span className="error-text">{errors.password}</span>
-          )}
 
           {serverMessage && (
             <div className="server-message">{serverMessage}</div>
@@ -146,7 +140,7 @@ const SigninPage = () => {
           </p>
         </div>
       </div>
-    </div>
+    </BackgroundLayout>
   );
 };
 
