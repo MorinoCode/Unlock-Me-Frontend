@@ -1,130 +1,166 @@
-/* Container: Dark Indigo Theme */
-.quiz-container {
-  min-height: 100vh;
+.quiz-page-wrapper {
+  width: 100%;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #0f172a, #020617);
-  font-family: 'Inter', sans-serif;
-  color: #e5e7eb;
+  gap: 2rem;
+  padding: 1rem;
+  animation: fadeIn 0.5s ease-out;
 }
 
-/* Progress Bar styling */
-.progress-bar {
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Progress Bar --- */
+.quiz-progress-bar-container {
   width: 100%;
-  max-width: 480px;
   height: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  margin-bottom: 25px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-.progress-fill {
+.quiz-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #818cf8);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  border-radius: 10px;
+  transition: width 0.4s ease-in-out;
   box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
-/* Question Card - Dark Glassmorphism */
-.question-card {
-  width: 100%;
-  max-width: 480px;
-  padding: 2.5rem;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  text-align: center;
-  position: relative;
-}
-
-/* Category Tag */
-.category-tag {
-  display: inline-block;
-  padding: 8px 18px;
-  background: #4ade80;
-  color: white;
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  letter-spacing: 1.5px;
-}
-
-.question-card h2 {
-  font-size: 1.6rem;
-  margin-bottom: 2.5rem;
-  line-height: 1.4;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-/* Options List */
-.options-list {
+/* --- Loader --- */
+.quiz-loader-container {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #a5b4fc;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Option Buttons - Indigo Focus */
-.option-btn {
-  padding: 1.1rem;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.6);
-  color: #cbd5e1;
-  font-size: 1rem;
+.quiz-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(99, 102, 241, 0.3);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Question Card --- */
+.quiz-question-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.quiz-category-badge {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
-.option-btn:hover {
-  background: rgba(99, 102, 241, 0.1);
-  border-color: #6366f1;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.option-btn:active {
-  transform: scale(0.97);
-}
-
-/* Counter at the bottom */
-.question-counter {
-  margin-top: 2.5rem;
-  font-size: 0.85rem;
+.quiz-counter {
   color: #64748b;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
-/* Loader Styling */
-.loader {
-  background: #020617;
-  color: #6366f1;
-  font-size: 1.2rem;
-  font-weight: 600;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  letter-spacing: 1px;
+.quiz-question-text {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  line-height: 1.4;
+  margin: 0;
 }
 
-/* Animation for loader */
-.loader::after {
-  content: "...";
-  display: inline-block;
-  width: 20px;
+/* --- Options List --- */
+.quiz-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.quiz-option-btn {
+  width: 100%;
+  padding: 1.2rem 1.5rem;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  color: #cbd5e1;
+  font-size: 1rem;
+  font-weight: 500;
   text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', sans-serif;
+}
+
+.quiz-option-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
+  color: #ffffff;
+  transform: translateX(5px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+}
+
+.quiz-option-btn:active {
+  transform: scale(0.98);
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 600px) {
+  .quiz-page-wrapper {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .quiz-question-card {
+    padding: 1.5rem;
+    border-radius: 20px;
+  }
+
+  .quiz-question-text {
+    font-size: 1.3rem;
+  }
+
+  .quiz-option-btn {
+    padding: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .quiz-header {
+    margin-bottom: 0;
+  }
 }
