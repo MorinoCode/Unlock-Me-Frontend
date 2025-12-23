@@ -1,36 +1,32 @@
-/* کانتینر اصلی که کل صفحه را می‌گیرد */
 .layout-container {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background-color: #020617; /* رنگ پایه تیره */
-  overflow: hidden; /* جلوگیری از اسکرول اضافه */
+  background-color: #020617; 
+  overflow: hidden; 
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 0;
 }
 
-/* لایه نگهدارنده افکت‌ها */
 .background-effects {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; /* پشت محتوا */
+  z-index: -1; 
 }
 
-/* تعریف لکه‌های نوری (Blobs) */
 .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px); /* ایجاد حالت محو و نورانی */
+  filter: blur(80px); 
   opacity: 0.5;
   animation: float 20s infinite alternate ease-in-out;
 }
 
-/* لکه بنفش (رنگ اصلی برند) - نماد شما */
 .blob-purple {
   top: -10%;
   left: -10%;
@@ -40,7 +36,6 @@
   animation-delay: 0s;
 }
 
-/* لکه سبز (رنگ هاور) - نماد مچ شدن یا پارتنر */
 .blob-green {
   bottom: -10%;
   right: -10%;
@@ -51,7 +46,6 @@
   opacity: 0.3;
 }
 
-/* لکه آبی تیره - برای عمق دادن */
 .blob-blue {
   top: 40%;
   left: 40%;
@@ -62,7 +56,6 @@
   opacity: 0.2;
 }
 
-/* انیمیشن شناور شدن */
 @keyframes float {
   0% {
     transform: translate(0, 0) scale(1);
@@ -78,7 +71,6 @@
   }
 }
 
-/* پترن نقطه‌ای (SVG Pattern) برای حس تکنولوژی و کشف */
 .grid-overlay {
   position: absolute;
   top: 0;
@@ -92,7 +84,6 @@
   pointer-events: none;
 }
 
-/* نگهدارنده محتوا */
 .content-wrapper {
   position: relative;
   z-index: 10;
@@ -106,7 +97,7 @@
 /* 📱 Mobile Optimization */
 @media (max-width: 768px) {
   .blob {
-    filter: blur(60px); /* بلور کمتر برای موبایل برای پرفورمنس */
+    filter: blur(60px); 
   }
   
   .blob-purple {
