@@ -4,6 +4,7 @@ import BackgroundLayout from "../../components/layout/backgroundLayout/Backgroun
 import QuizProgressBar from "../../components/quizProgressBar/QuizProgressBar.jsx";
 import QuizCard from "../../components/quizCard/QuizCard.jsx";
 import "./InitialQuizzesQuestionsPage.css";
+//new
 
 const InitialQuizzesQuestionsPage = () => {
   const navigate = useNavigate();

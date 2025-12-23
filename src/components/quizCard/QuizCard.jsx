@@ -1,5 +1,5 @@
 import React from "react";
-
+//quiz
 const QuizCard = ({ question, onAnswer, currentIndex, totalQuestions }) => {
   return (
     <div className="quiz-question-card">

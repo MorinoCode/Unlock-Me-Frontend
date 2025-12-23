@@ -1,5 +1,5 @@
 import React from "react";
-
+//quizBar
 const QuizProgressBar = ({ progress }) => {
   return (
     <div className="quiz-progress-bar-container">
