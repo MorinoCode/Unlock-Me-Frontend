@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Country, City } from 'country-state-city';
-import Cropper from "react-easy-crop"; // ایمپورت Cropper
+import Cropper from "react-easy-crop"; 
 import styles from "./ProfilePage.module.css";
 
 const ProfilePage = () => {
@@ -15,7 +15,6 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
 
-  // --- استیت‌های مربوط به Cropper ---
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -37,16 +36,16 @@ const ProfilePage = () => {
   const countries = Country.getAllCountries();
   const [cities, setCities] = useState([]);
 
-  // --- توابع مربوط به Cropper (مشابه Onboarding) ---
+  
   const onFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.addEventListener("load", () => {
         setImageSrc(reader.result);
-        setShowCropper(true); // نمایش مودال برش
+        setShowCropper(true); 
       });
       reader.readAsDataURL(e.target.files[0]);
-      e.target.value = ''; // ریست کردن اینپوت فایل
+      e.target.value = ''; 
     }
   };
 
@@ -73,7 +72,7 @@ const ProfilePage = () => {
       pixelCrop.width,
       pixelCrop.height
     );
-    return canvas.toDataURL("image/jpeg"); // بازگرداندن Base64
+    return canvas.toDataURL("image/jpeg"); 
   };
 
   const handleConfirmCrop = async () => {
@@ -194,7 +193,7 @@ const ProfilePage = () => {
         alert(err.message || "Failed to save profile.");
       }
     } catch (err) {
-      alert("Network error. Please try again.");
+      alert("Network error. Please try again.",err);
     } finally {
       setIsSaving(false);
     }
@@ -210,7 +209,7 @@ const ProfilePage = () => {
         body: JSON.stringify({ images: formData.gallery })
       });
       if (res.ok) alert("Gallery updated successfully! 🖼️");
-    } catch (err) { alert("Failed to update gallery."); } 
+    } catch (err) { alert("Failed to update gallery.",err) } 
     finally { setIsSaving(false); }
   };
 
@@ -234,7 +233,7 @@ const ProfilePage = () => {
         const err = await res.json();
         alert(err.message || "Incorrect current password.");
       }
-    } catch (err) { alert("Server error."); }
+    } catch (err) { alert("Server error.",err) }
   };
 
   if (loading) return <div className={styles.rootContainer}><div className={styles.spinner}></div></div>;
