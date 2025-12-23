@@ -1,0 +1,24 @@
+/* --- Global Scrollbar Styling --- */
+
+html {
+  scrollbar-width: thin; 
+  scrollbar-color: #1e293b #020617; 
+}
+
+::-webkit-scrollbar {
+  width: 6px; 
+  height: 6px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #020617; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b; 
+  border-radius: 10px; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6366f1; 
+}
