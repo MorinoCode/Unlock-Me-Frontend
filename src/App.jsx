@@ -14,6 +14,7 @@ import MyMatchesPage from './pages/myMatchesPag/MyMatchesPage.jsx';
 import ViewAllMatchesPage from './pages/viewAllMatchesPage/ViewAllMatchesPage.jsx';
 import ChatPage from './pages/chatPage/ChatPage.jsx';
 import MessagesPage from './pages/MessagesInboxPage/MessagesInboxPage.jsx';
+import ProfilePage from './pages/profilePage/ProfilePage.jsx';
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/mymatches/view-all/:type" element={<ViewAllMatchesPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/chat/:receiverId" element={<ChatPage />} />
+          <Route path="/myprofile" element={<ProfilePage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
