@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import UserCard from "../../components/userCard/UserCard";
+import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
 import "./ViewAllMatchesPage.css";
 
 const ViewAllMatchesPage = () => {
@@ -17,28 +18,27 @@ const ViewAllMatchesPage = () => {
     const fetchMatches = async () => {
       try {
         setLoading(true);
-        // Get user for plan check
+        // دریافت اطلاعات کاربر برای بررسی پلن
         const userRes = await fetch(`${API_URL}/api/user/location`, { credentials: "include" });
         const userData = await userRes.json();
         setCurrentUser(userData);
 
-        // Get dashboard data
-        const res = await fetch(`${API_URL}/api/user/matches-dashboard`, { credentials: "include" });
+        // اصلاح شده: استفاده از اندپوینت صحیح مطابق بک‌اِند
+        const res = await fetch(`${API_URL}/api/user/matches`, { credentials: "include" });
         const data = await res.json();
 
-        // Map type to data and title
         if (type === "mutual") {
-          setUsers(data.mutualMatches);
+          setUsers(data.mutualMatches || []);
           setTitle("Mutual Matches");
         } else if (type === "sent") {
-          setUsers(data.sentLikes);
+          setUsers(data.sentLikes || []);
           setTitle("People You Liked");
         } else if (type === "incoming") {
-          setUsers(data.incomingLikes);
+          setUsers(data.incomingLikes || []);
           setTitle("People Who Liked You");
         }
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Error fetching all matches:", err);
       } finally {
         setLoading(false);
       }
@@ -48,7 +48,6 @@ const ViewAllMatchesPage = () => {
 
   const userPlan = currentUser?.subscription?.plan || "free";
   
-  // Custom limits for Grid view
   const limits = {
     free: { mutual: 20, sent: 10, incoming: 0 },
     premium: { mutual: 100, sent: 50, incoming: 10 },
@@ -56,35 +55,64 @@ const ViewAllMatchesPage = () => {
   };
   const currentLimit = limits[userPlan][type] || 0;
 
-  if (loading) return <div className="loading-state">Loading your matches...</div>;
+  if (loading) return (
+    <div className="loading-container-viewall">
+      <div className="match-spinner"></div>
+      <p>Loading {type} connections...</p>
+    </div>
+  );
 
   return (
-    <div className="view-all-matches">
-      <header className="view-all-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
-        <h1>{title}</h1>
-        <p>Showing {users.length} connections</p>
-      </header>
+    <ExploreBackgroundLayout>
+      <div className="view-all-container">
+        <header className="view-all-header-modern">
+          <div className="header-top">
+            <button className="back-btn-modern" onClick={() => navigate(-1)}>
+              <span>←</span> Back
+            </button>
+            <div className="plan-badge-viewall">
+               PLAN: <span>{userPlan.toUpperCase()}</span>
+            </div>
+          </div>
+          <div className="header-bottom-text">
+            <h1 className="gradient-title-viewall">{title}</h1>
+            <p className="results-count">Showing {users.length} connections</p>
+          </div>
+        </header>
 
-      <div className="matches-grid">
-        {users.map((user, index) => (
-          <UserCard 
-            key={user._id} 
-            user={user} 
-            isLocked={index >= currentLimit} 
-            userPlan={userPlan} 
-          />
-        ))}
-      </div>
-
-      {userPlan === "free" && type === "incoming" && (
-        <div className="upsell-footer">
-          <h2>Want to see who likes you?</h2>
-          <p>Upgrade to Gold to unlock your incoming likes and match instantly!</p>
-          <button onClick={() => navigate("/upgrade")}>Upgrade Now</button>
+        <div className="matches-grid-modern">
+          {users.map((user, index) => (
+            <div className="grid-card-anim" key={user._id} style={{ "--delay": `${index * 0.05}s` }}>
+              <UserCard 
+                user={user} 
+                isLocked={index >= currentLimit} 
+                userPlan={userPlan} 
+              />
+            </div>
+          ))}
+          
+          {users.length === 0 && (
+            <div className="empty-view-state">
+              <span className="empty-icon-large">🔍</span>
+              <p>No connections found in this category.</p>
+              <button className="explore-more-btn" onClick={() => navigate("/explore")}>
+                Explore People
+              </button>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+
+        {userPlan === "free" && type === "incoming" && (
+          <div className="gold-upsell-banner" onClick={() => navigate("/upgrade")}>
+            <div className="upsell-content">
+              <h2>Reveal who liked you!</h2>
+              <p>Someone special is waiting in this list. Upgrade to Gold to unlock them instantly.</p>
+            </div>
+            <button className="gold-action-btn">Go Gold</button>
+          </div>
+        )}
+      </div>
+    </ExploreBackgroundLayout>
   );
 };
 
