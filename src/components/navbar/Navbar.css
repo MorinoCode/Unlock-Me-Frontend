@@ -1,0 +1,149 @@
+/* پاکسازی و ریست کلی */
+.nav-unique-wrapper,
+.nav-unique-wrapper *,
+.nav-unique-wrapper *::before,
+.nav-unique-wrapper *::after {
+    all: unset !important;
+    box-sizing: border-box !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* نوبار کاملاً شفاف (Transparent) */
+.nav-unique-wrapper {
+    position: absolute !important; 
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 85px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 10000 !important;
+    /* حذف رنگ پس‌زمینه برای دیده شدن تصویر زمینه سایت */
+    background: transparent !important; 
+    padding: 0 20px !important;
+}
+
+/* استایل کانتینر داخلی نوبار */
+.nav-unique-container {
+    width: 100% !important;
+    max-width: 1400px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+/* LOGO */
+.nav-unique-logoLink { display: flex !important; align-items: center !important; cursor: pointer !important; text-decoration: none !important; }
+.nav-unique-logoIcon { font-size: 1.8rem !important; margin-right: 10px !important; }
+.nav-unique-logoMain { color: white !important; font-size: 1.5rem !important; font-weight: 900 !important; letter-spacing: -1px !important; }
+.nav-unique-logoSub { color: #6366f1 !important; }
+
+/* LINKS SECTION */
+.nav-unique-linksSection {
+    display: flex !important;
+    gap: 15px !important;
+    align-items: center !important;
+}
+
+.nav-unique-linkItem {
+    padding: 10px 20px !important;
+    color: #94a3b8 !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    border-radius: 14px !important;
+    cursor: pointer !important;
+}
+
+.nav-unique-linkItem:hover { color: white !important; background: rgba(255, 255, 255, 0.05) !important; }
+.nav-unique-linkItem.nav-unique-active {
+    color: white !important;
+    background: rgba(99, 102, 241, 0.15) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+/* نمایش گزینه پروفایل فقط در منوی موبایل */
+.nav-unique-mobileOnlyLink { display: none !important; }
+
+/* PROFILE SECTION (DESKTOP) */
+.nav-unique-profileSection {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+.nav-unique-userCard {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    padding: 6px 18px 6px 6px !important;
+    border-radius: 50px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    cursor: pointer !important;
+}
+
+.nav-unique-avatarRing {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 50% !important;
+    border: 2px solid #6366f1 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #0f172a !important;
+}
+
+.nav-unique-avatarImg {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.nav-unique-userName { color: white !important; font-weight: 700 !important; font-size: 0.9rem !important; white-space: nowrap !important; }
+
+/* HAMBURGER SECTION */
+.nav-unique-hamburger {
+    display: none !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    cursor: pointer !important;
+}
+
+.nav-unique-bar { width: 25px !important; height: 3px !important; background: white !important; border-radius: 5px !important; }
+
+/* RESPONSIVE: Mobile Adjustments */
+@media (max-width: 900px) {
+    /* حذف آواتار از نوبار در موبایل */
+    .nav-unique-desktopOnlyAvatar { display: none !important; }
+    
+    .nav-unique-hamburger { display: flex !important; margin-left: 15px !important; }
+    
+    /* نمایش لینک پروفایل داخل منوی همبرگری */
+    .nav-unique-mobileOnlyLink { display: flex !important; }
+
+    .nav-unique-linksSection {
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        width: 280px !important;
+        height: 100vh !important;
+        background: #0f172a !important; /* منوی موبایل رنگ تیره دارد */
+        flex-direction: column !important;
+        justify-content: center !important;
+        padding: 40px !important;
+        gap: 20px !important;
+        transform: translateX(100%) !important;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5) !important;
+        z-index: 10001 !important;
+    }
+
+    .nav-unique-linksSection.nav-unique-mobileOpen { transform: translateX(0) !important; }
+}

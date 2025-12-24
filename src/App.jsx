@@ -15,11 +15,13 @@ import ViewAllMatchesPage from './pages/viewAllMatchesPage/ViewAllMatchesPage.js
 import ChatPage from './pages/chatPage/ChatPage.jsx';
 import MessagesPage from './pages/MessagesInboxPage/MessagesInboxPage.jsx';
 import ProfilePage from './pages/profilePage/ProfilePage.jsx';
+import Navbar from './components/navbar/Navbar.jsx';
 
 const App = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <Navbar/>
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/signup' element={<SignupPage />} />
