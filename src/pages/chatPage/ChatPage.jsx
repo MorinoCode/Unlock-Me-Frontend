@@ -17,6 +17,7 @@ const ChatPage = () => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
+  const [activeActionId, setActiveActionId] = useState(null);
 
   const scrollRef = useRef(null);
   const msgRefs = useRef({});
@@ -29,10 +30,8 @@ const ChatPage = () => {
     const today = new Date();
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
-
     if (date.toDateString() === today.toDateString()) return "Today";
     if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
-    
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
@@ -46,7 +45,6 @@ const ChatPage = () => {
         ]);
         if (uRes.ok) setReceiverUser(await uRes.json());
         if (mRes.ok) setMessages(await mRes.json());
-        
         fetch(`${API_URL}/api/chat/read/${receiverId}`, { method: "PUT", credentials: "include" });
       } finally { setTimeout(() => setIsSyncing(false), 500); }
     };
@@ -56,33 +54,27 @@ const ChatPage = () => {
   useEffect(() => {
     if (!myId) return;
     socket.emit("join_room", myId);
-
     socket.on("receive_message", (m) => {
       setMessages(prev => [...prev, m]);
       if (String(m.sender) === String(receiverId)) {
         fetch(`${API_URL}/api/chat/read/${receiverId}`, { method: "PUT", credentials: "include" });
       }
     });
-
     socket.on("messages_seen", ({ seenBy }) => {
       if (String(seenBy) === String(receiverId)) {
         setMessages(prev => prev.map(msg => ({ ...msg, isRead: true })));
       }
     });
-
     socket.on("display_typing", ({ senderId }) => {
       if (String(senderId) === String(receiverId)) {
         setIsReceiverTyping(true);
         setTimeout(() => setIsReceiverTyping(false), 3000);
       }
     });
-
     socket.on("hide_typing", () => setIsReceiverTyping(false));
-
     socket.on("reaction_updated", (data) => {
       setMessages(prev => prev.map(m => m._id === data.id ? { ...m, reactions: data.reactions } : m));
     });
-
     return () => { 
       socket.off("receive_message"); 
       socket.off("messages_seen");
@@ -181,7 +173,7 @@ const ChatPage = () => {
         </div>
       </header>
 
-      <div className="messages-scroll-area">
+      <div className="messages-scroll-area" onClick={() => setActiveActionId(null)}>
         {messages.map((m, index) => {
           const isOwn = String(m.sender) === String(myId);
           const currentDate = new Date(m.createdAt).toDateString();
@@ -196,7 +188,13 @@ const ChatPage = () => {
                 </div>
               )}
               <div ref={el => msgRefs.current[m._id] = el} className={`msg-row ${isOwn ? "own-msg" : "their-msg"}`}>
-                <div className="msg-wrapper-v2">
+                <div 
+                  className="msg-wrapper-v2" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (window.innerWidth <= 768) setActiveActionId(activeActionId === m._id ? null : m._id);
+                  }}
+                >
                   <div className="msg-bubble-v2">
                     {m.parentMessage && (
                       <div className="replied-message-box" onClick={() => scrollToOriginal(m.parentMessage.messageId)}>
@@ -218,10 +216,10 @@ const ChatPage = () => {
                     </div>
                   </div>
 
-                  <div className="msg-actions">
-                    <span onClick={() => addReaction(m._id, "❤️")}>❤️</span>
-                    <span onClick={() => addReaction(m._id, "👍")}>👍</span>
-                    <span onClick={() => setReplyingTo(m)}>Reply</span>
+                  <div className={`msg-actions ${activeActionId === m._id ? "force-show-mobile" : ""}`}>
+                    <span onClick={(e) => { e.stopPropagation(); addReaction(m._id, "❤️"); setActiveActionId(null); }}>❤️</span>
+                    <span onClick={(e) => { e.stopPropagation(); addReaction(m._id, "👍"); setActiveActionId(null); }}>👍</span>
+                    <span onClick={(e) => { e.stopPropagation(); setReplyingTo(m); setActiveActionId(null); }}>Reply</span>
                   </div>
                 </div>
               </div>
