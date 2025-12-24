@@ -1,68 +1,135 @@
-/* Update these parts in your ViewAllMatchedUsersPage.css */
-
-.matches-grid {
-  display: grid;
-  /* Use auto-fit to make it responsive and fill the space */
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-  gap: 30px;
-  justify-items: center; /* Center cards in their grid cells */
-  padding-bottom: 50px;
-}
-
-.view-all-container {
-  min-height: 100vh;
-  background: #020617;
-  padding: 3rem 4rem;
-  color: white;
-}
-
-/* Make sure UserCard fills the grid slot if needed */
-.matches-grid .user-card-component {
+/* Container اصلی که روی BackgroundLayout قرار می‌گیرد */
+.va-page-wrapper {
+  padding: 2rem 5% 8rem 5%;
   width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 5;
 }
 
-.back-btn {
+.va-header-section {
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.va-back-btn {
+  width: fit-content;
   background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  color: #818cf8;
-  padding: 10px 20px;
-  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #a5b4fc;
+  padding: 12px 24px;
+  border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 2rem;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
-.back-btn:hover {
+.va-back-btn:hover {
   background: rgba(99, 102, 241, 0.2);
   transform: translateX(-5px);
+  border-color: #6366f1;
 }
 
-.grid-upgrade-footer {
-  position: relative;
-  margin-top: 5rem;
-  padding: 4rem;
-  background: rgba(30, 41, 59, 0.5);
+.va-main-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.va-top-promo-box {
+  margin-bottom: 3rem;
+}
+
+/* ✅ راه حل قطعی برای گرید */
+.va-results-grid {
+  display: grid;
+  /* ستون‌بندی داینامیک: تضمین می‌کند که کارت‌ها کنار هم باشند */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+  justify-items: center;
+  align-items: start;
+}
+
+/* نگهدارنده هر کارت برای جلوگیری از ۱۰۰٪ شدن عرض */
+.va-card-item {
+  width: 100%;
+  max-width: 320px; /* حداکثر عرض هر کارت */
+  display: flex;
+}
+
+/* اطمینان از اینکه UserCard خودش را با نگهدارنده ست می‌کند */
+.va-card-item > * {
+  width: 100% !important;
+}
+
+.va-pagination-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin: 5rem 0;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 40px;
-  text-align: center;
-  overflow: hidden;
 }
 
-.upgrade-btn-primary {
+.va-pagination-nav button {
   background: #6366f1;
   color: white;
   border: none;
-  padding: 16px 40px;
+  padding: 12px 28px;
   border-radius: 14px;
-  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-  transition: 0.3s;
+  transition: all 0.2s ease;
 }
 
-.upgrade-btn-primary:hover {
-  transform: scale(1.05);
-  background: #4f46e5;
+.va-pagination-nav button:disabled {
+  background: #334155;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.va-page-info {
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.va-footer-upgrade-area {
+  margin-top: 4rem;
+}
+
+/* ریسپانسیو اختصاصی */
+@media screen and (max-width: 768px) {
+  .va-page-wrapper {
+    padding: 1.5rem 1.5rem 6rem 1.5rem;
+  }
+}
+
+@media screen and (max-width: 409px) {
+  .va-results-grid {
+    grid-template-columns: 1fr; /* در موبایل خیلی کوچک زیر هم باشند */
+    justify-items: center;
+  }
+  
+  .va-card-item {
+    max-width: 100%;
+  }
+
+  .va-pagination-nav {
+    flex-direction: column;
+    gap: 15px;
+  }
 }
