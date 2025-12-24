@@ -10,7 +10,6 @@ import {
 const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate }) => {
   let displayedUsers = users || [];
   
-  // ۱. منطق بخش VIP (The Soulmates)
   if (type === "soulmates") {
     const { isLocked, limit } = getSoulmatePermissions(userPlan);
 
@@ -65,7 +64,6 @@ const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate
     );
   }
 
-  // ۲. منطق بخش‌های عمومی (Near You, etc.)
   const scoreThreshold = getVisibilityThreshold(userPlan);
   displayedUsers = displayedUsers.filter(u => (u.matchScore || 0) <= scoreThreshold);
 

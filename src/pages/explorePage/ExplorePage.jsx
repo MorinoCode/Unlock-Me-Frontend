@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PromoBanner from "../../components/promoBanner/PromoBanner";
-import ExploreSection from "../../components/ExploreSection/ExploreSection";
+import ExploreSection from "../../components/exploreSection/ExploreSection";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
 import { getPromoBannerConfig } from "../../utils/subscriptionRules"; 
 import "./ExplorePage.css";

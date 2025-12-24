@@ -1,0 +1,114 @@
+/* AIInsightSection.css */
+
+.ai-insight-card {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(15, 23, 42, 0.6) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2) !important;
+  padding: 30px;
+  border-radius: 28px;
+  margin-bottom: 25px;
+}
+
+.ai-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.ai-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.5));
+}
+
+.insight-content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.insight-text-side {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.insight-text-side h4 {
+  font-size: 0.85rem;
+  color: #a78bfa;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 800;
+}
+
+.match-verdict {
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.match-verdict p {
+  line-height: 1.8;
+  font-size: 1rem;
+  color: #e2e8f0;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.dna-traits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.dna-trait-row {
+  display: flex;
+  /* flex-direction: column; */
+  gap: 4px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  transition: background 0.3s ease;
+}
+
+.dna-trait-row:hover {
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.trait-label {
+  font-weight: 800;
+  color: #fff;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trait-label::before {
+  content: "✦";
+  color: #8b5cf6;
+  font-size: 0.7rem;
+}
+
+.trait-desc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  padding-left: 18px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .insight-content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .insight-chart-side {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  
+  .ai-insight-card {
+    padding: 20px;
+  }
+}
