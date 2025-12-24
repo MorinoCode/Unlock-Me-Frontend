@@ -8,13 +8,11 @@ const UserCard = ({ user, isLocked }) => {
   const [isLiking, setIsLiking] = useState(false);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // فقط وقتی روی دکمه پروفایل کلیک شد اجرا میشه
   const goToProfile = (e) => {
     e.stopPropagation();
     navigate(`/user-profile/${user._id}`);
   };
 
-  // هندلر برای وقتی که کارت قفله
   const handleUnlockClick = () => {
     navigate("/upgrade");
   };
@@ -35,7 +33,7 @@ const UserCard = ({ user, isLocked }) => {
 
     try {
       if (newStatus) {
-         await fetch(`${API_URL}/api/user/like`, {
+        await fetch(`${API_URL}/api/user/like`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ targetUserId: user._id }),
@@ -73,7 +71,6 @@ const UserCard = ({ user, isLocked }) => {
         </div>
       ) : (
         <>
-          {/* --- بخش بالای کارت (عکس) --- */}
           <div className="card-media-wrapper">
             <img 
               src={user.avatar || "/default-avatar.png"} 
@@ -81,7 +78,6 @@ const UserCard = ({ user, isLocked }) => {
               className="user-img-cover"
             />
             
-            {/* دکمه لایک (بالا راست) */}
             <button 
               className={`like-btn-compact ${liked ? "is-liked" : ""}`} 
               onClick={handleLikeClick}
@@ -91,7 +87,6 @@ const UserCard = ({ user, isLocked }) => {
               </svg>
             </button>
             
-            {/* بج درصد مچ (پایین راست) */}
             <div className={`match-badge-compact ${matchStyle.class}`}>
               <span className="match-val">{score}%</span>
               <span className="match-lbl">{matchStyle.label}</span>
@@ -100,23 +95,13 @@ const UserCard = ({ user, isLocked }) => {
             <div className="gradient-shadow"></div>
           </div>
 
-          {/* --- بخش پایین کارت (محتوا) --- */}
           <div className="card-body-compact">
             <div className="info-header">
               <h3 className="user-name-age">{user.name}, {calculateAge(user.birthday)}</h3>
               <span className="location-tiny">📍 {user.location?.city || "N/A"}</span>
             </div>
 
-            {/* تگ‌ها (فقط ۲ تا برای شلوغ نشدن) */}
-            <div className="tags-compact">
-              {user.interests?.slice(0, 2).map((tag, i) => (
-                <span key={i} className="tiny-tag">
-                  <span className="star-symbol">✦</span> {tag}
-                </span>
-              ))}
-            </div>
 
-            {/* دکمه مشاهده پروفایل */}
             <button className="view-profile-compact" onClick={goToProfile}>
               View Profile
             </button>
