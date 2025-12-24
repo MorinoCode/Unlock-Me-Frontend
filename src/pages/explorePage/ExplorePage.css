@@ -10,7 +10,7 @@
 .explore-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 40px;
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -91,3 +91,16 @@
 }
 .locked-more-card:hover { transform: translateY(-8px); border-color: #a78bfa; }
 .lock-circle { font-size: 3rem; margin-bottom: 15px; }
+
+@media screen and (max-width: 409px) {
+  .plan-badge{
+    padding: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+  }
+ .plan-badge span{
+  font-size: 10px;
+ }
+}
