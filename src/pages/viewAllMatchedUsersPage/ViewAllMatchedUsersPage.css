@@ -1,5 +1,3 @@
-/* ViewAllMatchedUsersPage.css */
-
 .va-page-wrapper {
   padding: 2rem 5% 8rem 5%;
   width: 100%;
@@ -36,7 +34,7 @@
 }
 
 .va-main-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(1.8rem, 5vw, 3.5rem);
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -1px;
@@ -52,8 +50,9 @@
 
 .va-results-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  /* بهینه سازی برای نمایش حداکثری کارت در دسکتاپ و تبلت بزرگ */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
   width: 100%;
   justify-items: center;
   align-items: start;
@@ -61,8 +60,9 @@
 
 .va-card-item {
   width: 100%;
-  max-width: 320px;
+  /* حذف محدودیت عرضی صلب برای انعطاف پذیری در گرید */
   display: flex;
+  justify-content: center;
 }
 
 .va-card-item > * {
@@ -73,28 +73,49 @@
   margin-top: 4rem;
 }
 
-/* ریسپانسیو اختصاصی برای گرید و موبایل */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1024px) {
   .va-page-wrapper {
-    padding: 1.5rem 1.5rem 6rem 1.5rem;
+    padding: 2rem 3% 6rem 3%;
+  }
+  .va-results-grid {
+    /* در تبلت ها کارت ها را کمی کوچک تر نگه می داریم تا تعداد بیشتری جا شوند */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 768px) {
+  .va-page-wrapper {
+    padding: 1.5rem 2% 5rem 2%;
+  }
   .va-results-grid {
-    grid-template-columns: repeat(2, 1fr); 
+    /* اجبار به نمایش حداقل 2 یا 3 کارت بسته به عرض */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 12px;
   }
 }
 
-@media screen and (max-width: 409px) {
-  /* اگر موبایل خیلی کوچک بود و ۲ ستونه جا نمی‌شد */
-  .va-results-grid {
-    /* grid-template-columns: 1fr; */ /* بنا به سلیقه می‌توانید ۱ ستونه کنید */
-    justify-items: center;
+@media screen and (max-width: 480px) {
+  .va-page-wrapper {
+    padding: 1rem 10px 4rem 10px;
   }
-  
-  .va-card-item {
-    max-width: 100%;
+  .va-results-grid {
+    /* نمایش قطعی 2 کارت در هر ردیف برای موبایل های معمولی */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .va-main-title {
+    font-size: 1.5rem;
+  }
+  .va-back-btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+}
+
+@media screen and (max-width: 340px) {
+  .va-results-grid {
+    /* برای موبایل های خیلی کوچک (مثل آیفون SE قدیمی) برای جلوگیری از له شدن محتوا */
+    grid-template-columns: 1fr;
   }
 }

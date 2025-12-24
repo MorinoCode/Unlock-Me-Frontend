@@ -1,19 +1,22 @@
 .explore-page-container {
   min-height: 100vh;
-  background-color: #0f172a;
+  background-color: transparent;
   color: #f8fafc;
   padding: 30px 20px 90px 20px;
   overflow-x: hidden;
+  position: relative;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Header */
 .explore-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
   padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .header-text h1 {
@@ -26,20 +29,30 @@
   line-height: 1.2;
 }
 
-.header-text p { color: #94a3b8; margin-top: 5px; font-size: 1rem; }
+.header-text p {
+  color: #94a3b8;
+  margin-top: 5px;
+  font-size: 1rem;
+}
 
 .plan-badge {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 8px 16px;
   border-radius: 20px;
   color: #cbd5e1;
 }
 
-.plan-badge span { color: #a78bfa; font-weight: 800; margin-left: 4px; }
+.plan-badge span {
+  color: #a78bfa;
+  font-weight: 800;
+  margin-left: 4px;
+}
 
-/* Sections */
-.explore-section { margin-bottom: 40px; }
+.explore-section {
+  margin-bottom: 40px;
+}
 
 .section-header-wrapper {
   display: flex;
@@ -56,14 +69,23 @@
   gap: 10px;
 }
 
-.section-subtitle { color: #64748b; font-size: 0.9rem; margin-top: 5px; }
-
-.see-all-btn {
-  background: transparent; border: none;
-  color: #a78bfa; font-weight: 600; cursor: pointer;
+.section-subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-top: 5px;
 }
 
-/* Horizontal Scroll */
+.see-all-btn {
+  background: transparent;
+  border: none;
+  color: #a78bfa;
+  font-weight: 600;
+  cursor: pointer;
+}
+.see-all-btn:hover{
+  transform: scale(1.2);
+}
+
 .horizontal-scroll {
   display: flex;
   overflow-x: auto;
@@ -71,14 +93,17 @@
   padding-bottom: 20px;
   scrollbar-width: none;
 }
-.horizontal-scroll::-webkit-scrollbar { display: none; }
 
-/* Gold Locked Card */
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .locked-more-card {
   min-width: 240px;
   height: 380px;
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
-  border: 2px dashed rgba(167, 139, 250, 0.4);
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(12px);
+  border: 2px dashed rgba(167, 139, 250, 0.3);
   border-radius: 24px;
   display: flex;
   flex-direction: column;
@@ -89,18 +114,29 @@
   cursor: pointer;
   transition: transform 0.3s;
 }
-.locked-more-card:hover { transform: translateY(-8px); border-color: #a78bfa; }
-.lock-circle { font-size: 3rem; margin-bottom: 15px; }
+
+.locked-more-card:hover {
+  transform: translateY(-8px);
+  border-color: #a78bfa;
+}
+
+.lock-circle {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
 
 @media screen and (max-width: 409px) {
-  .plan-badge{
+  .plan-badge {
     padding: 6px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 10px;
   }
- .plan-badge span{
-  font-size: 10px;
- }
+  .plan-badge span {
+    font-size: 10px;
+  }
+  .header-text h1 {
+    font-size: 2.2rem;
+  }
 }

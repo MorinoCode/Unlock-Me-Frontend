@@ -11,10 +11,10 @@ const STATIC_STARS = Array.from({ length: 50 }).map((_, i) => ({
   scale: Math.random() * 0.7 + 0.3,
 }));
 
-const STATIC_HEARTS = Array.from({ length: 15 }).map((_, i) => ({
+const STATIC_HEARTS = Array.from({ length: 2 }).map((_, i) => ({
   id: i,
   left: `${Math.random() * 100}%`,
-  delay: `${Math.random() * 10}s`,
+  delay: `${Math.random() * 60}s`,
   duration: `${10 + Math.random() * 10}s`,
   opacity: Math.random() * 0.5 + 0.2,
 }));
