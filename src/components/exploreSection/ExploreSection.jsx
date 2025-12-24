@@ -1,51 +1,99 @@
 import React from "react";
-import UserCard from "../userCard/UserCard"; 
+import UserCard from "../userCard/UserCard";
+import EmptyStateCard from "../emptyState/EmptyStateCard";
+import PremiumLockCard from "../premiumLock/PremiumLockCard";
+import { 
+  getSoulmatePermissions, 
+  getVisibilityThreshold 
+} from "../../utils/subscriptionRules";
 
-const ExploreSection = ({ 
-  title, 
-  subtitle, 
-  data, 
-  limitKey, 
-  userPlan, 
-  onViewAll 
-}) => {
+const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate }) => {
+  let displayedUsers = users || [];
   
-  const previewLimits = {
-    free: { city: 15, interest: 12, country: 20 },
-    gold: { city: 50, interest: 40, country: 100 },      
-    platinum: { city: 999, interest: 999, country: 999 } 
-  };
+  if (type === "soulmates") {
+    const { isLocked, limit } = getSoulmatePermissions(userPlan);
 
-  const currentLimit = previewLimits[userPlan]?.[limitKey] || 10;
-  const displayData = data.slice(0, 20); 
+    if (isLocked) {
+      return (
+        <div className="explore-section">
+          <div className="section-header-wrapper">
+            <div className="section-header-group">
+              <h2 className="section-title">{title}</h2>
+              <p className="section-subtitle">{subtitle}</p>
+            </div>
+          </div>
+          <PremiumLockCard onUnlock={() => navigate("/upgrade")} />
+        </div>
+      );
+    }
+
+    const visibleUsers = displayedUsers.slice(0, limit);
+    const remainingCount = Math.max(0, displayedUsers.length - limit);
+
+    return (
+      <div className="explore-section">
+        <div className="section-header-wrapper">
+          <div className="section-header-group">
+            <h2 className="section-title">
+              {title} <span className="count">({displayedUsers.length})</span>
+            </h2>
+            <p className="section-subtitle">{subtitle}</p>
+          </div>
+          {link && <button className="see-all-btn" onClick={() => navigate(link)}>See More</button>}
+        </div>
+
+        <div className="horizontal-scroll">
+          {displayedUsers.length > 0 ? (
+            <>
+              {visibleUsers.map((user) => (
+                <UserCard key={user._id} user={user} isLocked={false} userPlan={userPlan} />
+              ))}
+              {userPlan === "gold" && remainingCount > 0 && (
+                <div className="locked-more-card" onClick={() => navigate("/upgrade")}>
+                  <div className="lock-circle">💎</div>
+                  <h3>+{remainingCount} More</h3>
+                  <p>Upgrade to Platinum for 90%+ matches</p>
+                </div>
+              )}
+            </>
+          ) : (
+            <EmptyStateCard type="soulmates" />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const scoreThreshold = getVisibilityThreshold(userPlan);
+  displayedUsers = displayedUsers.filter(u => (u.matchScore || 0) <= scoreThreshold);
 
   return (
-    <section className="explore-section">
-      <div className="section-info">
-        <div className="title-area">
-          <h2>{title}</h2>
-          <p className="subtitle">{subtitle}</p>
+    <div className="explore-section">
+      <div className="section-header-wrapper">
+        <div className="section-header-group">
+          <h2 className="section-title">
+            {title} <span className="count">({displayedUsers.length})</span>
+          </h2>
+          <p className="section-subtitle">{subtitle}</p>
         </div>
-        <button className="view-all" onClick={() => onViewAll(limitKey)}>
-          See More
-        </button>
+        {link && <button className="see-all-btn" onClick={() => navigate(link)}>See More</button>}
       </div>
-
-      <div className="horizontal-scroll-container">
-        {displayData.length > 0 ? (
-          displayData.map((match, index) => (
+      
+      <div className="horizontal-scroll">
+        {displayedUsers.length > 0 ? (
+          displayedUsers.map((user) => (
             <UserCard 
-              key={match._id} 
-              user={match} 
-              isLocked={index >= currentLimit} 
+              key={user._id} 
+              user={user} 
+              isLocked={false} 
               userPlan={userPlan}
             />
           ))
         ) : (
-          <div className="empty-state">No new profiles found in this category.</div>
+          <EmptyStateCard type={type === "city" ? "cityMatches" : "default"} />
         )}
       </div>
-    </section>
+    </div>
   );
 };
 
