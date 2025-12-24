@@ -35,6 +35,14 @@ const ChatPage = () => {
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
+  const formatMsgTime = (dateString) => {
+    return new Date(dateString).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
   useEffect(() => {
     setIsSyncing(true);
     const loadChat = async () => {
@@ -207,6 +215,7 @@ const ChatPage = () => {
                     {m.text && <p className="msg-text-p">{m.text}</p>}
                     
                     <div className="msg-info-footer">
+                      <span className="msg-time-v2">{formatMsgTime(m.createdAt)}</span>
                        {m.reactions?.length > 0 && (
                         <div className="reactions-display">
                           {m.reactions.map((r, i) => <span key={i}>{r.emoji}</span>)}
