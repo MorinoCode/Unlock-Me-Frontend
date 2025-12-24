@@ -1,4 +1,5 @@
-/* Container اصلی که روی BackgroundLayout قرار می‌گیرد */
+/* ViewAllMatchedUsersPage.css */
+
 .va-page-wrapper {
   padding: 2rem 5% 8rem 5%;
   width: 100%;
@@ -49,10 +50,8 @@
   margin-bottom: 3rem;
 }
 
-/* ✅ راه حل قطعی برای گرید */
 .va-results-grid {
   display: grid;
-  /* ستون‌بندی داینامیک: تضمین می‌کند که کارت‌ها کنار هم باشند */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   width: 100%;
@@ -60,76 +59,42 @@
   align-items: start;
 }
 
-/* نگهدارنده هر کارت برای جلوگیری از ۱۰۰٪ شدن عرض */
 .va-card-item {
   width: 100%;
-  max-width: 320px; /* حداکثر عرض هر کارت */
+  max-width: 320px;
   display: flex;
 }
 
-/* اطمینان از اینکه UserCard خودش را با نگهدارنده ست می‌کند */
 .va-card-item > * {
   width: 100% !important;
-}
-
-.va-pagination-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
-  margin: 5rem 0;
-  padding: 20px;
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 24px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.va-pagination-nav button {
-  background: #6366f1;
-  color: white;
-  border: none;
-  padding: 12px 28px;
-  border-radius: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.va-pagination-nav button:disabled {
-  background: #334155;
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.va-page-info {
-  font-weight: 600;
-  color: #cbd5e1;
 }
 
 .va-footer-upgrade-area {
   margin-top: 4rem;
 }
 
-/* ریسپانسیو اختصاصی */
+/* ریسپانسیو اختصاصی برای گرید و موبایل */
 @media screen and (max-width: 768px) {
   .va-page-wrapper {
     padding: 1.5rem 1.5rem 6rem 1.5rem;
   }
 }
 
-@media screen and (max-width: 409px) {
+@media screen and (max-width: 480px) {
   .va-results-grid {
-    grid-template-columns: 1fr; /* در موبایل خیلی کوچک زیر هم باشند */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px;
+  }
+}
+
+@media screen and (max-width: 409px) {
+  /* اگر موبایل خیلی کوچک بود و ۲ ستونه جا نمی‌شد */
+  .va-results-grid {
+    /* grid-template-columns: 1fr; */ /* بنا به سلیقه می‌توانید ۱ ستونه کنید */
     justify-items: center;
   }
   
   .va-card-item {
     max-width: 100%;
-  }
-
-  .va-pagination-nav {
-    flex-direction: column;
-    gap: 15px;
   }
 }

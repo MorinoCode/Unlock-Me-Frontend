@@ -1,4 +1,6 @@
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+import "./Pagination.css"
+
+export const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;
 
   return (

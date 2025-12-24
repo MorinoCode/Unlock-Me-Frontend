@@ -1,0 +1,52 @@
+/* Pagination.css */
+
+.va-pagination-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin: 5rem 0;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.va-pagination-nav button {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.va-pagination-nav button:disabled {
+  background: #334155;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.va-page-info {
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+@media screen and (max-width: 409px) {
+  .va-pagination-nav {
+    padding: 10px 2px;
+  }
+  .va-pagination-nav {
+    gap: 10px;
+  }
+  .va-pagination-nav button {
+    padding: 7px 15px;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+}
