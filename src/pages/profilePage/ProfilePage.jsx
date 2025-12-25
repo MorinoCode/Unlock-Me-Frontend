@@ -13,7 +13,7 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("general");
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
 
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
