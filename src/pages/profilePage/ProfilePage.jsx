@@ -13,7 +13,7 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("general");
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
 
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -87,7 +87,7 @@ const ProfilePage = () => {
     const fetchFullProfile = async () => {
       if (!currentUser?._id) return;
       try {
-        const res = await fetch(`${API_URL}/api/users/user/${currentUser._id}`, { credentials: "include" });
+        const res = await fetch(`${API_URL}/api/user/user/${currentUser._id}`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           const serverCountry = data.location?.country || data.country || "";

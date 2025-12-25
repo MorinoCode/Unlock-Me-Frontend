@@ -3,11 +3,12 @@
   background: #020617;
   color: #fff;
   padding-bottom: 140px;
+  
 }
 
 .sticky-close-btn {
   position: sticky;
-  top: 20px;
+  top: 80px;
   left: 20px;
   width: 45px;
   height: 45px;
@@ -24,6 +25,7 @@
 }
 
 .profile-hero-section {
+
   padding: 40px 20px;
   display: flex;
   flex-direction: column;
@@ -36,7 +38,7 @@
   position: relative;
   width: 220px;
   height: 220px;
-  margin-bottom: 25px;
+  margin: 40px 0;
 }
 
 .circle-avatar {
