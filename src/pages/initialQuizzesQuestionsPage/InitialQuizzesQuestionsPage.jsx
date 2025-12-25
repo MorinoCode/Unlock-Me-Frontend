@@ -4,7 +4,6 @@ import BackgroundLayout from "../../components/layout/backgroundLayout/Backgroun
 import QuizProgressBar from "../../components/quizProgressBar/QuizProgressBar.jsx";
 import QuizCard from "../../components/quizCard/QuizCard.jsx";
 import "./InitialQuizzesQuestionsPage.css";
-//new
 
 const InitialQuizzesQuestionsPage = () => {
   const navigate = useNavigate();
@@ -105,9 +104,9 @@ const InitialQuizzesQuestionsPage = () => {
   if (loading) {
     return (
       <BackgroundLayout>
-        <div className="quiz-loader-container">
-          <div className="quiz-spinner"></div>
-          <p>Preparing your personal quiz...</p>
+        <div className="quiz-loader">
+          <div className="quiz-loader__spinner"></div>
+          <p className="quiz-loader__text">Preparing your personal quiz...</p>
         </div>
       </BackgroundLayout>
     );
@@ -120,15 +119,19 @@ const InitialQuizzesQuestionsPage = () => {
 
   return (
     <BackgroundLayout>
-      <div className="quiz-page-wrapper">
-        <QuizProgressBar progress={progress} />
+      <div className="quiz-page">
+        <div className="quiz-page__progress-section">
+            <QuizProgressBar progress={progress} />
+        </div>
         
-        <QuizCard 
-          question={currentQuestion} 
-          onAnswer={handleAnswer} 
-          currentIndex={currentIndex} 
-          totalQuestions={allQuestions.length} 
-        />
+        <div className="quiz-page__card-section">
+            <QuizCard 
+              question={currentQuestion} 
+              onAnswer={handleAnswer} 
+              currentIndex={currentIndex} 
+              totalQuestions={allQuestions.length} 
+            />
+        </div>
       </div>
     </BackgroundLayout>
   );

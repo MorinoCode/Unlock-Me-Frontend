@@ -1,4 +1,5 @@
-.compact-user-card {
+/* Block: .user-card */
+.user-card {
   position: relative;
   width: 240px;      
   height: 350px;     
@@ -15,26 +16,28 @@
   flex-direction: column;
 }
 
-.compact-user-card:hover {
+.user-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
   border-color: rgba(139, 92, 246, 0.3);
 }
 
-/* --- بش عکس --- */
-.card-media-wrapper {
+/* Element: .user-card__media */
+.user-card__media {
   position: relative;
   width: 100%;
   height: 62%; 
 }
 
-.user-img-cover {
+/* Element: .user-card__image */
+.user-card__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.gradient-shadow {
+/* Element: .user-card__shadow */
+.user-card__shadow {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -44,7 +47,8 @@
   pointer-events: none;
 }
 
-.like-btn-compact {
+/* Element: .user-card__like-btn */
+.user-card__like-btn {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -62,12 +66,19 @@
   transition: all 0.2s;
 }
 
-.like-btn-compact:hover {
+.user-card__like-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
 
-.heart-svg {
+/* Modifier: .user-card__like-btn--active */
+.user-card__like-btn--active {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: white;
+}
+
+/* Element: .user-card__heart-svg */
+.user-card__heart-svg {
   width: 20px;
   height: 20px;
   fill: none;
@@ -76,17 +87,19 @@
   transition: all 0.3s;
 }
 
-.like-btn-compact.is-liked {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: white;
+/* Element: .user-card__heart-path */
+.user-card__heart-path {
+  /* Inherits styles from SVG, but class exists for specificity if needed */
 }
 
-.like-btn-compact.is-liked .heart-svg {
+/* Nested Modifier Styling */
+.user-card__like-btn--active .user-card__heart-svg {
   fill: #ef4444;
   stroke: #ef4444;
 }
 
-.match-badge-compact {
+/* Element: .user-card__match-badge */
+.user-card__match-badge {
   position: absolute;
   bottom: 10px;
   right: 10px;
@@ -101,13 +114,28 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.match-val {
+/* Modifiers for match badge */
+.user-card__match-badge--high {
+  background: rgba(16, 185, 129, 0.85); 
+  border-color: #34d399;
+}
+.user-card__match-badge--mid {
+  background: rgba(245, 158, 11, 0.85); 
+  border-color: #fbbf24;
+}
+.user-card__match-badge--low {
+  background: rgba(100, 116, 139, 0.85); 
+}
+
+/* Element: .user-card__match-score */
+.user-card__match-score {
   font-size: 0.6rem;
   font-weight: 800;
   color: #fff;
 }
 
-.match-lbl {
+/* Element: .user-card__match-label */
+.user-card__match-label {
   font-size: 0.5rem;
   font-weight: 700;
   margin-top: 2px;
@@ -115,19 +143,8 @@
   letter-spacing: 0.5px;
 }
 
-.match-badge-compact.match-high {
-  background: rgba(16, 185, 129, 0.85); 
-  border-color: #34d399;
-}
-.match-badge-compact.match-mid {
-  background: rgba(245, 158, 11, 0.85); 
-  border-color: #fbbf24;
-}
-.match-badge-compact.match-low {
-  background: rgba(100, 116, 139, 0.85); 
-}
-
-.card-body-compact {
+/* Element: .user-card__body */
+.user-card__body {
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -136,11 +153,13 @@
   background: rgba(15, 23, 42, 0.4);
 }
 
-.info-header {
+/* Element: .user-card__info */
+.user-card__info {
   margin-bottom: 5px;
 }
 
-.user-name-age {
+/* Element: .user-card__name */
+.user-card__name {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
@@ -150,20 +169,16 @@
   text-overflow: ellipsis;
 }
 
-.location-tiny {
+/* Element: .user-card__location */
+.user-card__location {
   font-size: 0.75rem;
   color: #94a3b8;
   display: block;
   margin-top: 2px;
 }
 
-
-
-
-
-.star-symbol { color: #8b5cf6; font-size: 0.7rem; }
-
-.view-profile-compact {
+/* Element: .user-card__action-btn */
+.user-card__action-btn {
   width: 100%;
   margin-top: 10px;
   padding: 8px 0;
@@ -177,13 +192,14 @@
   transition: all 0.2s;
 }
 
-.view-profile-compact:hover {
+.user-card__action-btn:hover {
   filter: brightness(1.1);
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.card-lock-overlay {
+/* Element: .user-card__lock-overlay */
+.user-card__lock-overlay {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background: #0f172a;
@@ -193,32 +209,57 @@
   cursor: pointer;
   z-index: 20;
 }
-.lock-content { text-align: center; color: white; }
-.lock-emoji { font-size: 1.8rem; display: block; margin-bottom: 5px; }
 
+/* Element: .user-card__lock-content */
+.user-card__lock-content {
+  text-align: center;
+  color: white;
+}
+
+/* Element: .user-card__lock-icon */
+.user-card__lock-icon {
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Element: .user-card__lock-title */
+.user-card__lock-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Element: .user-card__lock-desc */
+.user-card__lock-desc {
+  margin: 5px 0 0;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* Mobile Responsive */
 @media (max-width: 480px) {
-  .compact-user-card {
+  .user-card {
     width: 160px; 
     height: 260px;
   }
   
-  .like-btn-compact {
+  .user-card__like-btn {
     width: 28px; height: 28px;
     top: 6px; right: 6px;
   }
   
-  .match-badge-compact {
+  .user-card__match-badge {
     padding: 2px 6px;
     bottom: 6px; right: 6px;
   }
   
-  .match-val { font-size: 0.75rem; }
-  .match-lbl { font-size: 0.4rem; }
+  .user-card__match-score { font-size: 0.75rem; }
+  .user-card__match-label { font-size: 0.4rem; }
   
-  .user-name-age { font-size: 0.85rem; }
+  .user-card__name { font-size: 0.85rem; }
   
-  
-  .view-profile-compact {
+  .user-card__action-btn {
     font-size: 0.75rem;
     padding: 6px 0;
   }

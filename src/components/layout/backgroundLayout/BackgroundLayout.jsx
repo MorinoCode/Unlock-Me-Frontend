@@ -4,17 +4,17 @@ import "./BackgroundLayout.css";
 
 const BackgroundLayout = ({ children }) => {
   return (
-    <div className="layout-container">
-      <div className="background-effects">
-        <div className="blob blob-purple"></div>
-        <div className="blob blob-green"></div>
-        <div className="blob blob-blue"></div>
-        <div className="grid-overlay"></div>
+    <div className="background-layout">
+      <div className="background-layout__effects">
+        <div className="background-layout__blob background-layout__blob--purple"></div>
+        <div className="background-layout__blob background-layout__blob--green"></div>
+        <div className="background-layout__blob background-layout__blob--blue"></div>
+        <div className="background-layout__grid-overlay"></div>
       </div>
 
       <FloatingCharacters />
 
-      <div className="content-wrapper">
+      <div className="background-layout__content">
         {children}
       </div>
     </div>

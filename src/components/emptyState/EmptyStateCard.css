@@ -1,3 +1,4 @@
+/* Block: .empty-state-card */
 .empty-state-card {
   min-width: 240px;
   height: 350px;
@@ -15,11 +16,11 @@
   transition: all 0.3s ease;
 }
 
-/* --- ✅ کلاس جدید برای حالت تمام عرض (مثل Premium Lock) --- */
-.empty-state-card.is-full-width {
+/* Modifier: .empty-state-card--full-width */
+.empty-state-card--full-width {
   width: 100%;
-  min-width: 100%; /* اجبار به گرفتن کل عرض */
-  height: 280px; /* ارتفاع متناسب‌تر */
+  min-width: 100%; /* Force full width */
+  height: 280px; /* More proportional height */
   margin-right: 0;
   background: radial-gradient(circle at center, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
   border-color: rgba(99, 102, 241, 0.3);
@@ -28,10 +29,10 @@
 .empty-state-card:hover {
   background: rgba(30, 41, 59, 0.6);
   border-color: rgba(99, 102, 241, 0.4);
-  
 }
 
-.empty-icon-circle {
+/* Element: .empty-state-card__icon-circle */
+.empty-state-card__icon-circle {
   width: 80px;
   height: 80px;
   background: rgba(255, 255, 255, 0.05);
@@ -43,34 +44,40 @@
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
 }
 
-.empty-emoji { font-size: 2.5rem; }
+/* Element: .empty-state-card__emoji */
+.empty-state-card__emoji {
+  font-size: 2.5rem;
+}
 
-.empty-state-card h3 {
+/* Element: .empty-state-card__title */
+.empty-state-card__title {
   color: #f1f5f9;
   font-size: 1.2rem;
   margin-bottom: 10px;
 }
 
-.empty-state-card p {
+/* Element: .empty-state-card__desc */
+.empty-state-card__desc {
   color: #94a3b8;
   font-size: 0.9rem;
   line-height: 1.5;
   margin-bottom: 20px;
-  max-width: 80%; /* جلوگیری از طولانی شدن متن در حالت تمام عرض */
+  max-width: 80%; /* Prevent text from getting too wide in full-width mode */
 }
 
-.empty-action-btn {
+/* Element: .empty-state-card__btn */
+.empty-state-card__btn {
   background: linear-gradient(90deg, #4f46e5, #7c3aed);
   color: white;
   border: none;
-  padding: 10px 30px; /* دکمه کمی عریض‌تر */
+  padding: 10px 30px; /* Slightly wider button */
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
-.empty-action-btn:hover {
+.empty-state-card__btn:hover {
   transform: scale(1.05);
   filter: brightness(1.1);
 }

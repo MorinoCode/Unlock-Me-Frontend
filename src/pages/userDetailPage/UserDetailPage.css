@@ -1,12 +1,11 @@
-.profile-detail-page {
+.user-profile {
   min-height: 100vh;
   background: #020617;
   color: #fff;
   padding-bottom: 140px;
-  
 }
 
-.sticky-close-btn {
+.user-profile__close-btn {
   position: sticky;
   top: 80px;
   left: 20px;
@@ -24,8 +23,7 @@
   justify-content: center;
 }
 
-.profile-hero-section {
-
+.user-profile__hero {
   padding: 40px 20px;
   display: flex;
   flex-direction: column;
@@ -34,23 +32,23 @@
   margin-top: -50px;
 }
 
-.hero-img-box {
+.user-profile__avatar-container {
   position: relative;
   width: 220px;
   height: 220px;
   margin: 40px 0;
 }
 
-.circle-avatar {
+.user-profile__avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50% !important;
+  border-radius: 50%;
   border: 4px solid #6366f1;
   box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
 }
 
-.match-badge-premium {
+.user-match-badge {
   position: absolute;
   bottom: 5px;
   right: 5px;
@@ -66,52 +64,52 @@
   z-index: 5;
 }
 
-.match-high-badge {
+.user-match-badge--high {
   background: #10b981;
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
 }
 
-.match-mid-badge {
+.user-match-badge--mid {
   background: #f59e0b;
   box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
 }
 
-.match-low-badge {
+.user-match-badge--low {
   background: #334155;
   box-shadow: 0 0 15px rgba(51, 65, 85, 0.5);
 }
 
-.mb-percent {
+.user-match-badge__percent {
   font-size: 1.2rem;
   font-weight: 900;
   color: #fff;
   line-height: 1;
 }
 
-.mb-label {
+.user-match-badge__label {
   font-size: 0.5rem;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.9);
   letter-spacing: 0.5px;
 }
 
-.hero-text-box {
+.user-profile__header-info {
   text-align: center;
 }
 
-.hero-text-box h1 {
+.user-profile__name {
   font-size: 2.5rem;
   font-weight: 900;
   margin-bottom: 5px;
 }
 
-.loc-display {
+.user-profile__location {
   color: #94a3b8;
   font-size: 1.1rem;
   margin-bottom: 15px;
 }
 
-.tag-gender-styled {
+.user-profile__gender-pill {
   display: inline-block;
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
   color: #a5b4fc;
@@ -125,13 +123,13 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.profile-scroll-content {
+.user-profile__scroll-container {
   max-width: 850px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-.detail-card {
+.user-detail-card {
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 25px;
@@ -139,29 +137,14 @@
   margin-bottom: 25px;
 }
 
-.detail-card-looking-for {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 28px;
-  margin-bottom: 25px;
-  padding: 25px;
+.user-detail-card--looking-for {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1rem;
 }
 
-.detail-card-looking-for .card-title {
-  margin-bottom: 0;
-  
-}
-.looking-for-pill--looking-for .user-looking-for-gender{
-  color: #ffffff;
-  font-weight: bold;
-}
-
-
-.card-title {
+.user-detail-card__title {
   font-size: 1.1rem;
   font-weight: 800;
   color: #a5b4fc;
@@ -170,51 +153,65 @@
   letter-spacing: 1px;
 }
 
-.gallery-masonry {
+.user-detail-card__title--inline {
+  margin-bottom: 0;
+}
+
+.user-gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 12px;
 }
 
-.gallery-img-wrapper {
+.user-gallery__item {
   aspect-ratio: 1/1;
   border-radius: 18px;
   overflow: hidden;
   background: #1e293b;
 }
 
-.gallery-img-wrapper img {
+.user-gallery__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: 0.4s;
 }
 
-.gallery-img-wrapper img:hover {
+.user-gallery__image:hover {
   transform: scale(1.1);
 }
 
-.info-double-grid {
+.user-gallery__empty {
+  color: #cbd5e1;
+  font-size: 1rem;
+}
+
+.user-profile__info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 25px;
 }
 
-.bio-text,
-.looking-for-pill--looking-for p {
+.user-detail-card__bio-text {
   line-height: 1.7;
   font-size: 1rem;
   color: #cbd5e1;
 }
 
-.interest-flow {
+.user-detail-card__pill-text {
+  color: #ffffff;
+  font-weight: bold;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.user-interests {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.modern-tag,
-.common-tag {
+.user-interests__tag {
   padding: 10px 20px;
   border-radius: 14px;
   font-size: 0.9rem;
@@ -224,22 +221,22 @@
   gap: 8px;
 }
 
-.t-star {
-  color: #6366f1;
-}
-
-.modern-tag {
+.user-interests__tag--modern {
   background: #1e293b;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.common-tag {
+.user-interests__tag--common {
   background: rgba(16, 185, 129, 0.1);
   color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-.action-bar-floating {
+.user-interests__icon {
+  color: #6366f1;
+}
+
+.user-actions {
   position: fixed;
   bottom: 30px;
   left: 50%;
@@ -256,7 +253,7 @@
   z-index: 1000;
 }
 
-.act-circle {
+.user-actions__btn {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -271,17 +268,17 @@
   color: #fff;
 }
 
-.active-like {
+.user-actions__btn--like-active {
   background: #ef4444 !important;
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
 }
 
-.active-dislike {
+.user-actions__btn--dislike-active {
   background: #334155 !important;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 }
 
-.act-main-chat {
+.user-actions__chat-btn {
   background: #6366f1;
   color: white;
   border: none;
@@ -294,25 +291,42 @@
   transition: 0.3s;
 }
 
-.act-main-chat:hover {
+.user-actions__chat-btn:hover {
   background: #4f46e5;
 }
 
 @media (max-width: 768px) {
-  .info-double-grid {
+  .user-profile__info-grid {
     grid-template-columns: 1fr;
   }
-  .action-bar-floating {
+  .user-actions {
     width: 92%;
     justify-content: space-between;
     padding: 10px;
   }
-  .act-main-chat {
+  .user-actions__chat-btn {
     padding: 0 20px;
     flex-grow: 1;
   }
-  .act-circle {
+  .user-actions__btn {
     width: 55px;
     height: 55px;
   }
+}
+
+.user-detail-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #020617;
+}
+
+.user-detail-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #fff;
+  background: #020617;
 }

@@ -44,24 +44,24 @@ const MyMatchesPage = () => {
     const displayList = list.slice(0, 20);
 
     return (
-      <section className="explore-section">
-        <div className="section-header-wrapper">
-          <div className="header-title-group">
-            <h2 className="section-title">{title}</h2>
-            <p className="section-subtitle">{subtitle}</p>
+      <section className="matches-section">
+        <div className="matches-section__header">
+          <div className="matches-section__title-group">
+            <h2 className="matches-section__title">{title}</h2>
+            <p className="matches-section__subtitle">{subtitle}</p>
           </div>
-          <button className="see-all-btn" onClick={() => navigate(`/mymatches/view-all/${type}`)}>
+          <button className="matches-section__see-all-btn" onClick={() => navigate(`/mymatches/view-all/${type}`)}>
             See All
           </button>
         </div>
 
-        <div className="horizontal-scroll">
+        <div className="matches-section__list">
           {isLockedForFree && userPlan === "free" ? (
-            <div className="locked-more-card" onClick={() => navigate("/upgrade")}>
-              <div className="lock-circle">🔒</div>
-              <h3 style={{fontSize: '1.1rem', marginBottom: '8px'}}>Who's interested?</h3>
-              <p style={{fontSize: '0.85rem', color: '#94a3b8', textAlign: 'center'}}>
-                Upgrade to <span>GOLD</span> to reveal people who already liked you!
+            <div className="locked-card" onClick={() => navigate("/upgrade")}>
+              <div className="locked-card__icon">🔒</div>
+              <h3 className="locked-card__title">Who's interested?</h3>
+              <p className="locked-card__text">
+                Upgrade to <span className="locked-card__highlight">GOLD</span> to reveal people who already liked you!
               </p>
             </div>
           ) : list.length > 0 ? (
@@ -75,15 +75,15 @@ const MyMatchesPage = () => {
                 />
               ))}
               {list.length > 20 && (
-                <div className="locked-more-card" onClick={() => navigate(`/mymatches/view-all/${type}`)}>
-                  <div className="lock-circle">✨</div>
-                  <p>View all {list.length} matches</p>
+                <div className="locked-card" onClick={() => navigate(`/mymatches/view-all/${type}`)}>
+                  <div className="locked-card__icon">✨</div>
+                  <p className="locked-card__text">View all {list.length} matches</p>
                 </div>
               )}
             </>
           ) : (
-            <div className="empty-state-modern-box">
-              <p>No connections here yet. Keep exploring!</p>
+            <div className="matches-section__empty">
+              <p className="matches-section__empty-text">No connections here yet. Keep exploring!</p>
             </div>
           )}
         </div>
@@ -92,35 +92,35 @@ const MyMatchesPage = () => {
   };
 
   if (loading) return (
-    <div className="loading-matches-screen">
-      <div className="match-spinner"></div>
-      <p>Finding your connections...</p>
+    <div className="matches-loading">
+      <div className="matches-loading__spinner"></div>
+      <p className="matches-loading__text">Finding your connections...</p>
     </div>
   );
 
   return (
     <ExploreBackgroundLayout>
-      <div className="explore-page-container">
-        <header className="explore-header">
-          <div className="header-text">
-            <h1>My Connections</h1>
-            <p>Managing your matches and likes</p>
+      <div className="matches-page">
+        <header className="matches-page__header">
+          <div className="matches-page__header-content">
+            <h1 className="matches-page__title">My Connections</h1>
+            <p className="matches-page__subtitle">Managing your matches and likes</p>
           </div>
-          <div className="plan-badge">
-            Plan: <span>{userPlan.toUpperCase()}</span>
+          <div className="matches-page__badge">
+            Plan: <span className="matches-page__badge-val">{userPlan.toUpperCase()}</span>
           </div>
         </header>
 
-        <div className="dashboard-content-scroll">
+        <div className="matches-page__content">
           {renderSection("Mutual Matches", data.mutualMatches, "mutual", "People you both liked each other")}
 
           {userPlan === "free" && (
-            <div className="promo-banner-card" onClick={() => navigate("/upgrade")}>
-              <div className="promo-text">
-                <h3>Unlock "Who Liked You"</h3>
-                <p>Users with Gold plan get 3x more connections.</p>
+            <div className="promo-card" onClick={() => navigate("/upgrade")}>
+              <div className="promo-card__content">
+                <h3 className="promo-card__title">Unlock "Who Liked You"</h3>
+                <p className="promo-card__desc">Users with Gold plan get 3x more connections.</p>
               </div>
-              <button className="promo-upgrade-btn">Go Gold</button>
+              <button className="promo-card__btn">Go Gold</button>
             </div>
           )}
 

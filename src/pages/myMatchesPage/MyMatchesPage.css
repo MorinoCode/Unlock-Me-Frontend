@@ -1,4 +1,5 @@
-.explore-page-container {
+/* Block: .matches-page */
+.matches-page {
   min-height: 100vh;
   background-color: transparent;
   color: #f8fafc;
@@ -10,7 +11,8 @@
   margin: 0 auto;
 }
 
-.explore-header {
+/* Element: .matches-page__header */
+.matches-page__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -19,7 +21,14 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.header-text h1 {
+/* Element: .matches-page__header-content */
+.matches-page__header-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Element: .matches-page__title */
+.matches-page__title {
   font-size: 3rem;
   font-weight: 800;
   margin: 0;
@@ -29,13 +38,15 @@
   line-height: 1.2;
 }
 
-.header-text p {
+/* Element: .matches-page__subtitle */
+.matches-page__subtitle {
   color: #94a3b8;
   margin-top: 5px;
   font-size: 1rem;
 }
 
-.plan-badge {
+/* Element: .matches-page__badge */
+.matches-page__badge {
   background: rgba(30, 41, 59, 0.4);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -44,38 +55,59 @@
   color: #cbd5e1;
 }
 
-.plan-badge span {
+/* Element: .matches-page__badge-val */
+.matches-page__badge-val {
   color: #a78bfa;
   font-weight: 800;
   margin-left: 4px;
 }
 
-.explore-section {
+/* Element: .matches-page__content */
+.matches-page__content {
+  /* Container for sections */
+}
+
+
+/* Block: .matches-section */
+.matches-section {
   margin-bottom: 40px;
 }
 
-.section-header-wrapper {
+/* Element: .matches-section__header */
+.matches-section__header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 20px;
 }
 
-.section-title {
+/* Element: .matches-section__title-group */
+.matches-section__title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Element: .matches-section__title */
+.matches-section__title {
   font-size: 1.5rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 10px;
+  margin: 0;
+  color: #fff;
 }
 
-.section-subtitle {
+/* Element: .matches-section__subtitle */
+.matches-section__subtitle {
   color: #64748b;
   font-size: 0.9rem;
   margin-top: 5px;
+  margin-bottom: 0;
 }
 
-.see-all-btn {
+/* Element: .matches-section__see-all-btn */
+.matches-section__see-all-btn {
   background: transparent;
   border: none;
   color: #a78bfa;
@@ -84,12 +116,13 @@
   transition: 0.3s;
 }
 
-.see-all-btn:hover {
+.matches-section__see-all-btn:hover {
   transform: scale(1.1);
   color: #c4b5fd;
 }
 
-.horizontal-scroll {
+/* Element: .matches-section__list */
+.matches-section__list {
   display: flex;
   overflow-x: auto;
   gap: 16px;
@@ -97,12 +130,29 @@
   scrollbar-width: none;
 }
 
-.horizontal-scroll::-webkit-scrollbar {
+.matches-section__list::-webkit-scrollbar {
   display: none;
 }
 
-/* Locked Card for Gold */
-.locked-more-card {
+/* Element: .matches-section__empty */
+.matches-section__empty {
+  width: 100%;
+  padding: 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+}
+
+/* Element: .matches-section__empty-text */
+.matches-section__empty-text {
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+}
+
+
+/* Block: .locked-card */
+.locked-card {
   min-width: 240px;
   height: 380px;
   background: rgba(30, 41, 59, 0.4);
@@ -117,21 +167,46 @@
   padding: 24px;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-align: center;
 }
 
-.locked-more-card:hover {
+.locked-card:hover {
   transform: translateY(-8px);
   border-color: #a78bfa;
   background: rgba(45, 55, 75, 0.6);
 }
 
-.lock-circle {
+/* Element: .locked-card__icon */
+.locked-card__icon {
   font-size: 3rem;
   margin-bottom: 15px;
 }
 
-/* Promo Banner */
-.promo-banner-card {
+/* Element: .locked-card__title */
+.locked-card__title {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  margin-top: 0;
+  color: #fff;
+}
+
+/* Element: .locked-card__text */
+.locked-card__text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  text-align: center;
+  margin: 0;
+}
+
+/* Element: .locked-card__highlight */
+.locked-card__highlight {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+
+/* Block: .promo-card */
+.promo-card {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
   border: 1px solid rgba(167, 139, 250, 0.2);
   border-radius: 24px;
@@ -141,9 +216,32 @@
   align-items: center;
   margin-bottom: 40px;
   backdrop-filter: blur(5px);
+  cursor: pointer;
 }
 
-.promo-upgrade-btn {
+/* Element: .promo-card__content */
+.promo-card__content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Element: .promo-card__title */
+.promo-card__title {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Element: .promo-card__desc */
+.promo-card__desc {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+/* Element: .promo-card__btn */
+.promo-card__btn {
   background: gold;
   color: #1e1b4b;
   border: none;
@@ -154,22 +252,14 @@
   transition: 0.3s;
 }
 
-.promo-upgrade-btn:hover {
+.promo-card__btn:hover {
   background: #c4b5fd;
   transform: translateY(-2px);
 }
 
-.empty-state-modern-box {
-  width: 100%;
-  padding: 40px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 20px;
-  color: #64748b;
-  font-style: italic;
-}
 
-.loading-matches-screen {
+/* Block: .matches-loading */
+.matches-loading {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -179,25 +269,33 @@
   color: #a78bfa;
 }
 
-.match-spinner {
+/* Element: .matches-loading__spinner */
+.matches-loading__spinner {
   width: 40px;
   height: 40px;
   border: 3px solid rgba(167, 139, 250, 0.1);
   border-top-color: #a78bfa;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: matches-loading-spin 1s linear infinite;
   margin-bottom: 15px;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes matches-loading-spin { to { transform: rotate(360deg); } }
 
+/* Element: .matches-loading__text */
+.matches-loading__text {
+  font-size: 1.1rem;
+}
+
+
+/* Media Queries */
 @media screen and (max-width: 768px) {
-  .header-text h1 { font-size: 2.2rem; }
-  .promo-banner-card { flex-direction: column; text-align: center; gap: 20px; }
+  .matches-page__title { font-size: 2.2rem; }
+  .promo-card { flex-direction: column; text-align: center; gap: 20px; }
 }
 
 @media screen and (max-width: 409px) {
-  .plan-badge {
+  .matches-page__badge {
     padding: 6px 12px;
     font-size: 11px;
   }

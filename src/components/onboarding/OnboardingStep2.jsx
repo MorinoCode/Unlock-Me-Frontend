@@ -58,9 +58,9 @@ const SearchableSelect = ({
   };
 
   return (
-    <div className="searchable-wrapper" ref={wrapperRef}>
+    <div className="searchable-select" ref={wrapperRef}>
       <input
-        className="onboarding-input"
+        className="searchable-select__input"
         type="text"
         value={searchTerm}
         placeholder={placeholder}
@@ -70,11 +70,11 @@ const SearchableSelect = ({
       />
 
       {isOpen && !disabled && filteredOptions.length > 0 && (
-        <ul className="searchable-list">
+        <ul className="searchable-select__list">
           {filteredOptions.map((opt, index) => (
             <li
               key={opt.isoCode || `${opt.name}-${index}`}
-              className="searchable-option"
+              className="searchable-select__option"
               onClick={() => handleSelect(opt)}
             >
               {renderOption ? renderOption(opt) : opt.name}
@@ -106,17 +106,17 @@ const OnboardingStep2 = ({
   const isNextDisabled = !formData.country || !formData.city;
 
   return (
-    <div className="step-content">
-      <h2>Where do you live?</h2>
+    <div className="onboarding-step">
+      <h2 className="onboarding-step__title">Where do you live?</h2>
 
-      <div className="location-inputs">
+      <div className="onboarding-step__input-group onboarding-step__input-group--location">
         {/* Country */}
         <SearchableSelect
           options={countries}
           value={formData.country}
           placeholder="Select or Type Country"
           renderOption={(c) => (
-            <span>
+            <span className="searchable-select__option-content">
               {c.flag} {c.name}
             </span>
           )}
@@ -157,13 +157,13 @@ const OnboardingStep2 = ({
         />
       </div>
 
-      <div className="onboarding-actions">
-        <button className="skip-btn" onClick={onBack}>
+      <div className="onboarding-step__actions">
+        <button className="onboarding-step__btn onboarding-step__btn--secondary" onClick={onBack}>
           Back
         </button>
 
         <button
-          className="next-btn"
+          className="onboarding-step__btn onboarding-step__btn--primary"
           onClick={onNext}
           disabled={isNextDisabled || loading}
         >

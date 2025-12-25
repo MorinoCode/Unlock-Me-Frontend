@@ -1,8 +1,10 @@
-/* توجه: .onboarding-page حذف شد چون BackgroundLayout جایگزین آن می‌شود */
+/* Block: .initial-quizzes (Layout handled by BackgroundLayout) */
+/* The layout wrapper .onboarding-page was removed as requested, so we focus on the card block styles. */
 
-.onboarding-card {
+/* Block: .initial-quizzes__card (Previously .onboarding-card) */
+.initial-quizzes__card {
   width: 100%;
-  max-width: 480px; /* سایز دقیق شما */
+  max-width: 480px;
   padding: 2.5rem;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.03);
@@ -10,20 +12,22 @@
   backdrop-filter: blur(12px);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   text-align: center;
-  /* فونت و رنگ برای اطمینان از نمایش صحیح */
   font-family: 'Inter', sans-serif;
   color: #e5e7eb;
 }
 
-.onboarding-card h2 {
+
+
+.initial-quizzes__card h2 {
   margin-bottom: 2rem;
   font-size: 1.8rem;
   font-weight: 700;
   color: #6366f1;
 }
 
+/* Mobile Responsive */
 @media (max-width: 480px) {
-  .onboarding-card {
+  .initial-quizzes__card {
     padding: 2rem 1.5rem;
   }
 }

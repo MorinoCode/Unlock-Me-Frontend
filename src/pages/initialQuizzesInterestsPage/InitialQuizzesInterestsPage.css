@@ -1,15 +1,9 @@
-.onboarding-interests-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #0f172a, #020617);
-  font-family: 'Inter', sans-serif;
-  color: #e5e7eb;
-}
+/* Block: .interests-page (Layout wrapper handled by BackgroundLayout, but keeping page specific styles if needed) */
+/* The layout is handled by BackgroundLayout component, so specific page background styles might not be needed here 
+   unless overriding. Focusing on the card content. */
 
-.onboarding-interests-card {
+/* Block: .interests-page__card */
+.interests-page__card {
   width: 100%;
   max-width: 480px;
   padding: 2.5rem;
@@ -21,21 +15,29 @@
   text-align: center;
 }
 
-.onboarding-interests-card h2 {
+/* Since the Header, Grid, and Actions are imported components, 
+   I am defining the BEM classes they SHOULD use here. 
+   You will need to ensure those components use these classes.
+*/
+
+/* Element: .interests-header__title (Previously .onboarding-interests-card h2) */
+.interests-header__title {
   margin-bottom: 0.5rem;
   font-size: 1.8rem;
   font-weight: 700;
   color: #6366f1;
 }
 
-.interests-subtitle {
+/* Element: .interests-header__subtitle (Previously .interests-subtitle) */
+.interests-header__subtitle {
   font-size: 0.95rem;
   color: #94a3b8;
   margin-bottom: 2rem;
   line-height: 1.5;
 }
 
-.interests-grid {
+/* Element: .interests-grid__container (Previously .interests-grid) */
+.interests-grid__container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
@@ -44,16 +46,17 @@
   padding: 8px;
 }
 
-.interests-grid::-webkit-scrollbar {
+.interests-grid__container::-webkit-scrollbar {
   width: 5px;
 }
 
-.interests-grid::-webkit-scrollbar-thumb {
+.interests-grid__container::-webkit-scrollbar-thumb {
   background: rgba(99, 102, 241, 0.3);
   border-radius: 10px;
 }
 
-.interest-item {
+/* Element: .interests-grid__item (Previously .interest-item) */
+.interests-grid__item {
   padding: 0.9rem;
   border-radius: 14px;
   background: rgba(15, 23, 42, 0.6);
@@ -67,33 +70,38 @@
   color: #cbd5e1;
 }
 
-.interest-item:hover {
+.interests-grid__item:hover {
   background: rgba(99, 102, 241, 0.1);
   border-color: rgba(99, 102, 241, 0.4);
   transform: translateY(-2px);
 }
 
-.interest-icon {
-  font-size: 1.3rem;
-}
-
-.interest-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.interest-item.selected {
+/* Modifier: .interests-grid__item--selected (Previously .interest-item.selected) */
+.interests-grid__item--selected {
   background: #6366f1;
   color: #ffffff;
   border-color: #818cf8;
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
 }
 
-.onboarding-interests-actions {
+/* Element: .interests-grid__icon (Previously .interest-icon) */
+.interests-grid__icon {
+  font-size: 1.3rem;
+}
+
+/* Element: .interests-grid__label (Previously .interest-label) */
+.interests-grid__label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Element: .interests-actions__wrapper (Previously .onboarding-interests-actions) */
+.interests-actions__wrapper {
   margin-top: 2.5rem;
 }
 
-.next-btn {
+/* Element: .interests-actions__btn (Previously .next-btn) */
+.interests-actions__btn {
   width: 100%;
   padding: 1.1rem;
   border-radius: 14px;
@@ -107,51 +115,50 @@
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
 }
 
-.next-btn:hover:not(:disabled) {
+.interests-actions__btn:hover:not(:disabled) {
   background: #4f46e5;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
 }
 
-.next-btn:disabled {
+.interests-actions__btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
   box-shadow: none;
 }
 
+/* Mobile Responsive */
 @media (max-width: 480px) {
-  .onboarding-interests-page {
-    padding: 1rem;
-  }
-
-  .onboarding-interests-card {
+  /* Using block class from parent page layout if needed, otherwise handled by card padding */
+  
+  .interests-page__card {
     padding: 1.5rem;
   }
 
-  .interests-grid {
+  .interests-grid__container {
     gap: 8px;
     padding: 4px;
     max-height: 400px;
   }
 
-  .interest-item {
+  .interests-grid__item {
     padding: 0.7rem 0.8rem;
     gap: 6px;
     border-radius: 12px;
   }
 
-  .interest-icon {
+  .interests-grid__icon {
     font-size: 1.1rem;
   }
 
-  .interest-label {
+  .interests-grid__label {
     font-size: 0.8rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .onboarding-interests-actions {
+  .interests-actions__wrapper {
     margin-top: 2rem;
   }
 }

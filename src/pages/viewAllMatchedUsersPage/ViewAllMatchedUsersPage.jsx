@@ -73,18 +73,18 @@ const ViewAllMatchedUsersPage = () => {
   const currentUsers = allUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage);
   const banners = getPromoBannerConfig(userPlan);
 
-  if (loading) return <div className="view-all-loading">Loading matches... 🔮</div>;
+  if (loading) return <div className="matches-view-loading"><span className="matches-view-loading__text">Loading matches... 🔮</span></div>;
 
   return (
     <ExploreBackgroundLayout>
-      <div className="va-page-wrapper">
-        <header className="va-header-section">
-          <button onClick={() => navigate(-1)} className="va-back-btn">← Back to Explore</button>
-          <h1 className="va-main-title">{category.replace("-", " ").toUpperCase()}</h1>
+      <div className="matches-view">
+        <header className="matches-view__header">
+          <button onClick={() => navigate(-1)} className="matches-view__back-button">← Back to Explore</button>
+          <h1 className="matches-view__title">{category.replace("-", " ").toUpperCase()}</h1>
         </header>
 
         {banners.showGold && (
-          <div className="va-top-promo-box">
+          <div className="matches-view__promo-container matches-view__promo-container--top">
             <PromoBanner 
               title="Unlock More with Gold 🏆" 
               desc="See higher matches and city unlocks." 
@@ -95,26 +95,28 @@ const ViewAllMatchedUsersPage = () => {
           </div>
         )}
 
-        <div className="va-results-grid">
+        <div className="matches-view__grid">
           {currentUsers.length > 0 ? (
             currentUsers.map((user) => (
-              <div key={user._id} className="va-card-item">
+              <div key={user._id} className="matches-view__grid-item">
                 <UserCard user={user} userPlan={userPlan} />
               </div>
             ))
           ) : (
-            <p className="va-no-data">No more matches found in this category.</p>
+            <p className="matches-view__empty-message">No more matches found in this category.</p>
           )}
         </div>
 
-        <Pagination 
-          currentPage={currentPage} 
-          totalPages={totalPages} 
-          onPageChange={(page) => setCurrentPage(page)} 
-        />
+        <div className="matches-view__pagination-wrapper">
+            <Pagination 
+            currentPage={currentPage} 
+            totalPages={totalPages} 
+            onPageChange={(page) => setCurrentPage(page)} 
+            />
+        </div>
 
         {banners.showPlatinum && (
-          <div className="va-footer-upgrade-area">
+          <div className="matches-view__promo-container matches-view__promo-container--bottom">
              <PromoBanner 
                 title="Go Platinum 💎" 
                 desc="Reveal 100% matches instantly!" 

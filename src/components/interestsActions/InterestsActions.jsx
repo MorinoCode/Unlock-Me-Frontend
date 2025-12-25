@@ -1,12 +1,13 @@
 import React from "react";
+import "./InterestsActions.css";
 
 const InterestsActions = ({ loading, disabled, onNext }) => {
   return (
-    <div className="onboarding-interests-actions">
+    <div className="interests-actions">
       <button
         onClick={onNext}
         disabled={disabled}
-        className="next-btn full-width"
+        className="interests-actions__btn interests-actions__btn--full-width"
       >
         {loading ? "Saving..." : "Continue"}
       </button>

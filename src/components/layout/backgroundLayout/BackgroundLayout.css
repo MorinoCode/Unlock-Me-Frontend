@@ -1,4 +1,5 @@
-.layout-container {
+/* Block: .background-layout */
+.background-layout {
   position: relative;
   min-height: 100vh;
   width: 100%;
@@ -10,7 +11,8 @@
   z-index: 0;
 }
 
-.background-effects {
+/* Element: .background-layout__effects */
+.background-layout__effects {
   position: absolute;
   top: 0;
   left: 0;
@@ -19,7 +21,8 @@
   z-index: -1; 
 }
 
-.blob {
+/* Element: .background-layout__blob */
+.background-layout__blob {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px); 
@@ -27,7 +30,8 @@
   animation: float 20s infinite alternate ease-in-out;
 }
 
-.blob-purple {
+/* Modifier: .background-layout__blob--purple */
+.background-layout__blob--purple {
   top: -10%;
   left: -10%;
   width: 50vw;
@@ -36,7 +40,8 @@
   animation-delay: 0s;
 }
 
-.blob-green {
+/* Modifier: .background-layout__blob--green */
+.background-layout__blob--green {
   bottom: -10%;
   right: -10%;
   width: 40vw;
@@ -46,7 +51,8 @@
   opacity: 0.3;
 }
 
-.blob-blue {
+/* Modifier: .background-layout__blob--blue */
+.background-layout__blob--blue {
   top: 40%;
   left: 40%;
   width: 30vw;
@@ -71,7 +77,8 @@
   }
 }
 
-.grid-overlay {
+/* Element: .background-layout__grid-overlay */
+.background-layout__grid-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -84,7 +91,8 @@
   pointer-events: none;
 }
 
-.content-wrapper {
+/* Element: .background-layout__content */
+.background-layout__content {
   position: relative;
   z-index: 10;
   width: 100%;
@@ -96,18 +104,18 @@
 
 /* 📱 Mobile Optimization */
 @media (max-width: 768px) {
-  .blob {
+  .background-layout__blob {
     filter: blur(60px); 
   }
   
-  .blob-purple {
+  .background-layout__blob--purple {
     width: 80vw;
     height: 80vw;
     top: -20%;
     left: -20%;
   }
   
-  .blob-green {
+  .background-layout__blob--green {
     width: 70vw;
     height: 70vw;
     bottom: -20%;

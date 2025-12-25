@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import "./onboardingSteps.css";
+
 const OnboardingStep4 = ({ formData, setFormData, onNext, onBack, loading }) => {
   const [image, setImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -52,11 +53,11 @@ const OnboardingStep4 = ({ formData, setFormData, onNext, onBack, loading }) => 
   const isNextDisabled = !formData.avatar;
 
   return (
-    <div className="step-content">
-      <h2>Upload profile picture</h2>
+    <div className="onboarding-step">
+      <h2 className="onboarding-step__title">Upload profile picture</h2>
       {showCropper ? (
-        <div className="cropper-container">
-          <div className="crop-area">
+        <div className="onboarding-step__cropper-container">
+          <div className="onboarding-step__crop-area">
             <Cropper
               image={image}
               crop={crop}
@@ -67,29 +68,41 @@ const OnboardingStep4 = ({ formData, setFormData, onNext, onBack, loading }) => 
               onZoomChange={setZoom}
             />
           </div>
-          <div className="cropper-controls">
-            <input type="range" value={zoom} min={1} max={3} step={0.1} onChange={(e) => setZoom(e.target.value)} />
-            <button className="confirm-btn" onClick={handleConfirmCrop}>Confirm Crop</button>
+          <div className="onboarding-step__cropper-controls">
+            <input 
+              type="range" 
+              value={zoom} 
+              min={1} 
+              max={3} 
+              step={0.1} 
+              onChange={(e) => setZoom(e.target.value)} 
+              className="onboarding-step__range-input"
+            />
+            <button className="onboarding-step__btn onboarding-step__btn--confirm" onClick={handleConfirmCrop}>Confirm Crop</button>
           </div>
         </div>
       ) : (
-        <label className="upload-wrapper">
-          <input type="file" accept="image/*" onChange={onFileChange} hidden />
+        <label className="onboarding-step__upload-wrapper">
+          <input type="file" accept="image/*" onChange={onFileChange} hidden className="onboarding-step__file-input" />
           {!formData.avatar ? (
-            <span className="upload-btn">Choose Photo</span>
+            <span className="onboarding-step__upload-placeholder">Choose Photo</span>
           ) : (
-            <div className="avatar-preview-wrapper">
-              <img src={URL.createObjectURL(formData.avatar)} alt="Preview" className="avatar-preview" />
-              <span className="change-photo">Change Photo</span>
+            <div className="onboarding-step__preview-wrapper">
+              <img src={URL.createObjectURL(formData.avatar)} alt="Preview" className="onboarding-step__preview-image" />
+              <span className="onboarding-step__change-text">Change Photo</span>
             </div>
           )}
         </label>
       )}
 
       {!showCropper && (
-        <div className="onboarding-actions">
-          <button className="skip-btn" onClick={onBack}>Back</button>
-          <button onClick={onNext} disabled={isNextDisabled || loading} className="next-btn">
+        <div className="onboarding-step__actions">
+          <button className="onboarding-step__btn onboarding-step__btn--secondary" onClick={onBack}>Back</button>
+          <button 
+            onClick={onNext} 
+            disabled={isNextDisabled || loading} 
+            className="onboarding-step__btn onboarding-step__btn--primary"
+          >
             {loading ? "Saving..." : "Finish"}
           </button>
         </div>

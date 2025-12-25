@@ -52,13 +52,13 @@ const EmptyStateCard = ({ type }) => {
   };
 
   return (
-    <div className={`empty-state-card ${isFullWidth ? "is-full-width" : ""}`}>
-      <div className="empty-icon-circle">
-        <span className="empty-emoji">{data.emoji}</span>
+    <div className={`empty-state-card ${isFullWidth ? "empty-state-card--full-width" : ""}`}>
+      <div className="empty-state-card__icon-circle">
+        <span className="empty-state-card__emoji">{data.emoji}</span>
       </div>
-      <h3>{data.title}</h3>
-      <p>{data.desc}</p>
-      <button className="empty-action-btn" onClick={handleShare}>
+      <h3 className="empty-state-card__title">{data.title}</h3>
+      <p className="empty-state-card__desc">{data.desc}</p>
+      <button className="empty-state-card__btn" onClick={handleShare}>
         {data.btnText}
       </button>
     </div>

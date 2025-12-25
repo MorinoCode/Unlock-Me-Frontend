@@ -1,10 +1,11 @@
 import React from "react";
-//quizBar
+import "./QuizProgressBar.css";
+
 const QuizProgressBar = ({ progress }) => {
   return (
-    <div className="quiz-progress-bar-container">
+    <div className="quiz-progress">
       <div 
-        className="quiz-progress-fill" 
+        className="quiz-progress__fill" 
         style={{ width: `${progress}%` }}
       ></div>
     </div>

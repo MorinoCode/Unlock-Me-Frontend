@@ -1,0 +1,18 @@
+/* Block: .quiz-progress */
+.quiz-progress {
+  width: 100%;
+  height: 8px; 
+  background-color: rgba(255, 255, 255, 0.1); 
+  border-radius: 999px; 
+  overflow: hidden;
+  margin-bottom: 1.5rem; 
+}
+
+/* Element: .quiz-progress__fill */
+.quiz-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6); 
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); 
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import CompatibilityChart from "../compatibilityChart/CompatibilityChart";
-import "./AIInsightSection.css"
+import "./AIInsightSection.css";
 
 const AIInsightSection = ({ user }) => {
   const score = user.matchScore || 0;
@@ -26,29 +26,29 @@ const AIInsightSection = ({ user }) => {
   };
 
   return (
-    <section className="detail-card ai-insight-card">
-      <div className="ai-header">
-        <span className="ai-icon">✨</span>
-        <h3 className="card-title">AI Behavioral Analysis</h3>
+    <section className="ai-insight">
+      <div className="ai-insight__header">
+        <span className="ai-insight__icon">✨</span>
+        <h3 className="ai-insight__title">AI Behavioral Analysis</h3>
       </div>
 
-      <div className="insight-content-wrapper">
-        <div className="insight-chart-side">
+      <div className="ai-insight__content">
+        <div className="ai-insight__chart-side">
           <CompatibilityChart dna={dna} />
         </div>
-        <div className="insight-text-side">
-          <div className="match-verdict">
-            <h4>Overall Compatibility</h4>
-            <p>{getMatchAnalysis(score)}</p>
+        <div className="ai-insight__text-side">
+          <div className="ai-insight__verdict">
+            <h4 className="ai-insight__heading">Overall Compatibility</h4>
+            <p className="ai-insight__verdict-text">{getMatchAnalysis(score)}</p>
           </div>
           
-          <div className="dna-deep-dive">
-            <h4>DNA Breakdown</h4>
-            <div className="dna-traits-list">
+          <div className="ai-insight__dna-section">
+            <h4 className="ai-insight__heading">DNA Breakdown</h4>
+            <div className="ai-insight__traits-list">
               {Object.entries(dna).map(([trait, value]) => (
-                <div key={trait} className="dna-trait-row">
-                  <span className="trait-label">{trait}:</span>
-                  <span className="trait-desc">{getDnaTraitDesc(trait, value)}</span>
+                <div key={trait} className="ai-insight__trait-row">
+                  <span className="ai-insight__trait-label">{trait}:</span>
+                  <span className="ai-insight__trait-desc">{getDnaTraitDesc(trait, value)}</span>
                 </div>
               ))}
             </div>
