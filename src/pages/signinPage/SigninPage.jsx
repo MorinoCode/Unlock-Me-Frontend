@@ -62,7 +62,7 @@ const SigninPage = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/users/signin`, {
+      const response = await fetch(`${API_URL}/api/user/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

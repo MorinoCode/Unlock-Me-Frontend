@@ -10,16 +10,18 @@ import HomePage from './pages/homePage/HomePage';
 import ExplorePage from './pages/explorePage/ExplorePage';
 import ViewAllMatchedUsersPage from './pages/viewAllMatchedUsersPage/ViewAllMatchedUsersPage.jsx';
 import UserDetailPage from './pages/userDetailPage/UserDetailPage.jsx';
-import MyMatchesPage from './pages/myMatchesPag/MyMatchesPage.jsx';
+import MyMatchesPage from './pages/myMatchesPage/MyMatchesPage.jsx';
 import ViewAllMatchesPage from './pages/viewAllMatchesPage/ViewAllMatchesPage.jsx';
 import ChatPage from './pages/chatPage/ChatPage.jsx';
 import MessagesPage from './pages/MessagesInboxPage/MessagesInboxPage.jsx';
 import ProfilePage from './pages/profilePage/ProfilePage.jsx';
+import Navbar from './components/navbar/Navbar.jsx';
 
 const App = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <Navbar/>
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/signup' element={<SignupPage />} />

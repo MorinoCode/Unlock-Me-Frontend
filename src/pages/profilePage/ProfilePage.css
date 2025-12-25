@@ -20,6 +20,7 @@
     display: flex !important;
     justify-content: center !important;
     overflow-y: auto !important;
+    
 }
 
 .pp-unique-layout {
@@ -28,6 +29,7 @@
     max-width: 1600px !important;
     padding: 40px !important;
     gap: 30px !important;
+    margin-top: 2rem !important;
 }
 
 .pp-unique-sidebar {
@@ -254,7 +256,7 @@
 .pp-unique-fullWidthBtn { width: 100% !important; }
 
 @media (max-width: 803px) {
-    .pp-unique-layout { flex-direction: column !important; padding: 15px !important; }
+    .pp-unique-layout { flex-direction: column !important; padding: 15px !important;  }
     .pp-unique-sidebar { width: 100% !important; min-width: unset !important; }
     .pp-unique-navMenu { flex-direction: row !important; overflow-x: auto !important; padding-bottom: 10px !important; width: 100% !important; }
     .pp-unique-navBtn { white-space: nowrap !important; }
