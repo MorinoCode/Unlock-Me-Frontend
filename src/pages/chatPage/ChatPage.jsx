@@ -18,6 +18,7 @@ const ChatPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
   const [activeActionId, setActiveActionId] = useState(null);
+  
 
   const scrollRef = useRef(null);
   const msgRefs = useRef({});
@@ -48,7 +49,7 @@ const ChatPage = () => {
     const loadChat = async () => {
       try {
         const [uRes, mRes] = await Promise.all([
-          fetch(`${API_URL}/api/users/user/${receiverId}`, { credentials: "include" }),
+          fetch(`${API_URL}/api/user/user/${receiverId}`, { credentials: "include" }),
           fetch(`${API_URL}/api/chat/${receiverId}`, { credentials: "include", cache: "no-store" })
         ]);
         if (uRes.ok) setReceiverUser(await uRes.json());
@@ -98,8 +99,9 @@ const ChatPage = () => {
     const target = msgRefs.current[msgId];
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "center" });
-      target.classList.add("highlight-msg");
-      setTimeout(() => target.classList.remove("highlight-msg"), 1000);
+      // BEM class for highlighting
+      target.classList.add("chat-page__row--highlight");
+      setTimeout(() => target.classList.remove("chat-page__row--highlight"), 1000);
     }
   };
 
@@ -166,22 +168,26 @@ const ChatPage = () => {
     }
   };
 
-  if (isSyncing) return <div className="inbox-loading-screen"><div className="spinner" /></div>;
+  if (isSyncing) return (
+    <div className="chat-page__loading">
+      <div className="chat-page__spinner" />
+    </div>
+  );
 
   return (
-    <div className="chat-page-v2">
-      <header className="chat-header-v2">
-        <button className="chat-v2-unique-back-btn" onClick={() => navigate(-1)}>←</button>
-        <div className="header-user-info">
-          <img src={receiverUser?.avatar || "/default-avatar.png"} alt="avatar" className="header-avatar" />
-          <div className="header-text-info">
-            <h3>{receiverUser?.name}</h3>
-            <p className="status-text">{isReceiverTyping ? "typing..." : "online"}</p>
+    <div className="chat-page">
+      <header className="chat-page__header">
+        <button className="chat-page__back-btn" onClick={() => navigate(-1)}>←</button>
+        <div className="chat-page__header-info">
+          <img src={receiverUser?.avatar || "/default-avatar.png"} alt="avatar" className="chat-page__header-avatar" onClick={() => navigate(`/user-profile/${receiverUser._id}`)} />
+          <div className="chat-page__header-text-wrapper">
+            <h3 className="chat-page__header-username">{receiverUser?.name}</h3>
+            <p className="chat-page__header-status">{isReceiverTyping ? "typing..." : "online"}</p>
           </div>
         </div>
       </header>
 
-      <div className="messages-scroll-area" onClick={() => setActiveActionId(null)}>
+      <div className="chat-page__messages-area" onClick={() => setActiveActionId(null)}>
         {messages.map((m, index) => {
           const isOwn = String(m.sender) === String(myId);
           const currentDate = new Date(m.createdAt).toDateString();
@@ -191,78 +197,81 @@ const ChatPage = () => {
           return (
             <React.Fragment key={m._id}>
               {showDivider && (
-                <div className="date-divider">
-                  <span>{formatDividerDate(m.createdAt)}</span>
+                <div className="chat-page__date-divider">
+                  <span className="chat-page__date-label">{formatDividerDate(m.createdAt)}</span>
                 </div>
               )}
-              <div ref={el => msgRefs.current[m._id] = el} className={`msg-row ${isOwn ? "own-msg" : "their-msg"}`}>
+              <div 
+                ref={el => msgRefs.current[m._id] = el} 
+                className={`chat-page__row ${isOwn ? "chat-page__row--own" : "chat-page__row--their"}`}
+              >
                 <div 
-                  className="msg-wrapper-v2" 
+                  className="chat-page__message-wrapper" 
                   onClick={(e) => {
                     e.stopPropagation();
                     if (window.innerWidth <= 768) setActiveActionId(activeActionId === m._id ? null : m._id);
                   }}
                 >
-                  <div className="msg-bubble-v2">
+                  <div className="chat-page__bubble">
                     {m.parentMessage && (
-                      <div className="replied-message-box" onClick={() => scrollToOriginal(m.parentMessage.messageId)}>
-                        <small>{m.parentMessage.senderName}</small>
-                        <p>{m.parentMessage.text || "Media"}</p>
+                      <div className="chat-page__reply-quote" onClick={() => scrollToOriginal(m.parentMessage.messageId)}>
+                        <small className="chat-page__reply-sender">{m.parentMessage.senderName}</small>
+                        <p className="chat-page__reply-text">{m.parentMessage.text || "Media"}</p>
                       </div>
                     )}
-                    {m.fileType === "image" && <img src={m.fileUrl} className="chat-img" alt="sent" onClick={() => setSelectedImg(m.fileUrl)} />}
-                    {m.fileType === "audio" && <audio src={m.fileUrl} controls className="chat-audio" />}
-                    {m.text && <p className="msg-text-p">{m.text}</p>}
+                    {m.fileType === "image" && <img src={m.fileUrl} className="chat-page__image" alt="sent" onClick={() => setSelectedImg(m.fileUrl)} />}
+                    {m.fileType === "audio" && <audio src={m.fileUrl} controls className="chat-page__audio" />}
+                    {m.text && <p className="chat-page__text">{m.text}</p>}
                     
-                    <div className="msg-info-footer">
-                      <span className="msg-time-v2">{formatMsgTime(m.createdAt)}</span>
-                       {m.reactions?.length > 0 && (
-                        <div className="reactions-display">
-                          {m.reactions.map((r, i) => <span key={i}>{r.emoji}</span>)}
+                    <div className="chat-page__meta">
+                      <span className="chat-page__time">{formatMsgTime(m.createdAt)}</span>
+                        {m.reactions?.length > 0 && (
+                        <div className="chat-page__reactions">
+                          {m.reactions.map((r, i) => <span key={i} className="chat-page__reaction-emoji">{r.emoji}</span>)}
                         </div>
                       )}
-                      {isOwn && <span className="read-status">{m.isRead ? "✓✓" : "✓"}</span>}
+                      {isOwn && <span className="chat-page__read-icon">{m.isRead ? "✓✓" : "✓"}</span>}
                     </div>
                   </div>
 
-                  <div className={`msg-actions ${activeActionId === m._id ? "force-show-mobile" : ""}`}>
-                    <span onClick={(e) => { e.stopPropagation(); addReaction(m._id, "❤️"); setActiveActionId(null); }}>❤️</span>
-                    <span onClick={(e) => { e.stopPropagation(); addReaction(m._id, "👍"); setActiveActionId(null); }}>👍</span>
-                    <span onClick={(e) => { e.stopPropagation(); setReplyingTo(m); setActiveActionId(null); }}>Reply</span>
+                  <div className={`chat-page__actions ${activeActionId === m._id ? "chat-page__actions--mobile-active" : ""}`}>
+                    <span className="chat-page__action-item" onClick={(e) => { e.stopPropagation(); addReaction(m._id, "❤️"); setActiveActionId(null); }}>❤️</span>
+                    <span className="chat-page__action-item" onClick={(e) => { e.stopPropagation(); addReaction(m._id, "👍"); setActiveActionId(null); }}>👍</span>
+                    <span className="chat-page__action-item" onClick={(e) => { e.stopPropagation(); setReplyingTo(m); setActiveActionId(null); }}>Reply</span>
                   </div>
                 </div>
               </div>
             </React.Fragment>
           );
         })}
-        <div ref={scrollRef} />
+        <div className="chat-page__scroll-anchor" ref={scrollRef} />
       </div>
 
       {selectedImg && (
-        <div className="lightbox" onClick={() => setSelectedImg(null)}>
-          <img src={selectedImg} alt="Enlarged" />
+        <div className="chat-page__lightbox" onClick={() => setSelectedImg(null)}>
+          <img src={selectedImg} alt="Enlarged" className="chat-page__lightbox-img" />
         </div>
       )}
 
-      <footer className="chat-input-container">
+      <footer className="chat-page__footer">
         {replyingTo && (
-          <div className="reply-preview-bar">
-            <div className="reply-content">
-              <span>Replying to {String(replyingTo.sender) === String(myId) ? "yourself" : receiverUser?.name}</span>
-              <p>{replyingTo.text || "Media"}</p>
+          <div className="chat-page__reply-preview">
+            <div className="chat-page__reply-content">
+              <span className="chat-page__reply-label">Replying to {String(replyingTo.sender) === String(myId) ? "yourself" : receiverUser?.name}</span>
+              <p className="chat-page__reply-preview-text">{replyingTo.text || "Media"}</p>
             </div>
-            <button className="cancel-reply" onClick={() => setReplyingTo(null)}>×</button>
+            <button className="chat-page__cancel-reply" onClick={() => setReplyingTo(null)}>×</button>
           </div>
         )}
-        <form className="input-form-v2" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
-          <label htmlFor="file-up" className="attach-btn-modern">📎</label>
-          <input type="file" id="file-up" hidden onChange={(e) => {
+        <form className="chat-page__form" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+          <label htmlFor="file-up" className="chat-page__attach-label">📎</label>
+          <input type="file" id="file-up" className="chat-page__file-input" hidden onChange={(e) => {
             const reader = new FileReader();
             reader.readAsDataURL(e.target.files[0]);
             reader.onloadend = () => handleSend(reader.result, e.target.files[0].type.startsWith("image") ? "image" : "file");
           }} />
           <input 
-            className="main-input-v2"
+            className="chat-page__input"
             value={newMessage} 
             onChange={(e) => {
               setNewMessage(e.target.value);
@@ -270,10 +279,10 @@ const ChatPage = () => {
             }} 
             placeholder="Type a message..." 
           />
-          <button type="button" onClick={toggleRecording} className={isRecording ? "mic-btn-modern rec-active" : "mic-btn-modern"}>
-            {isRecording ? "⏹" : "🎤"}
+          <button type="button" onClick={toggleRecording} className={`chat-page__mic-btn ${isRecording ? "chat-page__mic-btn--active" : ""}`}>
+            {isRecording ? "🎤" : "🎤"}
           </button>
-          <button type="submit" className="send-btn-v2">✦</button>
+          <button type="submit" className="chat-page__send-btn">✦</button>
         </form>
       </footer>
     </div>

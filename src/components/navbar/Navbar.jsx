@@ -1,107 +1,131 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/useAuth";
 import "./Navbar.css";
 
 const Navbar = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, setCurrentUser } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-  
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userAvatar, setUserAvatar] = useState("/default-avatar.png");
 
-  // ۱. تمام هوک‌ها باید در بالاترین سطح و بدون قید و شرط اجرا شوند
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [avatar, setAvatar] = useState("/default-avatar.png");
+
   useEffect(() => {
-    const fetchUserAvatar = async () => {
-      if (currentUser?._id) {
-        try {
-          const res = await fetch(`${API_URL}/api/users/user/${currentUser._id}`, { credentials: "include" });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.avatar) setUserAvatar(data.avatar);
-          }
-        } catch (err) {
-          console.error("Error fetching avatar:", err);
-        }
-      }
+    let lastY = window.scrollY;
+    let t;
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 10);
+      setHidden(y > lastY && y > 80);
+      lastY = y;
+      clearTimeout(t);
+      t = setTimeout(() => setHidden(false), 140);
     };
-    fetchUserAvatar();
-  }, [currentUser, API_URL]);
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinks = [
-    { name: "Explore", path: "/explore", icon: "🌍" },
-    { name: "Matches", path: "/mymatches", icon: "🔥" },
-    { name: "Messages", path: "/messages", icon: "💬" },
-  ];
+  useEffect(() => {
+    if (!currentUser?._id) return;
+    fetch(`${API_URL}/api/user/user/${currentUser._id}`, { credentials: "include" })
+      .then(r => r.json())
+      .then(d => d.avatar && setAvatar(d.avatar));
+  }, [currentUser, API_URL]);
 
-  // ۲. حالا که تمام هوک‌ها اجرا شدند، اجازه داریم شرط return را بگذاریم
-  if (location.pathname.startsWith("/chat")) {
-    return null; 
-  }
+  const signout = async () => {
+    await fetch(`${API_URL}/api/user/signout`, { method: "POST", credentials: "include" });
+    setCurrentUser(null);
+    navigate("/");
+  };
+
+  if (location.pathname.startsWith("/chat")) return null;
+
+  const links = currentUser
+    ? [
+        { to: "/explore", label: "Explore", icon: "🌍" },
+        { to: "/mymatches", label: "Matches", icon: "🔥" },
+        { to: "/messages", label: "Messages", icon: "💬" },
+      ]
+    : [
+        { to: "/how-it-works", label: "How it works", icon: "⚙️" },
+        { to: "/about", label: "About", icon: "ℹ️" },
+      ];
 
   return (
-    <nav className={`nav-unique-wrapper ${isScrolled ? "nav-unique-scrolled" : ""}`}>
-      <div className="nav-unique-container">
-        <div className="nav-unique-logoSection">
-          <Link to="/" className="nav-unique-logoLink" onClick={() => setMobileMenuOpen(false)}>
-            <span className="nav-unique-logoIcon">🔓</span>
-            <span className="nav-unique-logoMain">UNLOCK<span className="nav-unique-logoSub">ME</span></span>
+    <>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            className="navbar__overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.nav
+        className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}
+        animate={{ y: hidden ? -100 : 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="navbar__container">
+          <Link to="/" className="navbar__logo">
+            <span className="navbar__logo-text navbar__logo-text--main">UNLOCK</span>
+            <span className="navbar__logo-text navbar__logo-text--sub">ME</span>
           </Link>
-        </div>
 
-        <div className={`nav-unique-linksSection ${mobileMenuOpen ? "nav-unique-mobileOpen" : ""}`}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`nav-unique-linkItem ${location.pathname === link.path ? "nav-unique-active" : ""}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="nav-unique-linkIcon">{link.icon}</span>
-              <span className="nav-unique-linkText">{link.name}</span>
-            </Link>
-          ))}
-          
-          {currentUser && (
-            <Link 
-              to="/myprofile" 
-              className={`nav-unique-linkItem nav-unique-mobileOnlyLink ${location.pathname === "/myprofile" ? "nav-unique-active" : ""}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="nav-unique-linkIcon">👤</span>
-              <span className="nav-unique-linkText">My Profile</span>
-            </Link>
-          )}
-        </div>
+          <div className={`navbar__menu ${mobileOpen ? "navbar__menu--open" : ""}`}>
+            {links.map(l => (
+              <Link 
+                key={l.to} 
+                to={l.to} 
+                onClick={() => setMobileOpen(false)}
+                className={`navbar__link ${location.pathname === l.to ? "navbar__link--active" : ""}`}
+              >
+                {l.icon && <span className="navbar__icon" style={{ marginRight: '6px' }}>{l.icon}</span>}
+                <span className="navbar__label">{l.label}</span>
+              </Link>
+            ))}
 
-        <div className="nav-unique-profileSection">
-          {currentUser ? (
-            <Link to="/myprofile" className="nav-unique-userCard nav-unique-desktopOnlyAvatar">
-              <div className="nav-unique-avatarRing">
-                <img src={userAvatar} alt="Profile" className="nav-unique-avatarImg" />
-              </div>
-              <span className="nav-unique-userName">{currentUser.name || "Profile"}</span>
-            </Link>
-          ) : (
-            <Link to="/signin" className="nav-unique-loginBtn">Login</Link>
-          )}
-          
-          <button className="nav-unique-hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            <div className={`nav-unique-bar ${mobileMenuOpen ? "nav-unique-bar1" : ""}`}></div>
-            <div className={`nav-unique-bar ${mobileMenuOpen ? "nav-unique-bar2" : ""}`}></div>
-            <div className={`nav-unique-bar ${mobileMenuOpen ? "nav-unique-bar3" : ""}`}></div>
-          </button>
+            {currentUser ? (
+              <button onClick={signout} className="navbar__link navbar__link--logout">
+                <span className="navbar__icon" style={{ marginRight: '6px' }}>🚪</span>
+                <span className="navbar__label">Logout</span>
+              </button>
+            ) : (
+              <Link to="/signin" onClick={() => setMobileOpen(false)} className="navbar__link navbar__link--login">
+                <span className="navbar__icon" style={{ marginRight: '6px' }}>🔑</span>
+                <span className="navbar__label">Login</span>
+              </Link>
+            )}
+          </div>
+
+          <div className="navbar__actions">
+            {currentUser && (
+              <Link to="/myprofile" className="navbar__profile">
+                <img src={avatar} alt="" className="navbar__profile-avatar" />
+                <span className="navbar__profile-name">{currentUser.name}</span>
+              </Link>
+            )}
+
+            <button className="navbar__burger" onClick={() => setMobileOpen(s => !s)}>
+              <span className="navbar__burger-line" />
+              <span className="navbar__burger-line" />
+              <span className="navbar__burger-line" />
+            </button>
+          </div>
         </div>
-      </div>
-    </nav>
+      </motion.nav>
+    </>
   );
 };
 
