@@ -1,0 +1,124 @@
+/* Block: .soulmates-section */
+.soulmates-section {
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+/* Element: .soulmates-section__header */
+.soulmates-section__header {
+  margin-bottom: 20px;
+}
+
+/* Element: .soulmates-section__title-group */
+.soulmates-section__title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Element: .soulmates-section__title */
+.soulmates-section__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+/* Element: .soulmates-section__subtitle */
+.soulmates-section__subtitle {
+  color: #a5b4fc; /* رنگ بنفش روشن */
+  font-size: 0.9rem;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+/* Element: .soulmates-section__locked-card */
+.soulmates-section__locked-card {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border: 2px dashed rgba(167, 139, 250, 0.4);
+  border-radius: 24px;
+  background: radial-gradient(circle at center, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.soulmates-section__locked-card:hover {
+  border-color: #a78bfa;
+}
+
+/* Element: .soulmates-section__lock-glow */
+.soulmates-section__lock-glow {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  background: #6366f1;
+  filter: blur(80px);
+  opacity: 0.2;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Element: .soulmates-section__lock-icon */
+.soulmates-section__lock-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+  z-index: 1;
+}
+
+/* Element: .soulmates-section__locked-title */
+.soulmates-section__locked-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 10px 0;
+  z-index: 1;
+}
+
+/* Element: .soulmates-section__locked-desc */
+.soulmates-section__locked-desc {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin: 0 0 25px 0;
+  max-width: 80%;
+  z-index: 1;
+}
+
+/* Element: .soulmates-section__unlock-btn */
+.soulmates-section__unlock-btn {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 1;
+}
+
+.soulmates-section__unlock-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+}
+
+/* Element: .soulmates-section__list */
+.soulmates-section__list {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 20px;
+  scrollbar-width: none;
+}
+
+.soulmates-section__list::-webkit-scrollbar {
+  display: none;
+}

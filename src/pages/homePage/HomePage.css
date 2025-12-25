@@ -1,4 +1,5 @@
-.home-wrapper {
+/* Block: .home-page */
+.home-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -6,9 +7,8 @@
   color: #e5e7eb;
 }
 
-/* ---------- HERO ---------- */
-
-.home-hero {
+/* Element: .home-page__hero */
+.home-page__hero {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -18,28 +18,29 @@
   padding: 4rem 1.5rem;
 }
 
-.home-title {
+/* Element: .home-page__title */
+.home-page__title {
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 1rem;
 }
 
-.home-subtitle {
+/* Element: .home-page__subtitle */
+.home-page__subtitle {
   max-width: 520px;
   font-size: 1.1rem;
   color: #cbd5f5;
   margin-bottom: 2.5rem;
 }
 
-/* ---------- ACTIONS ---------- */
-
-.home-actions {
+/* Element: .home-page__actions */
+.home-page__actions {
   display: flex;
   gap: 1rem;
 }
 
-.primary-btn,
-.secondary-btn {
+/* Element: .home-page__btn (Shared styles) */
+.home-page__btn {
   padding: 0.75rem 1.75rem;
   border-radius: 999px;
   font-weight: 600;
@@ -47,27 +48,28 @@
   transition: all 0.25s ease;
 }
 
-.primary-btn {
+/* Modifier: .home-page__btn--primary */
+.home-page__btn--primary {
   background: #6366f1;
   color: white;
 }
 
-.primary-btn:hover {
+.home-page__btn--primary:hover {
   background: #4f46e5;
 }
 
-.secondary-btn {
+/* Modifier: .home-page__btn--secondary */
+.home-page__btn--secondary {
   border: 1px solid #6366f1;
   color: #c7d2fe;
 }
 
-.secondary-btn:hover {
+.home-page__btn--secondary:hover {
   background: rgba(99, 102, 241, 0.15);
 }
 
-/* ---------- FEATURES ---------- */
-
-.home-features {
+/* Element: .home-page__features */
+.home-page__features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
@@ -75,7 +77,8 @@
   background: #020617;
 }
 
-.feature-card {
+/* Element: .home-page__feature-card */
+.home-page__feature-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
@@ -84,30 +87,32 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.feature-card:hover {
+.home-page__feature-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
-.feature-icon {
+/* Element: .home-page__feature-icon */
+.home-page__feature-icon {
   font-size: 2rem;
   margin-bottom: 1rem;
   display: block;
 }
 
-.feature-card h3 {
+/* Element: .home-page__feature-title */
+.home-page__feature-title {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
 }
 
-.feature-card p {
+/* Element: .home-page__feature-desc */
+.home-page__feature-desc {
   font-size: 0.95rem;
   color: #a5b4fc;
 }
 
-/* ---------- FOOTER ---------- */
-
-.home-footer {
+/* Element: .home-page__footer */
+.home-page__footer {
   padding: 1rem;
   text-align: center;
   font-size: 0.85rem;

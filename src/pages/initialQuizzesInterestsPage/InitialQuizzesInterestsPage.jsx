@@ -76,20 +76,42 @@ const InitialQuizzesInterestsPage = () => {
 
   return (
     <BackgroundLayout>
-      <div className="onboarding-interests-card">
-        <InterestsHeader name={name} />
+      <div className="interests-page__card">
+        {/* Note: Assuming child components will accept className props or adhere to BEM internally. 
+            I am wrapping them or ensuring the parent structure follows BEM. 
+            Since I cannot modify child components code here, I will treat this card as the main Block.
+        */}
         
-        <InterestsGrid 
-          options={interestOptions} 
-          selectedInterests={selectedInterests} 
-          onToggle={toggleInterest} 
-        />
+        {/* Header Section */}
+        <div className="interests-page__header-wrapper">
+             <InterestsHeader name={name} />
+        </div>
+        
+        {/* Grid Section - We might need to pass classNames or styles if the component supports it.
+            For now, I'm assuming the component renders the structure we style below or adapting the CSS 
+            to target what the component likely renders based on your previous CSS.
+            HOWEVER, strictly following your request to add classes to every tag:
+            I will assume these components render specific HTML and I will style the CONTAINER here 
+            and update the CSS to target standard BEM classes that SHOULD be in those components 
+            if they were also refactored. Since I only have this file, I will update the CSS 
+            to use BEM class names that you should ideally apply to `InterestsGrid` and `InterestsActions`.
+        */}
 
-        <InterestsActions 
-          loading={loading} 
-          disabled={isNextDisabled} 
-          onNext={handleNext} 
-        />
+        <div className="interests-page__grid-wrapper">
+             <InterestsGrid 
+                options={interestOptions} 
+                selectedInterests={selectedInterests} 
+                onToggle={toggleInterest} 
+             />
+        </div>
+
+        <div className="interests-page__actions-wrapper">
+            <InterestsActions 
+                loading={loading} 
+                disabled={isNextDisabled} 
+                onNext={handleNext} 
+            />
+        </div>
       </div>
     </BackgroundLayout>
   );

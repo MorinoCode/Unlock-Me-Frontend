@@ -61,95 +61,101 @@ const UserDetailPage = () => {
     }
   };
 
-  if (loading) return <div className="loading-screen-full"><div className="spinner"></div></div>;
-  if (!user) return <div className="error-screen">Profile not found.</div>;
+  if (loading) return <div className="user-detail-loading"><div className="user-detail-loading__spinner"></div></div>;
+  if (!user) return <div className="user-detail-error">Profile not found.</div>;
 
   const age = user.birthday?.year ? new Date().getFullYear() - parseInt(user.birthday.year) : "N/A";
 
-  // تابع کمکی برای تعیین کلاس رنگی بر اساس امتیاز (هماهنگ با Explore)
-  const getMatchClass = (score) => {
-    if (score >= 80) return "match-high-badge"; // سبز
-    if (score >= 60) return "match-mid-badge";  // نارنجی
-    return "match-low-badge";              // سرمه‌ای/خاکستری
+  const getMatchModifier = (score) => {
+    if (score >= 80) return "high";
+    if (score >= 60) return "mid";
+    return "low";
   };
 
   return (
-    <div className="profile-detail-page">
-      <button className="sticky-close-btn" onClick={() => navigate(-1)}>✕</button>
+    <div className="user-profile">
+      <button className="user-profile__close-btn" onClick={() => navigate(-1)}>✕</button>
 
-      <div className="profile-hero-section">
-        <div className="hero-img-box">
-          <img className="circle-avatar" src={user.avatar || "../../assets/default-avatar.png"} alt={user.name} />
+      <div className="user-profile__hero">
+        <div className="user-profile__avatar-container">
+          <img className="user-profile__avatar-img" src={user.avatar || "../../assets/default-avatar.png"} alt={user.name} />
           
-          {/* بخش Badge که حالا کلاس داینامیک می‌گیرد */}
-          <div className={`match-badge-premium ${getMatchClass(user.matchScore || 0)}`}>
-            <span className="mb-percent">{user.matchScore || 0}%</span>
-            <span className="mb-label">MATCH</span>
+          <div className={`user-match-badge user-match-badge--${getMatchModifier(user.matchScore || 0)}`}>
+            <span className="user-match-badge__percent">{user.matchScore || 0}%</span>
+            <span className="user-match-badge__label">MATCH</span>
           </div>
         </div>
         
-        <div className="hero-text-box">
-          <h1>{user.name}, {age}</h1>
-          <p className="loc-display">📍 {user.location?.city}, {user.location?.country}</p>
-          <div className="hero-tags">
-            <span className="tag-gender-styled">{user.gender}</span>
+        <div className="user-profile__header-info">
+          <h1 className="user-profile__name">{user.name}, {age}</h1>
+          <p className="user-profile__location">📍 {user.location?.city}, {user.location?.country}</p>
+          <div className="user-profile__gender-tags">
+            <span className="user-profile__gender-pill">{user.gender}</span>
           </div>
         </div>
       </div>
 
-      <div className="profile-scroll-content">
-        <section className="detail-card">
-          <h3 className="card-title">Gallery</h3>
-          <div className="gallery-masonry">
+      <div className="user-profile__scroll-container">
+        <section className="user-detail-card">
+          <h3 className="user-detail-card__title">Gallery</h3>
+          <div className="user-gallery">
             {user.gallery?.length > 0 ? (
               user.gallery.map((img, i) => (
-                <div key={i} className="gallery-img-wrapper"><img src={img} alt="" /></div>
+                <div key={i} className="user-gallery__item">
+                  <img src={img} alt="" className="user-gallery__image" />
+                </div>
               ))
             ) : (
-              <div className="empty-gallery-msg">No photos shared yet.</div>
+              <div className="user-gallery__empty">No photos shared yet.</div>
             )}
           </div>
         </section>
 
-        <div className="info-double-grid">
-          <section className="detail-card">
-            <h3 className="card-title">Bio</h3>
-            <p className="bio-text">{user.bio || "No biography available."}</p>
+        <div className="user-profile__info-grid">
+          <section className="user-detail-card">
+            <h3 className="user-detail-card__title">Bio</h3>
+            <p className="user-detail-card__bio-text">{user.bio || "No biography available."}</p>
           </section>
-          <section className="detail-card-looking-for">
-            <h3 className="card-title">Looking For :</h3>
-            <div className="looking-for-pill--looking-for"><p className="user-looking-for-gender">{user.lookingFor?.toUpperCase() || "Seeking a genuine connection."}</p></div>
+          <section className="user-detail-card user-detail-card--looking-for">
+            <h3 className="user-detail-card__title user-detail-card__title--inline">Looking For :</h3>
+            <div className="user-detail-card__pill">
+              <p className="user-detail-card__pill-text">{user.lookingFor?.toUpperCase() || "Seeking a genuine connection."}</p>
+            </div>
           </section>
         </div>
 
         <AIInsightSection user={user} />
 
-        <section className="detail-card">
-          <h3 className="card-title">Interests & Common Ground</h3>
-          <div className="interest-flow">
+        <section className="user-detail-card">
+          <h3 className="user-detail-card__title">Interests & Common Ground</h3>
+          <div className="user-interests">
             {user.interests?.map((item, i) => (
-              <span key={i} className="modern-tag"><span className="t-star">★</span> {item}</span>
+              <span key={i} className="user-interests__tag user-interests__tag--modern">
+                <span className="user-interests__icon">★</span> {item}
+              </span>
             ))}
             {user.commonCategories?.map((cat, i) => (
-              <span key={`common-${i}`} className="common-tag"><span className="t-check">✔</span> {cat}</span>
+              <span key={`common-${i}`} className="user-interests__tag user-interests__tag--common">
+                <span className="user-interests__icon">✔</span> {cat}
+              </span>
             ))}
           </div>
         </section>
       </div>
 
-      <footer className="action-bar-floating">
+      <footer className="user-actions">
         <button 
-          className={`act-circle dislike ${isDisliked ? "active-dislike" : ""}`} 
+          className={`user-actions__btn user-actions__btn--dislike ${isDisliked ? "user-actions__btn--dislike-active" : ""}`} 
           onClick={() => handleToggleAction("dislike")} 
           disabled={isProcessing}
         >
           {isDisliked ? "👎" : "👎🏻"}
         </button>
-        <button className="act-main-chat" onClick={() => navigate(`/chat/${userId}`)}>
+        <button className="user-actions__chat-btn" onClick={() => navigate(`/chat/${userId}`)}>
           Start Conversation
         </button>
         <button 
-          className={`act-circle like ${isLiked ? "active-like" : ""}`} 
+          className={`user-actions__btn user-actions__btn--like ${isLiked ? "user-actions__btn--like-active" : ""}`} 
           onClick={() => handleToggleAction("like")} 
           disabled={isProcessing}
         >

@@ -5,7 +5,7 @@ import OnboardingStep1 from "../../components/onboarding/OnboardingStep1";
 import OnboardingStep2 from "../../components/onboarding/OnboardingStep2";
 import OnboardingStep3 from "../../components/onboarding/OnboardingStep3";
 import OnboardingStep4 from "../../components/onboarding/OnboardingStep4";
-import "./InitialQuizzesPage.css"; // استایل کارت اصلی
+import "./InitialQuizzesPage.css";
 
 const InitialQuizzesPage = () => {
   const navigate = useNavigate();
@@ -68,7 +68,12 @@ const InitialQuizzesPage = () => {
 
   return (
     <BackgroundLayout>
-      <div className="onboarding-card">
+      <div className="initial-quizzes__card">
+        {/* We are treating the step components as elements within this block. 
+            Since they are imported components, we assume they will handle their internal structure 
+            or accept props if needed. Here, they are just children of the card block. 
+            If they render specific containers, those should ideally follow BEM too.
+        */}
         
         {step === 1 && (
           <OnboardingStep1 

@@ -13,7 +13,6 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("general");
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  // const [errors, setErrors] = useState({});
 
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -224,158 +223,188 @@ const ProfilePage = () => {
     } catch (err) { console.error(err); }
   };
 
-  if (loading) return <div className="pp-unique-rootContainer"><div className="pp-unique-spinner"></div></div>;
+  if (loading) return (
+    <div className="profile-page__loading">
+      <div className="profile-page__spinner"></div>
+    </div>
+  );
 
   return (
-    <div className="pp-unique-rootContainer">
+    <div className="profile-page">
       {showCropper && (
-        <div className="pp-unique-cropperModal">
-          <div className="pp-unique-cropperContent">
-            <div className="pp-unique-cropArea"><Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onCropComplete={onCropComplete} onZoomChange={setZoom} /></div>
-            <div className="pp-unique-cropperControls">
-              <input type="range" value={zoom} min={1} max={3} step={0.1} onChange={(e) => setZoom(e.target.value)} className="pp-unique-zoomSlider" />
-              <div className="pp-unique-cropperButtons">
-                <button className="pp-unique-cancelBtn" onClick={closeCropper}>Cancel</button>
-                <button className="pp-unique-confirmBtn" onClick={handleConfirmCrop}>Confirm</button>
+        <div className="crop-modal">
+          <div className="crop-modal__content">
+            <div className="crop-modal__area">
+              <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onCropComplete={onCropComplete} onZoomChange={setZoom} />
+            </div>
+            <div className="crop-modal__controls">
+              <input type="range" value={zoom} min={1} max={3} step={0.1} onChange={(e) => setZoom(e.target.value)} className="crop-modal__slider" />
+              <div className="crop-modal__actions">
+                <button className="crop-modal__btn crop-modal__btn--cancel" onClick={closeCropper}>Cancel</button>
+                <button className="crop-modal__btn crop-modal__btn--confirm" onClick={handleConfirmCrop}>Confirm</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      <div className="pp-unique-layout">
-        <aside className="pp-unique-sidebar">
-          <div className="pp-unique-avatarContainer">
-            <img src={formData.avatar || "/default-avatar.png"} alt="User" className="pp-unique-avatarImage" />
-            <label className="pp-unique-avatarUploadOverlay">📷 <input type="file" hidden accept="image/*" onChange={onFileChange} className="pp-unique-hiddenFileInput" /></label>
+      <div className="profile-page__layout">
+        <aside className="profile-sidebar">
+          <div className="profile-sidebar__avatar-wrapper">
+            <img src={formData.avatar || "/default-avatar.png"} alt="User" className="profile-sidebar__avatar-img" />
+            <label className="profile-sidebar__upload-label">
+              📷 <input type="file" hidden accept="image/*" onChange={onFileChange} className="profile-sidebar__file-input" />
+            </label>
           </div>
-          <h3 className="pp-unique-userNameText">{formData.name}</h3>
-          <span className={`pp-unique-subscriptionBadge pp-unique-plan-${formData.subscription.plan.toLowerCase()}`}>{formData.subscription.plan}</span>
-          <div className="pp-unique-navMenu">
-             <button className={`pp-unique-navBtn ${activeTab === "general" ? "pp-unique-navBtnActive" : ""}`} onClick={() => setActiveTab("general")}>👤 General Info</button>
-             <button className={`pp-unique-navBtn ${activeTab === "gallery" ? "pp-unique-navBtnActive" : ""}`} onClick={() => setActiveTab("gallery")}>🖼️ Photo Gallery</button>
-             <button className={`pp-unique-navBtn ${activeTab === "categories" ? "pp-unique-navBtnActive" : ""}`} onClick={() => setActiveTab("categories")}>📋 Interests</button>
-             <button className={`pp-unique-navBtn ${activeTab === "security" ? "pp-unique-navBtnActive" : ""}`} onClick={() => setActiveTab("security")}>🔒 Security</button>
+          <h3 className="profile-sidebar__name">{formData.name}</h3>
+          <span className={`profile-sidebar__badge profile-sidebar__badge--${formData.subscription.plan.toLowerCase()}`}>
+            {formData.subscription.plan}
+          </span>
+          <div className="profile-nav">
+             <button className={`profile-nav__btn ${activeTab === "general" ? "profile-nav__btn--active" : ""}`} onClick={() => setActiveTab("general")}>👤 General Info</button>
+             <button className={`profile-nav__btn ${activeTab === "gallery" ? "profile-nav__btn--active" : ""}`} onClick={() => setActiveTab("gallery")}>🖼️ Photo Gallery</button>
+             <button className={`profile-nav__btn ${activeTab === "categories" ? "profile-nav__btn--active" : ""}`} onClick={() => setActiveTab("categories")}>📋 Interests</button>
+             <button className={`profile-nav__btn ${activeTab === "security" ? "profile-nav__btn--active" : ""}`} onClick={() => setActiveTab("security")}>🔒 Security</button>
           </div>
         </aside>
 
-        <main className="pp-unique-contentArea">
+        <main className="profile-page__content">
           {activeTab === "general" && (
-            <div className="pp-unique-card">
-              <h2 className="pp-unique-sectionTitleWhite">Matching & Personal Info</h2>
-              <div className="pp-unique-formGrid">
-                <div className="pp-unique-field"><label className="pp-unique-fieldLabel">Full Name*</label><input className="pp-unique-textInput" value={formData.name} onChange={(e)=>setFormData({...formData, name:e.target.value})} /></div>
-                <div className="pp-unique-field"><label className="pp-unique-fieldLabel">Phone</label><input className="pp-unique-textInput" value={formData.phone} onChange={(e)=>setFormData({...formData, phone:e.target.value})} /></div>
-                <div className="pp-unique-field"><label className="pp-unique-fieldLabel">Country*</label>
-                  <select className="pp-unique-selectInput" value={formData.country} onChange={(e)=> {
+            <div className="profile-card">
+              <h2 className="profile-card__title">Matching & Personal Info</h2>
+              <div className="profile-form">
+                <div className="profile-form__group">
+                  <label className="profile-form__label">Full Name*</label>
+                  <input className="profile-form__input" value={formData.name} onChange={(e)=>setFormData({...formData, name:e.target.value})} />
+                </div>
+                <div className="profile-form__group">
+                  <label className="profile-form__label">Phone</label>
+                  <input className="profile-form__input" value={formData.phone} onChange={(e)=>setFormData({...formData, phone:e.target.value})} />
+                </div>
+                <div className="profile-form__group">
+                  <label className="profile-form__label">Country*</label>
+                  <select className="profile-form__select" value={formData.country} onChange={(e)=> {
                     const selected = countries.find(c => c.name === e.target.value);
                     setFormData({...formData, country: e.target.value, countryCode: selected?.isoCode || "", city: ""});
                   }}>
-                    {countries.map(c => <option key={c.isoCode} value={c.name} className="pp-unique-opt">{c.flag} {c.name}</option>)}
+                    {countries.map(c => <option key={c.isoCode} value={c.name} className="profile-form__option">{c.flag} {c.name}</option>)}
                   </select>
                 </div>
-                <div className="pp-unique-field"><label className="pp-unique-fieldLabel">City*</label>
-                  <select className="pp-unique-selectInput" value={formData.city} onChange={(e)=>setFormData({...formData, city: e.target.value})}>
-                    {cities.map((c, i) => <option key={i} value={c.name} className="pp-unique-opt">{c.name}</option>)}
+                <div className="profile-form__group">
+                  <label className="profile-form__label">City*</label>
+                  <select className="profile-form__select" value={formData.city} onChange={(e)=>setFormData({...formData, city: e.target.value})}>
+                    {cities.map((c, i) => <option key={i} value={c.name} className="profile-form__option">{c.name}</option>)}
                   </select>
                 </div>
-                <div className="pp-unique-field pp-unique-fullWidth">
-                  <label className="pp-unique-fieldLabel">Birthday*</label>
-                  <div className="pp-unique-birthdayRow">
-                    <input className="pp-unique-textInput pp-unique-bdayPart" placeholder="DD" name="day" value={formData.birthday.day} onChange={handleBirthdayChange} />
-                    <input className="pp-unique-textInput pp-unique-bdayPart" placeholder="MM" name="month" value={formData.birthday.month} onChange={handleBirthdayChange} />
-                    <input className="pp-unique-textInput pp-unique-bdayPart" placeholder="YYYY" name="year" value={formData.birthday.year} onChange={handleBirthdayChange} />
+                <div className="profile-form__group profile-form__group--full">
+                  <label className="profile-form__label">Birthday*</label>
+                  <div className="profile-form__row">
+                    <input className="profile-form__input profile-form__input--small" placeholder="DD" name="day" value={formData.birthday.day} onChange={handleBirthdayChange} />
+                    <input className="profile-form__input profile-form__input--small" placeholder="MM" name="month" value={formData.birthday.month} onChange={handleBirthdayChange} />
+                    <input className="profile-form__input profile-form__input--small" placeholder="YYYY" name="year" value={formData.birthday.year} onChange={handleBirthdayChange} />
                   </div>
                 </div>
-                <div className="pp-unique-field pp-unique-fullWidth"><label className="pp-unique-fieldLabel">Bio</label><textarea className="pp-unique-textArea" rows="4" value={formData.bio} onChange={(e)=>setFormData({...formData, bio:e.target.value})} /></div>
+                <div className="profile-form__group profile-form__group--full">
+                  <label className="profile-form__label">Bio</label>
+                  <textarea className="profile-form__textarea" rows="4" value={formData.bio} onChange={(e)=>setFormData({...formData, bio:e.target.value})} />
+                </div>
               </div>
-              <button className="pp-unique-saveBtn" onClick={handleSaveGeneral} disabled={isSaving}>Save Changes</button>
+              <button className="profile-card__save-btn" onClick={handleSaveGeneral} disabled={isSaving}>Save Changes</button>
             </div>
           )}
 
           {activeTab === "gallery" && (
-            <div className="pp-unique-card">
-              <h2 className="pp-unique-sectionTitleWhite">Photo Gallery</h2>
-              <div className="pp-unique-galleryGrid">
+            <div className="profile-card">
+              <h2 className="profile-card__title">Photo Gallery</h2>
+              <div className="profile-gallery">
                 {formData.gallery.map((img, i) => (
-                  <div key={i} className="pp-unique-galleryItem">
-                    <img src={img} alt="" className="pp-unique-galleryImg" />
-                    <button className="pp-unique-removeBtn" onClick={() => setFormData({...formData, gallery: formData.gallery.filter((_, idx) => idx !== i)})}>×</button>
+                  <div key={i} className="profile-gallery__item">
+                    <img src={img} alt="" className="profile-gallery__img" />
+                    <button className="profile-gallery__remove-btn" onClick={() => setFormData({...formData, gallery: formData.gallery.filter((_, idx) => idx !== i)})}>×</button>
                   </div>
                 ))}
                 {formData.gallery.length < 6 && (
-                  <label className="pp-unique-addPlaceholder">
-                    <span className="pp-unique-addText">+ Add Photo</span>
+                  <label className="profile-gallery__add-card">
+                    <span className="profile-gallery__add-text">+ Add Photo</span>
                     <input type="file" hidden accept="image/*" onChange={(e) => {
                       const reader = new FileReader();
                       reader.onloadend = () => setFormData({...formData, gallery: [...formData.gallery, reader.result]});
                       reader.readAsDataURL(e.target.files[0]);
-                    }} className="pp-unique-hiddenFileInput" />
+                    }} className="profile-gallery__file-input" />
                   </label>
                 )}
               </div>
-              <button className="pp-unique-saveBtn" onClick={handleSaveGallery}>Update Gallery</button>
+              <button className="profile-card__save-btn" onClick={handleSaveGallery}>Update Gallery</button>
             </div>
           )}
 
           {activeTab === "security" && (
-            <form className="pp-unique-card" onSubmit={handleUpdatePassword}>
-              <h2 className="pp-unique-sectionTitleWhite">Change Password</h2>
-              <div className="pp-unique-formGrid">
-                <div className="pp-unique-field pp-unique-fullWidth"><label className="pp-unique-fieldLabel">Current Password</label><input className="pp-unique-textInput" type="password" value={passwordData.currentPassword} onChange={(e)=>setPasswordData({...passwordData, currentPassword: e.target.value})} required /></div>
-                <div className="pp-unique-field"><label className="pp-unique-fieldLabel">New Password</label><input className="pp-unique-textInput" type="password" placeholder="8+ chars, A-Z, 0-9" value={passwordData.newPassword} onChange={(e)=>setPasswordData({...passwordData, newPassword: e.target.value})} required /></div>
-                <div className="pp-unique-field"><label className="pp-unique-fieldLabel">Confirm New Password</label><input className="pp-unique-textInput" type="password" value={passwordData.confirmPassword} onChange={(e)=>setPasswordData({...passwordData, confirmPassword: e.target.value})} required /></div>
+            <form className="profile-card" onSubmit={handleUpdatePassword}>
+              <h2 className="profile-card__title">Change Password</h2>
+              <div className="profile-form">
+                <div className="profile-form__group profile-form__group--full">
+                  <label className="profile-form__label">Current Password</label>
+                  <input className="profile-form__input" type="password" value={passwordData.currentPassword} onChange={(e)=>setPasswordData({...passwordData, currentPassword: e.target.value})} required />
+                </div>
+                <div className="profile-form__group">
+                  <label className="profile-form__label">New Password</label>
+                  <input className="profile-form__input" type="password" placeholder="8+ chars, A-Z, 0-9" value={passwordData.newPassword} onChange={(e)=>setPasswordData({...passwordData, newPassword: e.target.value})} required />
+                </div>
+                <div className="profile-form__group">
+                  <label className="profile-form__label">Confirm New Password</label>
+                  <input className="profile-form__input" type="password" value={passwordData.confirmPassword} onChange={(e)=>setPasswordData({...passwordData, confirmPassword: e.target.value})} required />
+                </div>
               </div>
-              <button type="submit" className="pp-unique-saveBtn">Update Password</button>
+              <button type="submit" className="profile-card__save-btn">Update Password</button>
             </form>
           )}
 
           {activeTab === "categories" && (
-            <div className="pp-unique-card">
-              <h2 className="pp-unique-sectionTitleWhite">My Interests</h2>
-              <div className="pp-unique-categoryContainer">
+            <div className="profile-card">
+              <h2 className="profile-card__title">My Interests</h2>
+              <div className="profile-interests">
                 {Object.keys(formData.categories).map(cat => (
-                  <div key={cat} className="pp-unique-catRow">
-                     <div className="pp-unique-catInfo">
-                       <h4 className="pp-unique-categoryLabelName">{cat}</h4>
-                       <span className="pp-unique-statusBadge">{formData.categories[cat].length} Answers</span>
-                     </div>
-                     <button className="pp-unique-editTabBtn" onClick={()=>navigate(`/onboarding?category=${cat}`)}>Edit</button>
+                  <div key={cat} className="profile-interests__row">
+                      <div className="profile-interests__info">
+                        <h4 className="profile-interests__name">{cat}</h4>
+                        <span className="profile-interests__status">{formData.categories[cat].length} Answers</span>
+                      </div>
+                      <button className="profile-interests__edit-btn" onClick={()=>navigate(`/onboarding?category=${cat}`)}>Edit</button>
                   </div>
                 ))}
 
-                <div className="pp-unique-addSectionArea">
+                <div className="profile-interests__add-section">
                   {!isAddingInterest ? (
-                    <button className="pp-unique-saveBtn pp-unique-fullWidthBtn" onClick={fetchAllInterestOptions}>+ Add New Interest</button>
+                    <button className="profile-card__save-btn profile-card__save-btn--full" onClick={fetchAllInterestOptions}>+ Add New Interest</button>
                   ) : (
-                    <div className="pp-unique-newInterestForm">
-                      <div className="pp-unique-field pp-unique-mb20">
-                        <label className="pp-unique-fieldLabel">Select Category</label>
-                        <select className="pp-unique-selectInput" value={selectedNewCat} onChange={(e) => handleCategorySelect(e.target.value)}>
-                          <option value="" className="pp-unique-opt">-- Choose Category --</option>
+                    <div className="interest-form">
+                      <div className="interest-form__group">
+                        <label className="interest-form__label">Select Category</label>
+                        <select className="interest-form__select" value={selectedNewCat} onChange={(e) => handleCategorySelect(e.target.value)}>
+                          <option value="" className="interest-form__option">-- Choose Category --</option>
                           {allInterestOptions.filter(c => !formData.categories[c.label]).map(c => (
-                            <option key={c._id} value={c.label} className="pp-unique-opt">{c.icon} {c.label}</option>
+                            <option key={c._id} value={c.label} className="interest-form__option">{c.icon} {c.label}</option>
                           ))}
                         </select>
                       </div>
 
                       {newCatQuestions[0]?.questions?.map((q) => (
-                        <div key={q._id} className="pp-unique-questionItem">
-                          <p className="pp-unique-qText">{q.questionText}</p>
-                          <div className="pp-unique-optionsWrap">
+                        <div key={q._id} className="interest-form__question-block">
+                          <p className="interest-form__question-text">{q.questionText}</p>
+                          <div className="interest-form__options">
                             {q.options.map((opt) => (
                               <button key={opt._id} type="button" onClick={() => setNewAnswers(prev => ({
                                 ...prev, [q._id]: { category: selectedNewCat, questionText: q.questionText, selectedText: opt.text, trait: opt.trait }
                               }))}
-                              className={`pp-unique-optBtn ${newAnswers[q._id]?.selectedText === opt.text ? "pp-unique-optBtnActive" : ""}`}>
+                              className={`interest-form__option-btn ${newAnswers[q._id]?.selectedText === opt.text ? "interest-form__option-btn--active" : ""}`}>
                                 {opt.text}
                               </button>
                             ))}
                           </div>
                         </div>
                       ))}
-                      {selectedNewCat && <button className="pp-unique-saveBtn pp-unique-fullWidthBtn" onClick={submitNewInterest} disabled={isSaving}>{isSaving ? "Saving..." : "Confirm & Add"}</button>}
-                      <button className="pp-unique-cancelBtn pp-unique-fullWidthBtn" onClick={() => { setIsAddingInterest(false); setSelectedNewCat(""); }}>Cancel</button>
+                      {selectedNewCat && <button className="profile-card__save-btn profile-card__save-btn--full" onClick={submitNewInterest} disabled={isSaving}>{isSaving ? "Saving..." : "Confirm & Add"}</button>}
+                      <button className="interest-form__cancel-btn" onClick={() => { setIsAddingInterest(false); setSelectedNewCat(""); }}>Cancel</button>
                     </div>
                   )}
                 </div>

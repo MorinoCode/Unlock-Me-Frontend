@@ -1,6 +1,5 @@
-/* AIInsightSection.css */
-
-.ai-insight-card {
+/* Block: .ai-insight */
+.ai-insight {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(15, 23, 42, 0.6) 100%);
   border: 1px solid rgba(139, 92, 246, 0.2) !important;
   padding: 30px;
@@ -8,32 +7,43 @@
   margin-bottom: 25px;
 }
 
-.ai-header {
+/* Element: .ai-insight__header */
+.ai-insight__header {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 25px;
 }
 
-.ai-icon {
+/* Element: .ai-insight__icon */
+.ai-insight__icon {
   font-size: 1.8rem;
   filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.5));
 }
 
-.insight-content-wrapper {
+/* Element: .ai-insight__title */
+/* Assuming styles inherited from .card-title, but adding BEM specificity if needed */
+.ai-insight__title {
+  /* Inherits global styles, but you can add specifics here */
+}
+
+/* Element: .ai-insight__content */
+.ai-insight__content {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 40px;
   align-items: start;
 }
 
-.insight-text-side {
+/* Element: .ai-insight__text-side */
+.ai-insight__text-side {
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
-.insight-text-side h4 {
+/* Element: .ai-insight__heading */
+.ai-insight__heading {
   font-size: 0.85rem;
   color: #a78bfa;
   margin-bottom: 12px;
@@ -42,12 +52,14 @@
   font-weight: 800;
 }
 
-.match-verdict {
+/* Element: .ai-insight__verdict */
+.ai-insight__verdict {
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.match-verdict p {
+/* Element: .ai-insight__verdict-text */
+.ai-insight__verdict-text {
   line-height: 1.8;
   font-size: 1rem;
   color: #e2e8f0;
@@ -55,15 +67,19 @@
   font-weight: bold;
 }
 
-.dna-traits-list {
+/* Element: .ai-insight__dna-section */
+/* Container style, currently relies on parent flex gap */
+
+/* Element: .ai-insight__traits-list */
+.ai-insight__traits-list {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.dna-trait-row {
+/* Element: .ai-insight__trait-row */
+.ai-insight__trait-row {
   display: flex;
-  /* flex-direction: column; */
   gap: 4px;
   padding: 10px;
   background: rgba(255, 255, 255, 0.02);
@@ -71,11 +87,12 @@
   transition: background 0.3s ease;
 }
 
-.dna-trait-row:hover {
+.ai-insight__trait-row:hover {
   background: rgba(139, 92, 246, 0.05);
 }
 
-.trait-label {
+/* Element: .ai-insight__trait-label */
+.ai-insight__trait-label {
   font-weight: 800;
   color: #fff;
   font-size: 0.9rem;
@@ -84,31 +101,35 @@
   gap: 8px;
 }
 
-.trait-label::before {
+.ai-insight__trait-label::before {
   content: "✦";
   color: #8b5cf6;
   font-size: 0.7rem;
 }
 
-.trait-desc {
+/* Element: .ai-insight__trait-desc */
+.ai-insight__trait-desc {
   font-size: 0.85rem;
   color: #94a3b8;
   padding-left: 18px;
   font-weight: bold;
 }
 
+/* Element: .ai-insight__chart-side */
+/* Styles if needed specific to wrapper */
+
 @media (max-width: 768px) {
-  .insight-content-wrapper {
+  .ai-insight__content {
     grid-template-columns: 1fr;
     gap: 30px;
   }
   
-  .insight-chart-side {
+  .ai-insight__chart-side {
     max-width: 280px;
     margin: 0 auto;
   }
   
-  .ai-insight-card {
+  .ai-insight {
     padding: 20px;
   }
 }

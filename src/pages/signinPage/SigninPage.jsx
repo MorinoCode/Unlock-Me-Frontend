@@ -96,10 +96,10 @@ const SigninPage = () => {
   return (
     <BackgroundLayout>
       <div className="signin-card">
-        <h2 className="signin-title">UnlockMe</h2>
-        <p className="signin-subtitle">Sign in and unlock connections!</p>
+        <h2 className="signin-card__title">UnlockMe</h2>
+        <p className="signin-card__subtitle">Sign in and unlock connections!</p>
 
-        <form onSubmit={handleSubmit} className="signin-form" noValidate>
+        <form onSubmit={handleSubmit} className="signin-card__form" noValidate>
           <FormInput
             name="email"
             type="email"
@@ -122,21 +122,21 @@ const SigninPage = () => {
           />
 
           {serverMessage && (
-            <div className="server-message">{serverMessage}</div>
+            <div className="signin-card__message">{serverMessage}</div>
           )}
 
           <button
             type="submit"
-            className="signin-button"
+            className="signin-card__btn"
             disabled={!isFormValid || loading}
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        <div className="signin-footer">
-          <p>
-            Don't have an account? <a href="/signup">Sign Up</a>
+        <div className="signin-card__footer">
+          <p className="signin-card__footer-text">
+            Don't have an account? <a href="/signup" className="signin-card__footer-link">Sign Up</a>
           </p>
         </div>
       </div>

@@ -18,12 +18,10 @@ const ViewAllMatchesPage = () => {
     const fetchMatches = async () => {
       try {
         setLoading(true);
-        // دریافت اطلاعات کاربر برای بررسی پلن
         const userRes = await fetch(`${API_URL}/api/user/location`, { credentials: "include" });
         const userData = await userRes.json();
         setCurrentUser(userData);
 
-        // اصلاح شده: استفاده از اندپوینت صحیح مطابق بک‌اِند
         const res = await fetch(`${API_URL}/api/user/matches`, { credentials: "include" });
         const data = await res.json();
 
@@ -56,33 +54,37 @@ const ViewAllMatchesPage = () => {
   const currentLimit = limits[userPlan][type] || 0;
 
   if (loading) return (
-    <div className="loading-container-viewall">
-      <div className="match-spinner"></div>
-      <p>Loading {type} connections...</p>
+    <div className="matches-loader">
+      <div className="matches-loader__spinner"></div>
+      <p className="matches-loader__text">Loading {type} connections...</p>
     </div>
   );
 
   return (
     <ExploreBackgroundLayout>
-      <div className="view-all-container">
-        <header className="view-all-header-modern">
-          <div className="header-top">
-            <button className="back-btn-modern" onClick={() => navigate(-1)}>
-              <span>←</span> Back
+      <div className="matches-page">
+        <header className="matches-page__header">
+          <div className="matches-page__header-top">
+            <button className="matches-page__back-btn" onClick={() => navigate(-1)}>
+              <span className="matches-page__back-icon">←</span> Back
             </button>
-            <div className="plan-badge-viewall">
-               PLAN: <span>{userPlan.toUpperCase()}</span>
+            <div className="matches-page__plan-badge">
+               PLAN: <span className="matches-page__plan-name">{userPlan.toUpperCase()}</span>
             </div>
           </div>
-          <div className="header-bottom-text">
-            <h1 className="gradient-title-viewall">{title}</h1>
-            <p className="results-count">Showing {users.length} connections</p>
+          <div className="matches-page__header-content">
+            <h1 className="matches-page__title">{title}</h1>
+            <p className="matches-page__count">Showing {users.length} connections</p>
           </div>
         </header>
 
-        <div className="matches-grid-modern">
+        <div className="matches-page__grid">
           {users.map((user, index) => (
-            <div className="grid-card-anim" key={user._id} style={{ "--delay": `${index * 0.05}s` }}>
+            <div 
+              className="matches-page__card-wrapper" 
+              key={user._id} 
+              style={{ "--delay": `${index * 0.05}s` }}
+            >
               <UserCard 
                 user={user} 
                 isLocked={index >= currentLimit} 
@@ -92,10 +94,10 @@ const ViewAllMatchesPage = () => {
           ))}
           
           {users.length === 0 && (
-            <div className="empty-view-state">
-              <span className="empty-icon-large">🔍</span>
-              <p>No connections found in this category.</p>
-              <button className="explore-more-btn" onClick={() => navigate("/explore")}>
+            <div className="matches-page__empty-state">
+              <span className="matches-page__empty-icon">🔍</span>
+              <p className="matches-page__empty-text">No connections found in this category.</p>
+              <button className="matches-page__explore-btn" onClick={() => navigate("/explore")}>
                 Explore People
               </button>
             </div>
@@ -103,12 +105,12 @@ const ViewAllMatchesPage = () => {
         </div>
 
         {userPlan === "free" && type === "incoming" && (
-          <div className="gold-upsell-banner" onClick={() => navigate("/upgrade")}>
-            <div className="upsell-content">
-              <h2>Reveal who liked you!</h2>
-              <p>Someone special is waiting in this list. Upgrade to Gold to unlock them instantly.</p>
+          <div className="matches-page__upsell-banner" onClick={() => navigate("/upgrade")}>
+            <div className="matches-page__upsell-info">
+              <h2 className="matches-page__upsell-title">Reveal who liked you!</h2>
+              <p className="matches-page__upsell-desc">Someone special is waiting in this list. Upgrade to Gold to unlock them instantly.</p>
             </div>
-            <button className="gold-action-btn">Go Gold</button>
+            <button className="matches-page__upsell-btn">Go Gold</button>
           </div>
         )}
       </div>

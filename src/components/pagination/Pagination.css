@@ -1,6 +1,5 @@
-/* Pagination.css */
-
-.va-pagination-nav {
+/* Block: .pagination */
+.pagination {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,7 +12,8 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.va-pagination-nav button {
+/* Element: .pagination__btn */
+.pagination__btn {
   background: #6366f1;
   color: white;
   border: none;
@@ -24,29 +24,28 @@
   transition: all 0.2s ease;
 }
 
-.va-pagination-nav button:disabled {
+/* State: disabled (applied via attribute selector on the BEM element) */
+.pagination__btn:disabled {
   background: #334155;
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-.va-page-info {
+/* Element: .pagination__info */
+.pagination__info {
   font-weight: 600;
   color: #cbd5e1;
 }
 
+/* Mobile Responsive */
 @media screen and (max-width: 409px) {
-  .va-pagination-nav {
+  .pagination {
     padding: 10px 2px;
-  }
-  .va-pagination-nav {
     gap: 10px;
   }
-  .va-pagination-nav button {
+  
+  .pagination__btn {
     padding: 7px 15px;
     border-radius: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
   }
 }

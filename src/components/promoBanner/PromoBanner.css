@@ -1,7 +1,8 @@
+/* Block: .promo-banner */
 .promo-banner {
   margin: 25px 0;
   padding: 24px 30px;
-  border-radius: 24px; /* گردی زیاد */
+  border-radius: 24px; 
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -10,25 +11,29 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.promo-content {
+/* Element: .promo-banner__content */
+.promo-banner__content {
   z-index: 2;
   max-width: 70%;
 }
 
-.promo-content h3 {
+/* Element: .promo-banner__title */
+.promo-banner__title {
   margin: 0 0 8px 0;
-  font-size: 1.4rem; /* تیتر بزرگتر */
+  font-size: 1.4rem; 
   font-weight: 800;
   color: white;
 }
 
-.promo-content p {
+/* Element: .promo-banner__description */
+.promo-banner__description {
   margin: 0;
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.9);
 }
 
-.promo-btn {
+/* Element: .promo-banner__btn */
+.promo-banner__btn {
   z-index: 2;
   padding: 12px 24px;
   border-radius: 14px;
@@ -41,12 +46,25 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.promo-btn:hover {
+.promo-banner__btn:hover {
   transform: translateY(-2px);
   filter: brightness(1.1);
 }
 
-/* حالت موبایل */
+/* Context-based styling (keeping original logic based on gradient color strings) */
+/* Gold Plan Gradient check */
+.promo-banner[style*="#2e1065"] .promo-banner__btn {
+  background-color: #f59e0b; 
+  color: #0f172a; 
+}
+
+/* Boost Plan Gradient check */
+.promo-banner[style*="#1e1b4b"] .promo-banner__btn {
+  background-color: #6366f1; 
+  color: white;
+}
+
+/* Mobile Responsive */
 @media (max-width: 600px) {
   .promo-banner {
     flex-direction: column;
@@ -54,16 +72,7 @@
     gap: 20px;
     padding: 20px;
   }
-  .promo-btn { width: 100%; }
-}
-/* اضافه کردن به PromoBanner.css */
-/* سلکتور هوشمند: اگر بنر گرادینت بنفش داشت، دکمه‌اش زرد شود */
-.promo-banner[style*="#2e1065"] .promo-btn {
-    background-color: #f59e0b; /* زرد */
-    color: #0f172a; /* متن تیره */
-}
-
-.promo-banner[style*="#1e1b4b"] .promo-btn {
-    background-color: #6366f1; /* آبی روشن برای Boost */
-    color: white;
+  .promo-banner__btn { 
+    width: 100%; 
+  }
 }

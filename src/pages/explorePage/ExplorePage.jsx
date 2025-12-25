@@ -38,18 +38,20 @@ const ExplorePage = () => {
 
   const banners = getPromoBannerConfig(userPlan);
 
-  if (loading) return <div className="loading-container">Finding your matches... 🔮</div>;
+  if (loading) return <div className="explore-page__loading">Finding your matches... 🔮</div>;
 
   return (
     <ExploreBackgroundLayout>
-      <div className="explore-page-container">
+      <div className="explore-page">
         
-        <header className="explore-header">
-          <div className="header-text">
-            <h1>Explore</h1>
-            <p>Matches in {userLocation.country}</p>
+        <header className="explore-page__header">
+          <div className="explore-page__text-container">
+            <h1 className="explore-page__title">Explore</h1>
+            <p className="explore-page__subtitle">Matches in {userLocation.country}</p>
           </div>
-          <div className="plan-badge">Plan: <span>{userPlan?.toUpperCase()}</span></div>
+          <div className="explore-page__badge">
+            Plan: <span className="explore-page__badge-value">{userPlan?.toUpperCase()}</span>
+          </div>
         </header>
 
         <ExploreSection title="Near You" subtitle={`In ${userLocation.city}`} users={sections.cityMatches} type="city" link="/explore/view-all/nearby" userPlan={userPlan} navigate={navigate} />

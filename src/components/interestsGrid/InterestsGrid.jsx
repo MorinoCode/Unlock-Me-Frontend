@@ -1,4 +1,5 @@
 import React from "react";
+import "./InterestsGrid.css";
 
 const InterestsGrid = ({ options, selectedInterests, onToggle }) => {
   return (
@@ -6,13 +7,13 @@ const InterestsGrid = ({ options, selectedInterests, onToggle }) => {
       {options.map((opt) => (
         <div
           key={opt._id}
-          className={`interest-item ${
-            selectedInterests.includes(opt.label) ? "selected" : ""
+          className={`interests-grid__item ${
+            selectedInterests.includes(opt.label) ? "interests-grid__item--selected" : ""
           }`}
           onClick={() => onToggle(opt.label)}
         >
-          <span className="interest-icon">{opt.icon}</span>
-          <span className="interest-label">{opt.label}</span>
+          <span className="interests-grid__icon">{opt.icon}</span>
+          <span className="interests-grid__label">{opt.label}</span>
         </div>
       ))}
     </div>

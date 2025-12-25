@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FormInput from "../../components/formInput/FormInput";
 import FormSelect from "../../components/formSelect/FormSelect";
-import "./SignupPage.css";
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
+import "./SignupPage.css";
 
 const SignupPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -36,7 +36,6 @@ const SignupPage = () => {
   useEffect(() => {
     const newErrors = {};
 
-    
     if (touched.name && name.trim().length < 2) 
       newErrors.name = "Name is too short";
     
@@ -114,89 +113,89 @@ const SignupPage = () => {
 
   return (
     <BackgroundLayout>
-    <div className="signup-page">
-      <div className="signup-card">
-        <h2 className="signup-title">UnlockMe</h2>
-        <p className="signup-subtitle">Create your profile and start unlocking!</p>
+      <div className="signup-page">
+        <div className="signup-page__card">
+          <h2 className="signup-page__title">UnlockMe</h2>
+          <p className="signup-page__subtitle">Create your profile and start unlocking!</p>
 
-        <form className="signup-form" onSubmit={handleSubmit} noValidate>
-          
-          <FormInput
-            name="name"
-            placeholder="Name"
-            value={name}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.name && errors.name}
-            autoFocus
-          />
+          <form className="signup-page__form" onSubmit={handleSubmit} noValidate>
+            
+            <FormInput
+              name="name"
+              placeholder="Name"
+              value={name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.name && errors.name}
+              autoFocus
+            />
 
-          <FormInput
-            name="email"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.email && errors.email}
-          />
+            <FormInput
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.email && errors.email}
+            />
 
-          <FormInput
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.password && errors.password}
-          />
+            <FormInput
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.password && errors.password}
+            />
 
-          <FormInput
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.confirmPassword && errors.confirmPassword}
-          />
+            <FormInput
+              name="confirmPassword"
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.confirmPassword && errors.confirmPassword}
+            />
 
-          <FormSelect
-            name="gender"
-            value={gender}
-            options={genderOptions}
-            defaultText="Select Your Gender"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.gender && errors.gender}
-          />
+            <FormSelect
+              name="gender"
+              value={gender}
+              options={genderOptions}
+              defaultText="Select Your Gender"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.gender && errors.gender}
+            />
 
-          <FormSelect
-            name="lookingFor"
-            value={lookingFor}
-            options={genderOptions}
-            defaultText="Looking For"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.lookingFor && errors.lookingFor}
-          />
+            <FormSelect
+              name="lookingFor"
+              value={lookingFor}
+              options={genderOptions}
+              defaultText="Looking For"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.lookingFor && errors.lookingFor}
+            />
 
-          {serverMessage && <div className="server-message">{serverMessage}</div>}
+            {serverMessage && <div className="signup-page__message">{serverMessage}</div>}
 
-          <button
-            type="submit"
-            className="signup-button"
-            disabled={!isFormValid || loading}
-          >
-            {loading ? "Creating account..." : "Sign Up"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="signup-page__btn"
+              disabled={!isFormValid || loading}
+            >
+              {loading ? "Creating account..." : "Sign Up"}
+            </button>
+          </form>
 
-        <div className="signup-footer">
-          Already have an account? <a href="/signin">Sign In</a>
+          <div className="signup-page__footer">
+            Already have an account? <a href="/signin" className="signup-page__link">Sign In</a>
+          </div>
         </div>
       </div>
-    </div>
     </BackgroundLayout>
   );
 };
