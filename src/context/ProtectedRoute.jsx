@@ -15,19 +15,8 @@ const ProtectedRoute = () => {
     return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
-  // --- DEBUGGING LOGS (بعد از پیدا کردن مشکل پاک کن) ---
-  console.group("Protected Route Check");
-  console.log("Current User:", currentUser);
-  console.log("Has Avatar?", !!currentUser.avatar);
-  console.log("Has Bio?", !!currentUser.bio);
-  console.log("Interests Count:", currentUser.interests?.length);
-  console.log("Categories:", currentUser.questionsbycategoriesResults?.categories);
-  console.groupEnd();
-  // -----------------------------------------------------
-
   // ۱. بررسی آواتار و بیو
   if (!currentUser.avatar || !currentUser.bio) {
-    console.warn("Redirecting because Avatar or Bio is missing"); // لاگ علت ریدایرکت
     if (location.pathname !== "/initial-quizzes") {
       return <Navigate to="/initial-quizzes" replace />;
     }
@@ -36,7 +25,6 @@ const ProtectedRoute = () => {
 
   // ۲. بررسی علایق
   if (!currentUser.interests || currentUser.interests.length === 0) {
-    console.warn("Redirecting because Interests are empty"); // لاگ علت ریدایرکت
     if (location.pathname !== "/initial-quizzes/interests") {
       return <Navigate to="/initial-quizzes/interests" replace />;
     }
@@ -47,7 +35,6 @@ const ProtectedRoute = () => {
   const categories = currentUser.questionsbycategoriesResults?.categories;
   // اگر categories وجود نداشت یا تعداد کلیدهایش کمتر از ۳ بود
   if (!categories || Object.keys(categories).length < 3) {
-    console.warn("Redirecting because Categories are less than 3"); // لاگ علت ریدایرکت
     if (location.pathname !== "/initial-quizzes/questionsbycategory") {
       return <Navigate to="/initial-quizzes/questionsbycategory" replace />;
     }
