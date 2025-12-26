@@ -10,7 +10,6 @@ import "./ExplorePage.css";
 
 const ExplorePage = () => {
   const { currentUser } = useAuth();
-  console.log(currentUser);
   
   const [sections, setSections] = useState({ soulmates: [], freshFaces: [], cityMatches: [], interestMatches: [], countryMatches: [] });
   const [loading, setLoading] = useState(true);
@@ -26,6 +25,7 @@ const ExplorePage = () => {
         setLoading(true);
         const matchesRes = await fetch(`${API_URL}/api/explore/matches?country=${currentUser.location.country}`, { credentials: "include" });
         const data = await matchesRes.json();
+        console.log(data);
         
         setSections(data.sections || {});
       } catch (err) { console.error(err); } 

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth";
+
 // Components
 import UserCard from "../../components/userCard/UserCard";
 import PromoBanner from "../../components/promoBanner/PromoBanner";
@@ -7,11 +9,7 @@ import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLa
 import { Pagination } from "../../components/pagination/Pagination"; 
 
 // Utils
-import { 
-  getVisibilityThreshold, 
-  getPromoBannerConfig, 
-  getSoulmatePermissions 
-} from "../../utils/subscriptionRules";
+import { getPromoBannerConfig } from "../../utils/subscriptionRules";
 
 import "./ViewAllMatchedUsersPage.css";
 
@@ -19,68 +17,85 @@ const ViewAllMatchedUsersPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-
-  const [allUsers, setAllUsers] = useState([]);
+  const { currentUser } = useAuth();
+  
+  // State های جدید برای Pagination سمت سرور
+  const [users, setUsers] = useState([]);
   const [userPlan, setUserPlan] = useState("free");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  
   const usersPerPage = 20;
 
   useEffect(() => {
-    const fetchAndFilterData = async () => {
+    const fetchMatches = async () => {
       try {
         setLoading(true);
-        const locRes = await fetch(`${API_URL}/api/user/location`, { credentials: "include" });
-        const locData = await locRes.json();
-        const country = locData.location?.country;
+        const country = currentUser?.country;
         if (!country) return;
 
-        const res = await fetch(`${API_URL}/api/explore/matches?country=${country}`, { credentials: "include" });
+        // 1. ساخت کوئری پارامترها برای ارسال به بک‌اند جدید
+        const queryParams = new URLSearchParams({
+            country: country,
+            category: category, // مثلا: 'soulmates', 'nearby'
+            page: currentPage,
+            limit: usersPerPage
+        });
+
+        // 2. درخواست به اندپوینت (بک‌اند الان فقط لیست همین صفحه را برمی‌گرداند)
+        const res = await fetch(`${API_URL}/api/explore/matches?${queryParams}`, { 
+            credentials: "include" 
+        });
+        
+        if (!res.ok) throw new Error("Failed to fetch matches");
+
         const data = await res.json();
         
-        const sections = data.sections || {};
-        const plan = data.userPlan || "free";
-        setUserPlan(plan);
-
-        const categoryMap = {
-          nearby: sections.cityMatches,
-          new: sections.freshFaces,
-          interests: sections.interestMatches,
-          soulmates: sections.soulmates,
-          country: sections.countryMatches
-        };
-
-        let selectedUsers = categoryMap[category] || [];
-        const threshold = getVisibilityThreshold(plan);
-
-        if (category !== "soulmates") {
-          selectedUsers = selectedUsers.filter(u => (u.matchScore || 0) <= threshold);
-        } else {
-          const { limit } = getSoulmatePermissions(plan);
-          selectedUsers = selectedUsers.slice(0, limit);
+        // 3. دریافت داده‌ها از ساختار جدید بک‌اند
+        setUserPlan(data.userPlan || "free");
+        setUsers(data.users || []); // آرایه کاربران صفحه جاری
+        
+        // تنظیم تعداد کل صفحات برای کامپوننت Pagination
+        if (data.pagination) {
+            setTotalPages(data.pagination.totalPages);
         }
-        setAllUsers(selectedUsers);
+
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error fetching matches:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchAndFilterData();
-  }, [category, API_URL]);
 
-  const totalPages = Math.ceil(allUsers.length / usersPerPage);
-  const currentUsers = allUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage);
+    fetchMatches();
+  }, [category, currentPage, API_URL, currentUser]); // با تغییر Page ریکوئست جدید زده می‌شود
+
+  // تنظیمات بنر تبلیغاتی
   const banners = getPromoBannerConfig(userPlan);
 
-  if (loading) return <div className="matches-view-loading"><span className="matches-view-loading__text">Loading matches... 🔮</span></div>;
+  // هندلر تغییر صفحه
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  if (loading) return (
+    <div className="matches-view-loading">
+        <span className="matches-view-loading__text">Loading matches... 🔮</span>
+    </div>
+  );
 
   return (
     <ExploreBackgroundLayout>
       <div className="matches-view">
         <header className="matches-view__header">
-          <button onClick={() => navigate(-1)} className="matches-view__back-button">← Back to Explore</button>
-          <h1 className="matches-view__title">{category.replace("-", " ").toUpperCase()}</h1>
+          <button onClick={() => navigate(-1)} className="matches-view__back-button">
+            ← Back to Explore
+          </button>
+          <h1 className="matches-view__title">
+            {category ? category.replace("-", " ").toUpperCase() : "MATCHES"}
+          </h1>
         </header>
 
         {banners.showGold && (
@@ -96,24 +111,28 @@ const ViewAllMatchedUsersPage = () => {
         )}
 
         <div className="matches-view__grid">
-          {currentUsers.length > 0 ? (
-            currentUsers.map((user) => (
+          {users.length > 0 ? (
+            users.map((user) => (
               <div key={user._id} className="matches-view__grid-item">
+                {/* کاربرانی که از بک‌اند می‌آیند already filtered هستند */}
                 <UserCard user={user} userPlan={userPlan} />
               </div>
             ))
           ) : (
-            <p className="matches-view__empty-message">No more matches found in this category.</p>
+            <p className="matches-view__empty-message">No matches found in this category.</p>
           )}
         </div>
 
-        <div className="matches-view__pagination-wrapper">
-            <Pagination 
-            currentPage={currentPage} 
-            totalPages={totalPages} 
-            onPageChange={(page) => setCurrentPage(page)} 
-            />
-        </div>
+        {/* فقط اگر صفحاتی وجود داشت پجینیشن را نشان بده */}
+        {totalPages > 1 && (
+            <div className="matches-view__pagination-wrapper">
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages} 
+                    onPageChange={handlePageChange} 
+                />
+            </div>
+        )}
 
         {banners.showPlatinum && (
           <div className="matches-view__promo-container matches-view__promo-container--bottom">

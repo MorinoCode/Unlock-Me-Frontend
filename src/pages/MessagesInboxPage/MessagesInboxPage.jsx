@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
+import HeartBeatLoader from "../../components/heartbeatLoader/HeartbeatLoader"
 import "./MessagesInboxPage.css";
 
 const MessagesInboxPage = () => {
@@ -30,10 +31,7 @@ const MessagesInboxPage = () => {
   }, [API_URL]);
 
   if (loading) return (
-    <div className="inbox-page__loading">
-      <div className="inbox-page__spinner"></div>
-      <p className="inbox-page__loading-text">Unlocking Conversations...</p>
-    </div>
+    <HeartBeatLoader/>
   );
 
   return (
