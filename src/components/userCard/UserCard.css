@@ -1,63 +1,159 @@
-/* Block: .user-card */
+/* UserCard.css */
+
+/* نگهدارنده اصلی کارت */
 .user-card {
   position: relative;
-  width: 240px;      
-  height: 350px;     
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  width: 260px;       /* عرض کمی بیشتر برای خوانایی بهتر */
+  height: 380px;      /* ارتفاع بلند مثل عکس نمونه */
+  border-radius: 24px; /* گردی گوشه‌ها مثل عکس */
   overflow: hidden;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  background: #1e293b; /* رنگ پس زمینه لودینگ */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   flex-shrink: 0;
   margin-right: 15px;
-  display: flex;
-  flex-direction: column;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .user-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Element: .user-card__media */
-.user-card__media {
-  position: relative;
+/* 1. عکس تمام صفحه */
+.user-card__image-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 62%; 
+  height: 100%;
+  z-index: 1;
 }
 
-/* Element: .user-card__image */
 .user-card__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* پر کردن کل فضا */
+  transition: transform 0.5s ease;
 }
 
-/* Element: .user-card__shadow */
-.user-card__shadow {
+.user-card:hover .user-card__image {
+  transform: scale(1.05); /* زوم ملایم هنگام هاور */
+}
+
+/* 2. گرادینت سایه (محو شدن پایین) */
+.user-card__overlay-gradient {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 60px;
-  background: linear-gradient(to top, rgba(15, 23, 42, 1), transparent);
+  height: 60%; /* گرادینت از ۶۰ درصد پایین شروع میشه */
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 1) 0%,     /* رنگ تیره کامل پایین */
+    rgba(15, 23, 42, 0.8) 40%,
+    rgba(15, 23, 42, 0) 100%    /* شفاف بالا */
+  );
+  z-index: 2;
   pointer-events: none;
 }
 
-/* Element: .user-card__like-btn */
+/* 3. محتوای متنی و دکمه‌ها */
+.user-card__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* نام و لوکیشن */
+.user-card__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-card__name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.user-card__location {
+  font-size: 0.85rem;
+  color: #cbd5e1; /* خاکستری روشن */
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ردیف دکمه و درصد مچ */
+.user-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* دکمه اصلی (رنگ بنفش کد خودت) */
+.user-card__action-btn {
+  flex: 1; /* فضای باقی‌مانده رو پر کنه */
+  padding: 12px 0;
+  border: none;
+  border-radius: 14px; /* گردی دکمه مثل عکس */
+  background: linear-gradient(90deg, #6366f1, #8b5cf6); /* همون رنگ بنفش */
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.user-card__action-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+/* کپسول درصد مچ (کنار دکمه) */
+.user-card__match-pill {
+  width: 50px; /* شکل دایره/مربع نرم */
+  height: 44px; /* هم‌ارتفاع دکمه */
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1); /* شیشه‌ای */
+  backdrop-filter: blur(5px);
+  border: 1px solid; /* رنگ بردر داینامیک است */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* دکمه لایک (شناور بالا سمت راست) */
 .user-card__like-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,200 +163,100 @@
 }
 
 .user-card__like-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-}
-
-/* Modifier: .user-card__like-btn--active */
-.user-card__like-btn--active {
   background: rgba(255, 255, 255, 0.9);
-  border-color: white;
 }
 
-/* Element: .user-card__heart-svg */
+.user-card__like-btn:hover .user-card__heart-svg {
+    stroke: #ef4444;
+}
+
 .user-card__heart-svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   fill: none;
   stroke: white;
   stroke-width: 2;
   transition: all 0.3s;
 }
 
-/* Element: .user-card__heart-path */
-.user-card__heart-path {
-  /* Inherits styles from SVG, but class exists for specificity if needed */
+.user-card__like-btn--active {
+  background: white;
+  border-color: white;
 }
 
-/* Nested Modifier Styling */
 .user-card__like-btn--active .user-card__heart-svg {
   fill: #ef4444;
   stroke: #ef4444;
 }
 
-/* Element: .user-card__match-badge */
-.user-card__match-badge {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  z-index: 5;
-  padding: 4px 10px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1;
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+/* استایل‌های قفل (همان استایل قبلی با کمی تمیزکاری) */
+.user-card--locked {
+  pointer-events: none; /* جلوگیری از هاور روی قفل */
 }
-
-/* Modifiers for match badge */
-.user-card__match-badge--high {
-  background: rgba(16, 185, 129, 0.85); 
-  border-color: #34d399;
-}
-.user-card__match-badge--mid {
-  background: rgba(245, 158, 11, 0.85); 
-  border-color: #fbbf24;
-}
-.user-card__match-badge--low {
-  background: rgba(100, 116, 139, 0.85); 
-}
-
-/* Element: .user-card__match-score */
-.user-card__match-score {
-  font-size: 0.6rem;
-  font-weight: 800;
-  color: #fff;
-}
-
-/* Element: .user-card__match-label */
-.user-card__match-label {
-  font-size: 0.5rem;
-  font-weight: 700;
-  margin-top: 2px;
-  color: rgba(255,255,255,0.9);
-  letter-spacing: 0.5px;
-}
-
-/* Element: .user-card__body */
-.user-card__body {
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
-  background: rgba(15, 23, 42, 0.4);
-}
-
-/* Element: .user-card__info */
-.user-card__info {
-  margin-bottom: 5px;
-}
-
-/* Element: .user-card__name */
-.user-card__name {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #f1f5f9;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Element: .user-card__location */
-.user-card__location {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  display: block;
-  margin-top: 2px;
-}
-
-/* Element: .user-card__action-btn */
-.user-card__action-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 8px 0;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  color: white;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.user-card__action-btn:hover {
-  filter: brightness(1.1);
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
-
-/* Element: .user-card__lock-overlay */
 .user-card__lock-overlay {
+  pointer-events: auto; /* فعال کردن کلیک روی قفل */
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background: #0f172a;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   z-index: 20;
 }
-
-/* Element: .user-card__lock-content */
+.user-card__lock-bg-blur {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(2px);
+  opacity: 0.4;
+  z-index: -1;
+}
 .user-card__lock-content {
-  text-align: center;
-  color: white;
+  text-align: center; color: white; padding: 20px;
+}
+.user-card__lock-icon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+.user-card__lock-title { margin: 0; font-size: 1.4rem; font-weight: 800; }
+.user-card__lock-desc { margin: 5px 0 15px; color: #cbd5e1; }
+.user-card__lock-btn {
+    background: linear-gradient(90deg, #FFD700, #FFA500);
+    border: none; padding: 10px 20px; border-radius: 20px;
+    color: black; font-weight: bold; cursor: pointer;
 }
 
-/* Element: .user-card__lock-icon */
-.user-card__lock-icon {
-  font-size: 1.8rem;
-  display: block;
-  margin-bottom: 5px;
-}
-
-/* Element: .user-card__lock-title */
-.user-card__lock-title {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-/* Element: .user-card__lock-desc */
-.user-card__lock-desc {
-  margin: 5px 0 0;
-  font-size: 0.9rem;
-  color: #94a3b8;
-}
-
-/* Mobile Responsive */
+/* Responsive Styles */
 @media (max-width: 480px) {
   .user-card {
-    width: 160px; 
-    height: 260px;
+    width: 46vw; /* دو ستونه در موبایل */
+    height: 70vw; /* نسبت تصویر عمودی */
+    margin-right: 0; /* گرید هندل میکنه */
+    border-radius: 16px;
+  }
+  
+  .user-card__content {
+    padding: 12px;
+    gap: 8px;
+  }
+  
+  .user-card__name { font-size: 0.95rem; }
+  .user-card__location { font-size: 0.7rem; }
+  
+  .user-card__action-btn {
+    padding: 8px 0;
+    font-size: 0.8rem;
+    border-radius: 10px;
+  }
+  
+  .user-card__match-pill {
+    width: 35px;
+    height: 35px;
+    font-size: 0.7rem;
+    border-radius: 10px;
   }
   
   .user-card__like-btn {
-    width: 28px; height: 28px;
-    top: 6px; right: 6px;
+    width: 32px; height: 32px;
+    top: 10px; right: 10px;
   }
-  
-  .user-card__match-badge {
-    padding: 2px 6px;
-    bottom: 6px; right: 6px;
-  }
-  
-  .user-card__match-score { font-size: 0.75rem; }
-  .user-card__match-label { font-size: 0.4rem; }
-  
-  .user-card__name { font-size: 0.85rem; }
-  
-  .user-card__action-btn {
-    font-size: 0.75rem;
-    padding: 6px 0;
-  }
+  .user-card__heart-svg { width: 18px; height: 18px; }
 }

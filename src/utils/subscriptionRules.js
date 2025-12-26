@@ -4,9 +4,7 @@ export const PLANS = {
   PREMIUM: "premium", // همان Platinum در منطق شما
 };
 
-/**
- * تعیین سقف امتیاز قابل مشاهده در بخش‌های عمومی (Near You, etc.)
- */
+
 export const getVisibilityThreshold = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
 

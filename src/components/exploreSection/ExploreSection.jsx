@@ -2,18 +2,20 @@ import React from "react";
 import UserCard from "../userCard/UserCard";
 import EmptyStateCard from "../emptyState/EmptyStateCard";
 import PremiumLockCard from "../premiumLock/PremiumLockCard";
-import { 
-  getSoulmatePermissions, 
-  getVisibilityThreshold 
-} from "../../utils/subscriptionRules";
+import { getSoulmatePermissions } from "../../utils/subscriptionRules";
 import "./ExploreSection.css"; 
 
 const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate }) => {
-  let displayedUsers = users || [];
+  const displayedUsers = users || [];
   
+  // ----------------------------------------------------
+  // بخش ۱: لاجیک مخصوص Soulmates
+  // (طبق قوانین: Free=قفل، Gold=۵ نفر، Premium=همه)
+  // ----------------------------------------------------
   if (type === "soulmates") {
     const { isLocked, limit } = getSoulmatePermissions(userPlan);
 
+    // حالت ۱: کاربر Free است و کلاً قفل است
     if (isLocked) {
       return (
         <div className="explore-section">
@@ -28,8 +30,16 @@ const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate
       );
     }
 
-    const visibleUsers = displayedUsers.slice(0, limit);
-    const remainingCount = Math.max(0, displayedUsers.length - limit);
+    // حالت ۲: کاربر Gold یا Premium است
+    // اگر limit برابر Infinity باشد (Premium)، کل لیست را نشان بده
+    // اگر limit عدد باشد (Gold)، فقط همان تعداد را برش بزن
+    const visibleUsers = (limit === Infinity) 
+        ? displayedUsers 
+        : displayedUsers.slice(0, limit);
+        
+    const remainingCount = (limit === Infinity) 
+        ? 0 
+        : Math.max(0, displayedUsers.length - limit);
 
     return (
       <div className="explore-section">
@@ -47,13 +57,22 @@ const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate
           {displayedUsers.length > 0 ? (
             <>
               {visibleUsers.map((user) => (
-                <UserCard key={user._id} user={user} isLocked={false} userPlan={userPlan} />
+                <UserCard 
+                  key={user._id} 
+                  user={user} 
+                  // در بخش سول‌میت، کسانی که نمایش داده می‌شوند معمولاً باز هستند
+                  // مگر اینکه بخواهید منطق دیگری اضافه کنید
+                  isLocked={false} 
+                  userPlan={userPlan} 
+                />
               ))}
-              {userPlan === "gold" && remainingCount > 0 && (
+
+              {/* کارت "بقیه کاربران" فقط برای Gold نمایش داده می‌شود */}
+              {remainingCount > 0 && (
                 <div className="explore-section__locked-more-card" onClick={() => navigate("/upgrade")}>
                   <div className="explore-section__lock-icon">💎</div>
                   <h3 className="explore-section__locked-title">+{remainingCount} More</h3>
-                  <p className="explore-section__locked-desc">Upgrade to Platinum for 90%+ matches</p>
+                  <p className="explore-section__locked-desc">Upgrade to Premium to see everyone!</p>
                 </div>
               )}
             </>
@@ -65,9 +84,11 @@ const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate
     );
   }
 
-  const scoreThreshold = getVisibilityThreshold(userPlan);
-  displayedUsers = displayedUsers.filter(u => (u.matchScore || 0) <= scoreThreshold);
-
+  // ----------------------------------------------------
+  // بخش ۲: سایر بخش‌ها (Nearby, Fresh, Interests, Country)
+  // طبق "حالت B": هیچکس حذف نمی‌شود، فقط UserCard تصمیم می‌گیرد بلر کند یا نه
+  // ----------------------------------------------------
+  
   return (
     <div className="explore-section">
       <div className="explore-section__header">
@@ -86,16 +107,26 @@ const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate
             <UserCard 
               key={user._id} 
               user={user} 
-              isLocked={false} 
+              isLocked={false} // در لیست‌های عمومی قفل کامل نداریم، بلر داریم که داخل کارد هندل میشه
               userPlan={userPlan}
             />
           ))
         ) : (
-          <EmptyStateCard type={type === "city" ? "cityMatches" : "default"} />
+          <EmptyStateCard type={getEmptyStateType(type)} />
         )}
       </div>
     </div>
   );
+};
+
+// تابع کمکی برای تعیین نوع EmptyState
+const getEmptyStateType = (sectionType) => {
+    switch(sectionType) {
+        case 'city': return 'cityMatches';
+        case 'fresh': return 'freshFaces';
+        case 'interests': return 'interestMatches';
+        default: return 'default';
+    }
 };
 
 export default ExploreSection;
