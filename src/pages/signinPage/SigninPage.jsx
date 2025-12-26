@@ -8,7 +8,7 @@ import "./SigninPage.css";
 const SigninPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-  const { currentUser, checkAuth } = useAuth();
+  const {  checkAuth } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
