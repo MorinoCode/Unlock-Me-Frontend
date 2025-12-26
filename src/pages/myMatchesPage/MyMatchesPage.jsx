@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import UserCard from "../../components/userCard/UserCard";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
 import "./MyMatchesPage.css";
+import { useAuth } from "../../context/useAuth";
+import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
 
 const MyMatchesPage = () => {
   const [data, setData] = useState({ mutualMatches: [], sentLikes: [], incomingLikes: [] });
-  const [currentUser, setCurrentUser] = useState(null);
+  const { currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -14,10 +16,6 @@ const MyMatchesPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-        const userRes = await fetch(`${API_URL}/api/user/location`, { credentials: "include" });
-        const userData = await userRes.json();
-        setCurrentUser(userData);
 
         const res = await fetch(`${API_URL}/api/user/matches`, { credentials: "include" });
         const dashboardData = await res.json();
@@ -32,6 +30,7 @@ const MyMatchesPage = () => {
   }, [API_URL]);
 
   const userPlan = currentUser?.subscription?.plan || "free";
+  
 
   const renderSection = (title, list, type, subtitle, isLockedForFree = false) => {
     const limits = {
@@ -92,10 +91,7 @@ const MyMatchesPage = () => {
   };
 
   if (loading) return (
-    <div className="matches-loading">
-      <div className="matches-loading__spinner"></div>
-      <p className="matches-loading__text">Finding your connections...</p>
-    </div>
+    <HeartbeatLoader/>
   );
 
   return (
