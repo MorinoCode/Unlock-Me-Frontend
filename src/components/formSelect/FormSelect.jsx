@@ -11,22 +11,22 @@ const FormSelect = ({
   defaultText 
 }) => {
   return (
-    <div className="select-wrapper">
+    <div className="form-select">
       <select
         name={name}
         value={value}
         onChange={onChange}
         onBlur={onBlur}
-        className="signup-input" 
+        className="form-select__field" 
       >
-        <option value="">{defaultText}</option>
+        <option className="form-select__option" value="">{defaultText}</option>
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
+          <option className="form-select__option" key={opt.value} value={opt.value}>
             {opt.label}
           </option>
         ))}
       </select>
-      {error && <span className="error-text">{error}</span>}
+      {error && <span className="form-select__error">{error}</span>}
     </div>
   );
 };

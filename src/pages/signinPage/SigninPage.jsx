@@ -8,7 +8,7 @@ import "./SigninPage.css";
 const SigninPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-  const { setCurrentUser } = useAuth();
+  const {  checkAuth } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -27,15 +27,21 @@ const SigninPage = () => {
 
   const { email, password } = formData;
 
+  
   useEffect(() => {
+    
     const newErrors = {};
 
     if (touched.email && !/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Invalid email format";
     }
 
-    if (touched.password && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)) {
-      newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
+    if (
+      touched.password &&
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)
+    ) {
+      newErrors.password =
+        "Min 6 chars, uppercase, lowercase, number & symbol";
     }
 
     setErrors(newErrors);
@@ -61,6 +67,8 @@ const SigninPage = () => {
     if (!isFormValid) return;
 
     setLoading(true);
+    setServerMessage("");
+
     try {
       const response = await fetch(`${API_URL}/api/user/signin`, {
         method: "POST",
@@ -68,23 +76,17 @@ const SigninPage = () => {
         credentials: "include",
         body: JSON.stringify(formData),
       });
+
       const data = await response.json();
 
-      if (response.ok) {
-        setCurrentUser(data.user);
-
-        localStorage.setItem(
-          "unlock-me-user",
-          JSON.stringify({
-            id: data.user.id || data.user._id,
-            name: data.user.name,
-          })
-        );
-
-        navigate("/explore");
-      } else {
+      if (!response.ok) {
         setServerMessage(data.message || "Invalid credentials");
+        return;
       }
+
+      // ✅ فقط همین خط اضافه / اصلاح شده
+      await checkAuth();
+      navigate("/explore");
     } catch (err) {
       console.error(err);
       setServerMessage("Server error. Try again later.");
@@ -92,14 +94,21 @@ const SigninPage = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <BackgroundLayout>
       <div className="signin-card">
-        <h2 className="signin-title">UnlockMe</h2>
-        <p className="signin-subtitle">Sign in and unlock connections!</p>
+        <h2 className="signin-card__title">UnlockMe</h2>
+        <p className="signin-card__subtitle">
+          Sign in and unlock connections!
+        </p>
 
-        <form onSubmit={handleSubmit} className="signin-form" noValidate>
+        <form
+          onSubmit={handleSubmit}
+          className="signin-card__form"
+          noValidate
+        >
           <FormInput
             name="email"
             type="email"
@@ -122,21 +131,24 @@ const SigninPage = () => {
           />
 
           {serverMessage && (
-            <div className="server-message">{serverMessage}</div>
+            <div className="signin-card__message">{serverMessage}</div>
           )}
 
           <button
             type="submit"
-            className="signin-button"
+            className="signin-card__btn"
             disabled={!isFormValid || loading}
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        <div className="signin-footer">
-          <p>
-            Don't have an account? <a href="/signup">Sign Up</a>
+        <div className="signin-card__footer">
+          <p className="signin-card__footer-text">
+            Don't have an account?{" "}
+            <a href="/signup" className="signin-card__footer-link">
+              Sign Up
+            </a>
           </p>
         </div>
       </div>

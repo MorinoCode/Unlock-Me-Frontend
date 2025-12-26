@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth"; 
+
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
 import OnboardingStep1 from "../../components/onboarding/OnboardingStep1";
 import OnboardingStep2 from "../../components/onboarding/OnboardingStep2";
 import OnboardingStep3 from "../../components/onboarding/OnboardingStep3";
 import OnboardingStep4 from "../../components/onboarding/OnboardingStep4";
-import "./InitialQuizzesPage.css"; // استایل کارت اصلی
+import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader"; 
+import "./InitialQuizzesPage.css";
 
 const InitialQuizzesPage = () => {
   const navigate = useNavigate();
+  const { currentUser, checkAuth } = useAuth(); 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   
@@ -23,42 +26,57 @@ const InitialQuizzesPage = () => {
     avatar: null,
   });
 
-  const storedUser = localStorage.getItem("unlock-me-user");
-  const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-  const userName = parsedUser?.name ? parsedUser.name.charAt(0).toUpperCase() + parsedUser.name.slice(1) : "User";
+  const capitalizeFirstLetter = (str) => 
+    str ? str.charAt(0).toUpperCase() + str.slice(1) : "User";
+    
+  const userName = capitalizeFirstLetter(currentUser?.name);
 
   const handleNext = async () => {
     setLoading(true);
     try {
       let endpoint = "";
       let body;
+      let headers = { "Content-Type": "application/json" }; 
 
-      if (step === 1) {
-        endpoint = "birthday";
-        body = JSON.stringify({ birthday: formData.birthday });
-      } else if (step === 2) {
-        endpoint = "location";
-        body = JSON.stringify({ country: formData.country, city: formData.city });
-      } else if (step === 3) {
-        endpoint = "bio";
-        body = JSON.stringify({ bio: formData.bio });
-      } else {
-        endpoint = "avatar";
-        body = new FormData();
-        body.append("avatar", formData.avatar);
+      
+      switch (step) {
+        case 1:
+          endpoint = "birthday";
+          body = JSON.stringify({ birthday: formData.birthday });
+          break;
+        case 2:
+          endpoint = "location";
+          body = JSON.stringify({ country: formData.country, city: formData.city });
+          break;
+        case 3:
+          endpoint = "bio";
+          body = JSON.stringify({ bio: formData.bio });
+          break;
+        case 4:
+          endpoint = "avatar";
+          body = new FormData();
+          body.append("avatar", formData.avatar);
+          headers = {}; 
+          break;
+        default:
+          return;
       }
 
       const res = await fetch(`${API_URL}/api/user/onboarding/${endpoint}`, {
         method: "POST",
         credentials: "include",
-        headers: body instanceof FormData ? {} : { "Content-Type": "application/json" },
+        headers,
         body,
       });
 
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error("Failed to save step");
       
-      if (step < 4) setStep(step + 1);
-      else navigate("/initial-quizzes/interests");
+      if (step < 4) {
+        setStep(step + 1);
+      } else {
+        await checkAuth();
+        navigate("/initial-quizzes/interests");
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -68,7 +86,9 @@ const InitialQuizzesPage = () => {
 
   return (
     <BackgroundLayout>
-      <div className="onboarding-card">
+      {loading && <HeartbeatLoader text="Saving your progress..." />}
+
+      <div className="initial-quizzes__card">
         
         {step === 1 && (
           <OnboardingStep1 

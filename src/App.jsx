@@ -1,5 +1,9 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
+import { AuthProvider } from './context/AuthProvider';
+import Navbar from './components/navbar/Navbar.jsx';
+
+import PublicRoute from './context/PublicRoute.jsx'; 
+import ProtectedRoute from './context/ProtectedRoute.jsx'; 
 
 import SignupPage from './pages/signupPage/SignupPage';
 import Login from './pages/signinPage/SigninPage';
@@ -15,31 +19,51 @@ import ViewAllMatchesPage from './pages/viewAllMatchesPage/ViewAllMatchesPage.js
 import ChatPage from './pages/chatPage/ChatPage.jsx';
 import MessagesPage from './pages/MessagesInboxPage/MessagesInboxPage.jsx';
 import ProfilePage from './pages/profilePage/ProfilePage.jsx';
-import Navbar from './components/navbar/Navbar.jsx';
+
+const MainLayout = () => {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
+};
 
 const App = () => {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Navbar/>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='/signup' element={<SignupPage />} />
-          <Route path='/signin' element={<Login />} />
-          <Route path='/initial-quizzes' element={<InitialQuizzesPage />} />
-          <Route path='/initial-quizzes/interests' element={<InitialQuizzesInterestsPage />} />
-          <Route path='/initial-quizzes/questionsbycategory' element={<InitialQuizzesQuestionsPage />} />
-          <Route path='/explore' element={<ExplorePage />} />
-          <Route path="/explore/view-all/:category" element={<ViewAllMatchedUsersPage />} />
-          <Route path="/user-profile/:userId" element={<UserDetailPage />} />
-          <Route path="/mymatches" element={<MyMatchesPage />} />
-          <Route path="/mymatches/view-all/:type" element={<ViewAllMatchesPage />} />
-          <Route path="/messages" element={<MessagesPage />} />
-          <Route path="/chat/:receiverId" element={<ChatPage />} />
-          <Route path="/myprofile" element={<ProfilePage />} />
+          
+          <Route path='/' element={<> <Navbar/> <HomePage /> </>} />
+
+          <Route element={<PublicRoute />}>
+            <Route path='/signup' element={<SignupPage />} />
+            <Route path='/signin' element={<Login />} />
+          </Route>
+
+          <Route element={<ProtectedRoute />}>
+             <Route element={<MainLayout />}>
+             
+                <Route path='/initial-quizzes' element={<InitialQuizzesPage />} />
+                <Route path='/initial-quizzes/interests' element={<InitialQuizzesInterestsPage />} />
+                <Route path='/initial-quizzes/questionsbycategory' element={<InitialQuizzesQuestionsPage />} />
+
+                <Route path='/explore' element={<ExplorePage />} />
+                <Route path="/explore/view-all/:category" element={<ViewAllMatchedUsersPage />} />
+                <Route path="/user-profile/:userId" element={<UserDetailPage />} />
+                <Route path="/mymatches" element={<MyMatchesPage />} />
+                <Route path="/mymatches/view-all/:type" element={<ViewAllMatchesPage />} />
+                <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/chat/:receiverId" element={<ChatPage />} />
+                <Route path="/myprofile" element={<ProfilePage />} />
+                
+             </Route>
+          </Route>
+
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

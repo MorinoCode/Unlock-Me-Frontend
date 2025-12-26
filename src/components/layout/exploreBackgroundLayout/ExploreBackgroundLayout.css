@@ -1,4 +1,5 @@
-.romantic-layout {
+/* Block: .explore-bg-layout */
+.explore-bg-layout {
   position: relative;
   min-height: 100vh;
   width: 100%;
@@ -7,45 +8,49 @@
   color: white;
 }
 
-.romantic-bg {
+/* Element: .explore-bg-layout__background */
+.explore-bg-layout__background {
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
 }
 
-.star {
+/* Element: .explore-bg-layout__star */
+.explore-bg-layout__star {
   position: absolute;
   width: 2px;
   height: 2px;
   background: white;
   border-radius: 50%;
   box-shadow: 0 0 10px white;
-  animation: twinkle 3s infinite ease-in-out;
+  animation: explore-bg-twinkle 3s infinite ease-in-out;
 }
 
-@keyframes twinkle {
+@keyframes explore-bg-twinkle {
   0%, 100% { opacity: 0.3; transform: scale(0.8); }
   50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 15px white; }
 }
 
-.floating-heart {
+/* Element: .explore-bg-layout__heart */
+.explore-bg-layout__heart {
   position: absolute;
   bottom: -50px;
   font-size: 20px;
   filter: drop-shadow(0 0 10px rgba(255, 0, 100, 0.5));
-  animation: floatUp 15s infinite linear;
+  animation: explore-bg-float-up 15s infinite linear;
   user-select: none;
 }
 
-@keyframes floatUp {
+@keyframes explore-bg-float-up {
   0% { transform: translateY(0) rotate(0deg); opacity: 0; }
   10% { opacity: 1; }
   90% { opacity: 0.5; }
   100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
 }
 
-.romantic-glow {
+/* Element: .explore-bg-layout__glow */
+.explore-bg-layout__glow {
   position: absolute;
   width: 60vw;
   height: 60vw;
@@ -55,16 +60,29 @@
   z-index: -1;
 }
 
-.purple { top: -10%; left: -10%; background: #6366f1; }
-.pink { bottom: -10%; right: -10%; background: #ec4899; }
+/* Modifier: .explore-bg-layout__glow--purple */
+.explore-bg-layout__glow--purple {
+  top: -10%;
+  left: -10%;
+  background: #6366f1;
+}
 
-.romantic-content {
+/* Modifier: .explore-bg-layout__glow--pink */
+.explore-bg-layout__glow--pink {
+  bottom: -10%;
+  right: -10%;
+  background: #ec4899;
+}
+
+/* Element: .explore-bg-layout__content */
+.explore-bg-layout__content {
   position: relative;
   z-index: 10;
 }
 
+/* Mobile Responsive */
 @media (max-width: 409px) {
-  .star { width: 1.5px; height: 1.5px; }
-  .floating-heart { font-size: 16px; }
-  .romantic-glow { opacity: 0.1; }
+  .explore-bg-layout__star { width: 1.5px; height: 1.5px; }
+  .explore-bg-layout__heart { font-size: 16px; }
+  .explore-bg-layout__glow { opacity: 0.1; }
 }

@@ -6,6 +6,7 @@ import {
   getSoulmatePermissions, 
   getVisibilityThreshold 
 } from "../../utils/subscriptionRules";
+import "./ExploreSection.css"; 
 
 const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate }) => {
   let displayedUsers = users || [];
@@ -16,10 +17,10 @@ const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate
     if (isLocked) {
       return (
         <div className="explore-section">
-          <div className="section-header-wrapper">
-            <div className="section-header-group">
-              <h2 className="section-title">{title}</h2>
-              <p className="section-subtitle">{subtitle}</p>
+          <div className="explore-section__header">
+            <div className="explore-section__header-group">
+              <h2 className="explore-section__title">{title}</h2>
+              <p className="explore-section__subtitle">{subtitle}</p>
             </div>
           </div>
           <PremiumLockCard onUnlock={() => navigate("/upgrade")} />
@@ -32,27 +33,27 @@ const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate
 
     return (
       <div className="explore-section">
-        <div className="section-header-wrapper">
-          <div className="section-header-group">
-            <h2 className="section-title">
-              {title} <span className="count">({displayedUsers.length})</span>
+        <div className="explore-section__header">
+          <div className="explore-section__header-group">
+            <h2 className="explore-section__title">
+              {title} <span className="explore-section__count">({displayedUsers.length})</span>
             </h2>
-            <p className="section-subtitle">{subtitle}</p>
+            <p className="explore-section__subtitle">{subtitle}</p>
           </div>
-          {link && <button className="see-all-btn" onClick={() => navigate(link)}>See More</button>}
+          {link && <button className="explore-section__see-more-btn" onClick={() => navigate(link)}>See More</button>}
         </div>
 
-        <div className="horizontal-scroll">
+        <div className="explore-section__scroll-container">
           {displayedUsers.length > 0 ? (
             <>
               {visibleUsers.map((user) => (
                 <UserCard key={user._id} user={user} isLocked={false} userPlan={userPlan} />
               ))}
               {userPlan === "gold" && remainingCount > 0 && (
-                <div className="locked-more-card" onClick={() => navigate("/upgrade")}>
-                  <div className="lock-circle">💎</div>
-                  <h3>+{remainingCount} More</h3>
-                  <p>Upgrade to Platinum for 90%+ matches</p>
+                <div className="explore-section__locked-more-card" onClick={() => navigate("/upgrade")}>
+                  <div className="explore-section__lock-icon">💎</div>
+                  <h3 className="explore-section__locked-title">+{remainingCount} More</h3>
+                  <p className="explore-section__locked-desc">Upgrade to Platinum for 90%+ matches</p>
                 </div>
               )}
             </>
@@ -69,17 +70,17 @@ const ExploreSection = ({ title, subtitle, users, type, link, userPlan, navigate
 
   return (
     <div className="explore-section">
-      <div className="section-header-wrapper">
-        <div className="section-header-group">
-          <h2 className="section-title">
-            {title} <span className="count">({displayedUsers.length})</span>
+      <div className="explore-section__header">
+        <div className="explore-section__header-group">
+          <h2 className="explore-section__title">
+            {title} <span className="explore-section__count">({displayedUsers.length})</span>
           </h2>
-          <p className="section-subtitle">{subtitle}</p>
+          <p className="explore-section__subtitle">{subtitle}</p>
         </div>
-        {link && <button className="see-all-btn" onClick={() => navigate(link)}>See More</button>}
+        {link && <button className="explore-section__see-more-btn" onClick={() => navigate(link)}>See More</button>}
       </div>
       
-      <div className="horizontal-scroll">
+      <div className="explore-section__scroll-container">
         {displayedUsers.length > 0 ? (
           displayedUsers.map((user) => (
             <UserCard 

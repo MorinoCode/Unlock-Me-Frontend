@@ -1,0 +1,36 @@
+/* Block: .interests-actions */
+.interests-actions {
+  margin-top: 2.5rem;
+  width: 100%;
+}
+
+/* Element: .interests-actions__btn */
+.interests-actions__btn {
+  padding: 1.1rem;
+  border-radius: 14px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+}
+
+/* Modifier: .interests-actions__btn--full-width */
+.interests-actions__btn--full-width {
+  width: 100%;
+}
+
+.interests-actions__btn:hover:not(:disabled) {
+  background: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.interests-actions__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  box-shadow: none;
+}

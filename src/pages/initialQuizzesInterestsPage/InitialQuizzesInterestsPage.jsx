@@ -1,27 +1,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth"; 
+
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
 import InterestsHeader from "../../components/interestsHeader/InterestsHeader";
 import InterestsGrid from "../../components/interestsGrid/InterestsGrid";
 import InterestsActions from "../../components/interestsActions/InterestsActions";
+import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
 import "./InitialQuizzesInterestsPage.css";
 
 const InitialQuizzesInterestsPage = () => {
   const navigate = useNavigate();
+  const { currentUser ,  checkAuth } = useAuth(); 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [interestOptions, setInterestOptions] = useState([]);
-
-  const storedUser = localStorage.getItem("unlock-me-user");
-  const parsedUser = storedUser ? JSON.parse(storedUser) : null;
 
   const capitalizeFirstLetter = (str = "") =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 
-  const name = parsedUser?.name
-    ? capitalizeFirstLetter(parsedUser.name)
+  const name = currentUser?.name
+    ? capitalizeFirstLetter(currentUser.name)
     : "User";
 
   useEffect(() => {
@@ -33,10 +33,13 @@ const InitialQuizzesInterestsPage = () => {
         return res.json();
       })
       .then((data) => {
-        const options = data.categories || data; 
+        const options = data; 
         setInterestOptions(Array.isArray(options) ? options : []);
       })
-      .catch((err) => console.error("Fetch error:", err));
+      .catch((err) => console.error("Fetch error:", err))
+      .finally(() => {
+        setLoading(false);
+      });
   }, [API_URL]);
 
   const toggleInterest = (label) => {
@@ -52,7 +55,7 @@ const InitialQuizzesInterestsPage = () => {
   const handleNext = async () => {
     if (selectedInterests.length === 0) return;
 
-    setLoading(true);
+    setLoading(true); 
     try {
       const res = await fetch(`${API_URL}/api/user/onboarding/interests`, {
         method: "POST",
@@ -62,34 +65,42 @@ const InitialQuizzesInterestsPage = () => {
       });
 
       if (!res.ok) throw new Error("Request failed");
-
+      await checkAuth();
       navigate("/initial-quizzes/questionsbycategory");
     } catch (err) {
       console.error("Submission error:", err);
       alert("Failed to save interests. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+      setLoading(false); 
+    } 
   };
 
   const isNextDisabled = loading || selectedInterests.length < 3;
 
   return (
     <BackgroundLayout>
-      <div className="onboarding-interests-card">
-        <InterestsHeader name={name} />
+      {loading && <HeartbeatLoader text="Updating your profile..." />}
+      
+      <div className="interests-page__card">
         
-        <InterestsGrid 
-          options={interestOptions} 
-          selectedInterests={selectedInterests} 
-          onToggle={toggleInterest} 
-        />
+        <div className="interests-page__header-wrapper">
+             <InterestsHeader name={name} />
+        </div>
+        
+        <div className="interests-page__grid-wrapper">
+             <InterestsGrid 
+                options={interestOptions} 
+                selectedInterests={selectedInterests} 
+                onToggle={toggleInterest} 
+             />
+        </div>
 
-        <InterestsActions 
-          loading={loading} 
-          disabled={isNextDisabled} 
-          onNext={handleNext} 
-        />
+        <div className="interests-page__actions-wrapper">
+            <InterestsActions 
+                loading={loading} 
+                disabled={isNextDisabled} 
+                onNext={handleNext} 
+            />
+        </div>
       </div>
     </BackgroundLayout>
   );

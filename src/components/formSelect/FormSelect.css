@@ -1,10 +1,12 @@
-.select-wrapper {
+/* Block: .form-select */
+.form-select {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.signup-input {
+/* Element: .form-select__field */
+.form-select__field {
   width: 100%;
   padding: 0.9rem 1.2rem;
   border-radius: 12px;
@@ -14,28 +16,25 @@
   font-size: 1rem;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  cursor: pointer;
+  appearance: none; /* Removes default arrow in some browsers */
 }
 
-.signup-input:focus {
+.form-select__field:focus {
   outline: none;
   border-color: #6366f1;
   background: rgba(15, 23, 42, 0.9);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
-select.signup-input {
-  cursor: pointer;
-  appearance: none; 
-  
-}
-
-
-select.signup-input option {
+/* Element: .form-select__option */
+.form-select__option {
   background-color: #0f172a;
   color: white;
 }
 
-.error-text {
+/* Element: .form-select__error */
+.form-select__error {
   font-size: 0.8rem;
   color: #fb7185; 
   margin-top: 0.3rem;

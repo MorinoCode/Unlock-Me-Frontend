@@ -12,7 +12,7 @@ const FormInput = ({
   autoFocus = false 
 }) => {
   return (
-    <div className="input-wrapper">
+    <div className="form-input">
       <input
         name={name}
         type={type}
@@ -20,10 +20,10 @@ const FormInput = ({
         value={value}
         onChange={onChange}
         onBlur={onBlur}
-        className="signup-input" 
+        className="form-input__field" 
         autoFocus={autoFocus}
       />
-      {error && <span className="error-text">{error}</span>}
+      {error && <span className="form-input__error">{error}</span>}
     </div>
   );
 };

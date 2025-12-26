@@ -3,56 +3,59 @@ import { useNavigate } from "react-router-dom";
 import PromoBanner from "../../components/promoBanner/PromoBanner";
 import ExploreSection from "../../components/exploreSection/ExploreSection";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
+import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
 import { getPromoBannerConfig } from "../../utils/subscriptionRules"; 
+import { useAuth } from "../../context/useAuth";
 import "./ExplorePage.css";
 
 const ExplorePage = () => {
+  const { currentUser } = useAuth();
+  console.log(currentUser);
+  
   const [sections, setSections] = useState({ soulmates: [], freshFaces: [], cityMatches: [], interestMatches: [], countryMatches: [] });
-  const [userPlan, setUserPlan] = useState("free");
-  const [userLocation, setUserLocation] = useState({ country: "", city: "" });
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (!currentUser?.location?.country) return;
+
+    const fetchMatches = async () => {
       try {
         setLoading(true);
-        const locRes = await fetch(`${API_URL}/api/user/location`, { credentials: "include" });
-        const locData = await locRes.json();
-        if (!locData.location?.country) return setLoading(false);
-        
-        setUserLocation({ country: locData.location.country, city: locData.location.city });
-
-        const matchesRes = await fetch(`${API_URL}/api/explore/matches?country=${locData.location.country}`, { credentials: "include" });
+        const matchesRes = await fetch(`${API_URL}/api/explore/matches?country=${currentUser.location.country}`, { credentials: "include" });
         const data = await matchesRes.json();
         
         setSections(data.sections || {});
-        setUserPlan(data.userPlan || "free"); 
       } catch (err) { console.error(err); } 
       finally { setLoading(false); }
     };
-    fetchData();
-  }, [API_URL]);
 
+    fetchMatches();
+  }, [currentUser, API_URL]);
+
+  if (loading || !currentUser) return <HeartbeatLoader />;
+
+  const userPlan = currentUser.subscription?.plan || "free";
   const banners = getPromoBannerConfig(userPlan);
-
-  if (loading) return <div className="loading-container">Finding your matches... 🔮</div>;
+  const location = currentUser.location;
 
   return (
     <ExploreBackgroundLayout>
-      <div className="explore-page-container">
+      <div className="explore-page">
         
-        <header className="explore-header">
-          <div className="header-text">
-            <h1>Explore</h1>
-            <p>Matches in {userLocation.country}</p>
+        <header className="explore-page__header">
+          <div className="explore-page__text-container">
+            <h1 className="explore-page__title">Explore</h1>
+            <p className="explore-page__subtitle">Matches in {location.country}</p>
           </div>
-          <div className="plan-badge">Plan: <span>{userPlan?.toUpperCase()}</span></div>
+          <div className="explore-page__badge">
+            Plan: <span className="explore-page__badge-value">{userPlan.toUpperCase()}</span>
+          </div>
         </header>
 
-        <ExploreSection title="Near You" subtitle={`In ${userLocation.city}`} users={sections.cityMatches} type="city" link="/explore/view-all/nearby" userPlan={userPlan} navigate={navigate} />
+        <ExploreSection title="Near You" subtitle={`In ${location.city}`} users={sections.cityMatches} type="city" link="/explore/view-all/nearby" userPlan={userPlan} navigate={navigate} />
 
         <ExploreSection title="Fresh Faces" subtitle="New members" users={sections.freshFaces} type="fresh" link="/explore/view-all/new" userPlan={userPlan} navigate={navigate} />
 
@@ -68,7 +71,7 @@ const ExplorePage = () => {
           <PromoBanner title="Unlock Everything with Gold 🏆" desc="Unlimited city unlocks." btnText="Go Gold" onClick={() => navigate("/upgrade")} gradient="linear-gradient(90deg, #2e1065, #4c1d95)" />
         )}
 
-        <ExploreSection title="Across the Country" subtitle={`In ${userLocation.country}`} users={sections.countryMatches} type="country" link="/explore/view-all/country" userPlan={userPlan} navigate={navigate} />
+        <ExploreSection title="Across the Country" subtitle={`In ${location.country}`} users={sections.countryMatches} type="country" link="/explore/view-all/country" userPlan={userPlan} navigate={navigate} />
 
       </div>
     </ExploreBackgroundLayout>

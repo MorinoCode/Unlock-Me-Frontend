@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {  AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/useAuth";
 import "./Navbar.css";
+import defaultAvatar from "../../assets/default-avatar.png"
 
 const Navbar = () => {
   const { currentUser, setCurrentUser } = useAuth();
@@ -13,7 +14,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [avatar, setAvatar] = useState("/default-avatar.png");
+  const [avatar, setAvatar] = useState(defaultAvatar);
+  
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -46,6 +48,7 @@ const Navbar = () => {
   };
 
   if (location.pathname.startsWith("/chat")) return null;
+  if (location.pathname.startsWith("/initial")) return null;
 
   const links = currentUser
     ? [
@@ -62,7 +65,7 @@ const Navbar = () => {
     <>
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
+          <Motion.div
             className="navbar__overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -72,7 +75,7 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <motion.nav
+      <Motion.nav
         className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}
         animate={{ y: hidden ? -100 : 0 }}
         transition={{ duration: 0.3 }}
@@ -124,7 +127,7 @@ const Navbar = () => {
             </button>
           </div>
         </div>
-      </motion.nav>
+      </Motion.nav>
     </>
   );
 };

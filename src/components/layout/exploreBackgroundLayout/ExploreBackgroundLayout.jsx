@@ -2,7 +2,6 @@ import React from "react";
 import "./ExploreBackgroundLayout.css";
 
 // ✅ مقادیر را بیرون از کامپوننت می‌سازیم تا React Compiler ارور ندهد
-// این مقادیر فقط یکبار هنگام لود شدن اپلیکیشن ساخته می‌شوند
 const STATIC_STARS = Array.from({ length: 50 }).map((_, i) => ({
   id: i,
   top: `${Math.random() * 100}%`,
@@ -21,13 +20,13 @@ const STATIC_HEARTS = Array.from({ length: 2 }).map((_, i) => ({
 
 const ExploreBackgroundLayout = ({ children }) => {
   return (
-    <div className="romantic-layout">
-      <div className="romantic-bg">
+    <div className="explore-bg-layout">
+      <div className="explore-bg-layout__background">
         {/* ستاره‌های چشمک‌زن */}
         {STATIC_STARS.map((star) => (
           <div 
             key={`star-${star.id}`} 
-            className="star" 
+            className="explore-bg-layout__star" 
             style={{
               top: star.top,
               left: star.left,
@@ -41,7 +40,7 @@ const ExploreBackgroundLayout = ({ children }) => {
         {STATIC_HEARTS.map((heart) => (
           <div 
             key={`heart-${heart.id}`} 
-            className="floating-heart" 
+            className="explore-bg-layout__heart" 
             style={{
               left: heart.left,
               animationDelay: heart.delay,
@@ -54,11 +53,11 @@ const ExploreBackgroundLayout = ({ children }) => {
         ))}
 
         {/* هاله‌های رنگی */}
-        <div className="romantic-glow purple"></div>
-        <div className="romantic-glow pink"></div>
+        <div className="explore-bg-layout__glow explore-bg-layout__glow--purple"></div>
+        <div className="explore-bg-layout__glow explore-bg-layout__glow--pink"></div>
       </div>
 
-      <div className="romantic-content">
+      <div className="explore-bg-layout__content">
         {children}
       </div>
     </div>

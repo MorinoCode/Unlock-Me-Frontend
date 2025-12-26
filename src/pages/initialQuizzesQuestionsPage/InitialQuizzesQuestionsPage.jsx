@@ -4,12 +4,12 @@ import BackgroundLayout from "../../components/layout/backgroundLayout/Backgroun
 import QuizProgressBar from "../../components/quizProgressBar/QuizProgressBar.jsx";
 import QuizCard from "../../components/quizCard/QuizCard.jsx";
 import "./InitialQuizzesQuestionsPage.css";
-//new
+import { useAuth } from "../../context/useAuth.js";
 
 const InitialQuizzesQuestionsPage = () => {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-
+  const {  checkAuth } = useAuth(); 
   const [allQuestions, setAllQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -90,6 +90,7 @@ const InitialQuizzesQuestionsPage = () => {
       });
 
       if (res.ok) {
+        await checkAuth();
         navigate("/explore"); 
       } else {
         throw new Error("Failed to save results");
@@ -105,9 +106,9 @@ const InitialQuizzesQuestionsPage = () => {
   if (loading) {
     return (
       <BackgroundLayout>
-        <div className="quiz-loader-container">
-          <div className="quiz-spinner"></div>
-          <p>Preparing your personal quiz...</p>
+        <div className="quiz-loader">
+          <div className="quiz-loader__spinner"></div>
+          <p className="quiz-loader__text">Preparing your personal quiz...</p>
         </div>
       </BackgroundLayout>
     );
@@ -120,15 +121,19 @@ const InitialQuizzesQuestionsPage = () => {
 
   return (
     <BackgroundLayout>
-      <div className="quiz-page-wrapper">
-        <QuizProgressBar progress={progress} />
+      <div className="quiz-page">
+        <div className="quiz-page__progress-section">
+            <QuizProgressBar progress={progress} />
+        </div>
         
-        <QuizCard 
-          question={currentQuestion} 
-          onAnswer={handleAnswer} 
-          currentIndex={currentIndex} 
-          totalQuestions={allQuestions.length} 
-        />
+        <div className="quiz-page__card-section">
+            <QuizCard 
+              question={currentQuestion} 
+              onAnswer={handleAnswer} 
+              currentIndex={currentIndex} 
+              totalQuestions={allQuestions.length} 
+            />
+        </div>
       </div>
     </BackgroundLayout>
   );

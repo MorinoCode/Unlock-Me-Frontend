@@ -1,22 +1,23 @@
 import React from "react";
-//quiz
+import "./QuizCard.css";
+
 const QuizCard = ({ question, onAnswer, currentIndex, totalQuestions }) => {
   return (
-    <div className="quiz-question-card">
-      <div className="quiz-header">
-        <span className="quiz-category-badge">{question.category}</span>
-        <span className="quiz-counter">
+    <div className="quiz-card">
+      <div className="quiz-card__header">
+        <span className="quiz-card__badge">{question.category}</span>
+        <span className="quiz-card__counter">
           {currentIndex + 1} / {totalQuestions}
         </span>
       </div>
 
-      <h2 className="quiz-question-text">{question.questionText}</h2>
+      <h2 className="quiz-card__title">{question.questionText}</h2>
 
-      <div className="quiz-options-list">
+      <div className="quiz-card__options">
         {question.options.map((option, idx) => (
           <button
             key={idx}
-            className="quiz-option-btn"
+            className="quiz-card__option-btn"
             onClick={() => onAnswer(option)}
           >
             {option.text}

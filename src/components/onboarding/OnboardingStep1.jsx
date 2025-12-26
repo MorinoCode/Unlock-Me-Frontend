@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// ایمپورت فایل CSS مشترک
 import "./onboardingSteps.css"; 
 
 const OnboardingStep1 = ({ formData, setFormData, userName, onNext, loading }) => {
@@ -36,30 +35,33 @@ const OnboardingStep1 = ({ formData, setFormData, userName, onNext, loading }) =
   const isNextDisabled = Object.keys(validateBirthday(formData.birthday)).length > 0;
 
   return (
-    <div className="step-content">
-      <h2>{`${userName}, When were you born?`}</h2>
-      <div className="birthday-inputs">
+    <div className="onboarding-step">
+      <h2 className="onboarding-step__title">{`${userName}, When were you born?`}</h2>
+      <div className="onboarding-step__input-group onboarding-step__input-group--birthday">
         {["day", "month", "year"].map((f) => (
-          <div key={f}>
+          <div key={f} className="onboarding-step__field-wrapper">
             <input
               name={f}
               placeholder={f.toUpperCase()}
               value={formData.birthday[f]}
               onChange={handleChange}
               onBlur={() => setTouched({ ...touched, [f]: true })}
-              // کلاس دقیقاً مطابق استایل شما
-              className="onboarding-input" 
+              className="onboarding-step__input onboarding-step__input--center" 
               autoFocus={f === "day"}
               maxLength={f === "year" ? 4 : 2}
             />
-            {touched[f] && errors[f] && <span className="error-text">{errors[f]}</span>}
+            {touched[f] && errors[f] && <span className="onboarding-step__error">{errors[f]}</span>}
           </div>
         ))}
       </div>
-      {errors.age && <span className="error-text-age">{errors.age}</span>}
+      {errors.age && <span className="onboarding-step__error onboarding-step__error--age">{errors.age}</span>}
 
-      <div className="onboarding-actions">
-         <button onClick={onNext} disabled={isNextDisabled || loading} className="next-btn">
+      <div className="onboarding-step__actions">
+         <button 
+           onClick={onNext} 
+           disabled={isNextDisabled || loading} 
+           className="onboarding-step__btn onboarding-step__btn--primary"
+         >
            {loading ? "Saving..." : "Next"}
          </button>
       </div>
