@@ -4,10 +4,12 @@ import FormInput from "../../components/formInput/FormInput";
 import FormSelect from "../../components/formSelect/FormSelect";
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
 import "./SignupPage.css";
+import { useAuth } from "../../context/useAuth";
 
 const SignupPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -99,6 +101,8 @@ const SignupPage = () => {
           "unlock-me-user",
           JSON.stringify({ id: data.user.id, name: data.user.name })
         );
+        
+        await checkAuth();
         navigate("/initial-quizzes");
       } else {
         setServerMessage(data.message || "Signup failed");

@@ -1,0 +1,55 @@
+/* HeartbeatLoader.css */
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(10, 10, 20, 0.85); 
+  backdrop-filter: blur(8px); 
+  z-index: 9999; 
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+}
+
+.heartbeat-svg {
+  width: 120px;
+  height: auto;
+  overflow: visible;
+}
+
+.heartbeat-path {
+  fill: none;
+  stroke: #8b5cf6; 
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 250;
+  stroke-dashoffset: 250;
+  animation: heartbeatDraw 2s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5)); 
+}
+
+.loader-text {
+  margin-top: 20px;
+  color: #e0e7ff; 
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  animation: pulseText 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes heartbeatDraw {
+  0% { stroke-dashoffset: 250; opacity: 0; }
+  10% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes pulseText {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}

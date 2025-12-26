@@ -48,6 +48,7 @@ const Navbar = () => {
   };
 
   if (location.pathname.startsWith("/chat")) return null;
+  if (location.pathname.startsWith("/initial")) return null;
 
   const links = currentUser
     ? [

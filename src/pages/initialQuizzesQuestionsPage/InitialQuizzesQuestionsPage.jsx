@@ -4,11 +4,12 @@ import BackgroundLayout from "../../components/layout/backgroundLayout/Backgroun
 import QuizProgressBar from "../../components/quizProgressBar/QuizProgressBar.jsx";
 import QuizCard from "../../components/quizCard/QuizCard.jsx";
 import "./InitialQuizzesQuestionsPage.css";
+import { useAuth } from "../../context/useAuth.js";
 
 const InitialQuizzesQuestionsPage = () => {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-
+  const {  checkAuth } = useAuth(); 
   const [allQuestions, setAllQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -89,6 +90,7 @@ const InitialQuizzesQuestionsPage = () => {
       });
 
       if (res.ok) {
+        await checkAuth();
         navigate("/explore"); 
       } else {
         throw new Error("Failed to save results");
