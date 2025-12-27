@@ -11,7 +11,7 @@ import { Pagination } from "../../components/pagination/Pagination";
 // Utils
 import { getPromoBannerConfig } from "../../utils/subscriptionRules";
 
-import "./ViewAllMatchedUsersPage.css";
+import "./ViewAllMatchedExploreUsersPage.css";
 
 const ViewAllMatchedUsersPage = () => {
   const { category } = useParams();
@@ -32,18 +32,17 @@ const ViewAllMatchedUsersPage = () => {
     const fetchMatches = async () => {
       try {
         setLoading(true);
-        const country = currentUser?.country;
+        const country = currentUser?.location.country;
+        console.log(currentUser);
         if (!country) return;
 
-        // 1. ساخت کوئری پارامترها برای ارسال به بک‌اند جدید
         const queryParams = new URLSearchParams({
             country: country,
-            category: category, // مثلا: 'soulmates', 'nearby'
+            category: category, 
             page: currentPage,
             limit: usersPerPage
         });
-
-        // 2. درخواست به اندپوینت (بک‌اند الان فقط لیست همین صفحه را برمی‌گرداند)
+        console.log("sending req");
         const res = await fetch(`${API_URL}/api/explore/matches?${queryParams}`, { 
             credentials: "include" 
         });
@@ -51,8 +50,7 @@ const ViewAllMatchedUsersPage = () => {
         if (!res.ok) throw new Error("Failed to fetch matches");
 
         const data = await res.json();
-        
-        // 3. دریافت داده‌ها از ساختار جدید بک‌اند
+        console.log(data);
         setUserPlan(data.userPlan || "free");
         setUsers(data.users || []); // آرایه کاربران صفحه جاری
         
@@ -69,7 +67,7 @@ const ViewAllMatchedUsersPage = () => {
     };
 
     fetchMatches();
-  }, [category, currentPage, API_URL, currentUser]); // با تغییر Page ریکوئست جدید زده می‌شود
+  }, [category, currentPage, API_URL, currentUser]); 
 
   // تنظیمات بنر تبلیغاتی
   const banners = getPromoBannerConfig(userPlan);
@@ -85,7 +83,7 @@ const ViewAllMatchedUsersPage = () => {
         <span className="matches-view-loading__text">Loading matches... 🔮</span>
     </div>
   );
-
+  
   return (
     <ExploreBackgroundLayout>
       <div className="matches-view">
