@@ -1,18 +1,29 @@
-name: Main CI/CD
+name: Main CI/CD (Production)
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-test-deploy:
+  deploy-production:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write 
       deployments: write
     steps:
+      - name: Check Source Branch
+        if: github.event_name == 'pull_request'
+        run: |
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "Error: You can only merge into 'main' from 'dev' branch."
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -31,7 +42,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      
       - name: Deploy to Vercel (Production)
+        if: github.event_name == 'push'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
