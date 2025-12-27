@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '../../context/useAuth';
 import ExploreBackgroundLayout from '../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout';
-import SwipeCard from '../../components/swipeCard/swipeCard';
+import SwipeCard from '../../components/swipeCard/SwipeCard';
 import PromoBanner from '../../components/promoBanner/PromoBanner'; 
 import './SwipePage.css';
 import HeartbeatLoader from '../../components/heartbeatLoader/HeartbeatLoader';
+import { useNavigate } from 'react-router-dom';
 
 const SwipePage = () => {
   const [users, setUsers] = useState([]);
@@ -12,8 +13,9 @@ const SwipePage = () => {
   const [showUpsell, setShowUpsell] = useState(false);
   const [matchModal, setMatchModal] = useState(null); 
   const [feedback, setFeedback] = useState(null); 
-  const [topIndex, setTopIndex] = useState(-1);
+  const [icebreakerUser, setIcebreakerUser] = useState(null);
 
+  const [topIndex, setTopIndex] = useState(-1);
   const topIndexRef = useRef(-1); 
   const childRefs = useMemo(
     () => Array(users.length).fill(0).map(() => React.createRef()),
@@ -22,12 +24,13 @@ const SwipePage = () => {
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const { currentUser } = useAuth(); 
+  const navigate = useNavigate();
 
   useEffect(() => { topIndexRef.current = topIndex; }, [topIndex]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (showUpsell || matchModal) return;
+      if (showUpsell || matchModal || icebreakerUser) return;
       switch(e.key) {
         case 'ArrowLeft': triggerSwipe('left'); break;
         case 'ArrowRight': triggerSwipe('right'); break;
@@ -37,7 +40,7 @@ const SwipePage = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showUpsell, matchModal, users]);
+  }, [showUpsell, matchModal, icebreakerUser, users]);
 
   const fetchCards = async () => {
     try {
@@ -83,7 +86,6 @@ const SwipePage = () => {
 
   const handleCardLeftScreen = (index) => {
     setUsers(prev => {
-      if (!prev || prev.length === 0) return prev;
       const next = prev.filter((_, i) => i !== index);
       const newTop = next.length - 1;
       setTopIndex(newTop);
@@ -99,13 +101,26 @@ const SwipePage = () => {
     }
   };
 
+  const handleChatClick = () => {
+    const idx = topIndexRef.current;
+    if (idx >= 0 && idx < users.length) {
+        setIcebreakerUser(users[idx]);
+    }
+  };
+
+  const proceedToChat = () => {
+    if (icebreakerUser) {
+        navigate(`/chat/${icebreakerUser._id}`);
+    }
+  };
+
   if (loading) return <HeartbeatLoader/>;
 
   return (
     <ExploreBackgroundLayout>
       <div className="swipe-page">
         
-        <div className="swipe-page__card-container" role="list">
+        <div className="swipe-page__card-container">
           {users.map((user, index) => (
             <SwipeCard
               ref={childRefs[index]}
@@ -119,29 +134,35 @@ const SwipePage = () => {
           ))}
 
           {users.length === 0 && !loading && (
-             <div style={{textAlign:'center', color:'white', zIndex:0}}>
+             <div className="empty-state">
                 <h2>That's everyone!</h2>
-                <button onClick={fetchCards} style={{padding:'10px 20px', borderRadius:20, marginTop:10, cursor:'pointer'}}>Refresh</button>
+                <button onClick={fetchCards} style={{padding:'12px 24px', borderRadius:30, marginTop:20, cursor:'pointer', border:'none', background:'#2563eb', color:'white', fontWeight:'bold'}}>Refresh</button>
              </div>
           )}
         </div>
 
         <div className="swipe-page__actions">
-            <button className="action-btn-circle btn-nope" onClick={() => triggerSwipe('left')} aria-label="Nope (Left)">
-                👎
-            </button>
-
-            <button className="action-btn-pill" onClick={() => triggerSwipe('up')} aria-label="Super like (Up)">
-                ⭐ Super Like
-            </button>
-
-            <button className="action-btn-circle btn-like" onClick={() => triggerSwipe('right')} aria-label="Like (Right)">
-                ❤
-            </button>
+            <button className="action-btn-circle btn-nope" onClick={() => triggerSwipe('left')}>👎</button>
+            <button className="action-btn-pill" onClick={() => triggerSwipe('up')}>⭐ Super Like</button>
+            <button className="action-btn-circle btn-chat-page" onClick={handleChatClick}>💬</button>
+            <button className="action-btn-circle btn-like" onClick={() => triggerSwipe('right')}>❤️</button>
         </div>
 
+        {icebreakerUser && (
+            <div className="swipe-page__modal-overlay">
+                <div className="icebreaker-modal">
+                    <h3>🧊 Icebreaker</h3>
+                    <p>"{icebreakerUser.icebreaker || `Ask about ${icebreakerUser.name}'s bio!`}"</p>
+                    <div className="icebreaker-modal-actions">
+                        <button className="btn-cancel" onClick={() => setIcebreakerUser(null)}>Cancel</button>
+                        <button className="btn-proceed" onClick={proceedToChat}>Start Chat</button>
+                    </div>
+                </div>
+            </div>
+        )}
+
         {showUpsell && (
-           <div className="swipe-page__modal-overlay" role="dialog" aria-modal="true">
+           <div className="swipe-page__modal-overlay">
              <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
                <PromoBanner 
                  title="Premium Match! 💎"
@@ -150,19 +171,17 @@ const SwipePage = () => {
                  onClick={() => { window.location.href = '/upgrade'; }}
                  onClose={() => setShowUpsell(false)}
                />
-               <button className="swipe-page__modal-close" onClick={() => setShowUpsell(false)}>
-                  Maybe later
-               </button>
+               <button className="swipe-page__modal-close" onClick={() => setShowUpsell(false)}>Maybe later</button>
              </div>
            </div>
         )}
         
         {matchModal && (
-          <div className="swipe-page__modal-overlay" role="dialog">
-             <div style={{textAlign: 'center', color: 'white'}}>
-                 <h1 style={{color: '#22c55e'}}>It's a Match!</h1>
+          <div className="swipe-page__modal-overlay">
+             <div className="match-modal">
+                 <h1>It's a Match! 🎉</h1>
                  <p>You matched with {matchModal.name}</p>
-                 <button onClick={() => setMatchModal(null)} style={{padding: '10px 20px', borderRadius: 20}}>Keep Swiping</button>
+                 <button onClick={() => setMatchModal(null)}>Keep Swiping</button>
              </div>
           </div>
         )}

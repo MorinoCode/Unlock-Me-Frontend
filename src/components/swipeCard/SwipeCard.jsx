@@ -1,20 +1,37 @@
 import React, { useState, useRef, useImperativeHandle, useEffect } from 'react';
-import TinderCard from 'react-tinder-card';
+import { motion as Motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import './SwipeCard.css';
 
 const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFeedback, index }, ref) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showIcebreaker, setShowIcebreaker] = useState(false);
-  
-  const tinderCardRef = useRef();
   const audioRef = useRef(null);
   const navigate = useNavigate();
 
+  // Framer Motion Hooks
+  const controls = useAnimation();
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-25, 25]);
+  const opacity = useTransform(x, [-300, -200, 0, 200, 300], [0, 1, 1, 1, 0]);
+
   useImperativeHandle(ref, () => ({
-    async swipe(dir) { if (tinderCardRef.current?.swipe) await tinderCardRef.current.swipe(dir); },
-    async restoreCard() { if (tinderCardRef.current?.restoreCard) await tinderCardRef.current.restoreCard(); }
+    async swipe(dir) {
+      const xTarget = dir === 'right' ? window.innerWidth + 100 : dir === 'left' ? -window.innerWidth - 100 : 0;
+      const yTarget = dir === 'up' ? -window.innerHeight - 100 : 0;
+      
+      await controls.start({
+        x: xTarget,
+        y: yTarget,
+        opacity: 0,
+        transition: { duration: 0.3 }
+      });
+      if (onSwipe) onSwipe(dir, user, index);
+      if (onCardLeftScreen) onCardLeftScreen(index);
+    },
+    async restoreCard() {
+      await controls.start({ x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 20 } });
+    }
   }));
 
   useEffect(() => {
@@ -27,21 +44,45 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
     };
   }, [user._id]);
 
-  const stopPropagation = (e) => {
-    e.stopPropagation();
+  const handleDragEnd = async (event, info) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+    const swipeThreshold = 100;
+
+    if (Math.abs(offset) > swipeThreshold || Math.abs(velocity) > 500) {
+      const dir = offset > 0 ? "right" : "left";
+      
+      if (isFlipped) {
+        controls.start({ x: 0, y: 0 });
+        return;
+      }
+
+      await controls.start({ x: dir === "right" ? 1000 : -1000, opacity: 0 });
+      if (onSwipe) onSwipe(dir, user, index);
+      if (onCardLeftScreen) onCardLeftScreen(index);
+    } else {
+      controls.start({ x: 0, y: 0 });
+    }
   };
 
   const handleFlip = (e) => {
-    stopPropagation(e);
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (isPlaying && audioRef.current) {
       audioRef.current.pause();
       setIsPlaying(false);
     }
     setIsFlipped(!isFlipped);
+    console.log("Flipped state:", !isFlipped); // Added console log for verification
   };
 
   const handleAudioToggle = (e) => {
-    stopPropagation(e);
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!user.voiceIntro || !audioRef.current) return;
     if (isPlaying) {
       audioRef.current.pause();
@@ -53,56 +94,41 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
   };
 
   const handleProfileClick = () => {
-    if (!isFlipped && !showIcebreaker) navigate(`/user-profile/${user._id}`);
-  };
-
-  const handleChatClick = (e) => {
-    stopPropagation(e);
-    setShowIcebreaker(true);
-  };
-
-  const handleProceedToChat = (e) => {
-    stopPropagation(e);
-    navigate(`/chat/${user._id}`);
-  };
-
-  const handleCloseIcebreaker = (e) => {
-    stopPropagation(e);
-    setShowIcebreaker(false);
+    if (!isFlipped) navigate(`/user-profile/${user._id}`);
   };
 
   const hasPhotos = user.gallery && user.gallery.length > 0;
 
   return (
-    <TinderCard
-      ref={tinderCardRef}
-      className="swipe"
-      onSwipe={(dir) => { if (onSwipe) onSwipe(dir, user, index); }}
-      onCardLeftScreen={() => { if (onCardLeftScreen) onCardLeftScreen(index); }}
-      preventSwipe={['down']}
+    <Motion.div
+      className="swipe-card-wrapper"
+      drag={!isFlipped} 
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      onDragEnd={handleDragEnd}
+      animate={controls}
+      style={{ x, rotate, opacity }}
+      whileTap={{ scale: 1.02 }}
     >
       <div className={`swipe-card__inner ${isFlipped ? 'swipe-card__inner--flipped' : ''}`}>
 
+        {/* --- FRONT SIDE --- */}
         <div className="swipe-card__front" style={{ backgroundImage: `url(${user.avatar || '/default-avatar.png'})` }}>
-
+          
           <div className={`swipe-card__stamp swipe-card__stamp--like ${actionFeedback === 'right' ? 'swipe-card__stamp--visible' : ''}`}>LIKE</div>
           <div className={`swipe-card__stamp swipe-card__stamp--nope ${actionFeedback === 'left' ? 'swipe-card__stamp--visible' : ''}`}>NOPE</div>
           <div className={`swipe-card__stamp swipe-card__stamp--super ${actionFeedback === 'up' ? 'swipe-card__stamp--visible' : ''}`}>SUPER</div>
 
           <button 
             className="swipe-card__btn-flip" 
-            onClick={handleFlip}
-            onTouchStart={stopPropagation}
-            onMouseDown={stopPropagation}
+            onPointerUp={handleFlip} 
+            // Removed onPointerDown to avoid double firing or conflicts
           >
              🧬 DNA Breakdown
           </button>
 
           <div 
-            style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '75%', zIndex: 10, cursor: 'pointer'}}
+            className="swipe-card__touch-area"
             onClick={handleProfileClick}
-            role="button"
-            tabIndex={0}
           ></div>
 
           <div className="swipe-card__overlay">
@@ -113,46 +139,30 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
                📍 {user.location?.city || "Unknown"}, {user.location?.country || "Unknown"}
              </div>
 
-             <button
-               className="swipe-card__btn-chat"
-               onClick={handleChatClick}
-               onTouchStart={stopPropagation}
-               onMouseDown={stopPropagation}
-             >
-               💬
-             </button>
-
-             <button 
-                className={`swipe-card__btn-audio ${isPlaying ? 'swipe-card__btn-audio--playing' : ''}`}
-                onClick={handleAudioToggle}
-                onTouchStart={stopPropagation}
-                onMouseDown={stopPropagation}
-                disabled={!user.voiceIntro}
-             >
-               {isPlaying ? '⏸' : '🎤'}
-             </button>
+             <div style={{ marginTop: '15px' }}>
+                <button 
+                    className={`swipe-card__btn-audio-inline ${isPlaying ? 'playing' : ''}`}
+                    onPointerUp={handleAudioToggle}
+                    disabled={!user.voiceIntro}
+                >
+                  {isPlaying ? '⏸ Pause Voice' : (user.voiceIntro ? '▶ Play Voice Intro' : '🎤 No Voice Intro')}
+                </button>
+             </div>
+             
              {user.voiceIntro && <audio ref={audioRef} src={user.voiceIntro} onEnded={() => setIsPlaying(false)} />}
           </div>
-
-          {showIcebreaker && (
-            <div className="swipe-card__icebreaker-overlay" onClick={stopPropagation} onTouchStart={stopPropagation}>
-              <div className="icebreaker-content">
-                <h3>🧊 Icebreaker</h3>
-                <p>"{user.icebreaker || `Ask about ${user.name}'s bio!`}"</p>
-                <div className="icebreaker-actions">
-                  <button className="btn-cancel" onClick={handleCloseIcebreaker}>Cancel</button>
-                  <button className="btn-proceed" onClick={handleProceedToChat}>Start Chat</button>
-                </div>
-              </div>
-            </div>
-          )}
-
         </div>
 
+        {/* --- BACK SIDE --- */}
         <div className="swipe-card__back">
           <div className="swipe-card__back-header">
              <h3 className="swipe-card__title">DNA Breakdown</h3>
-             <button className="swipe-card__btn-close" onClick={handleFlip} onTouchStart={stopPropagation}>✕</button>
+             <button 
+                type="button"
+                className="swipe-card__btn-close" 
+                // Using only onPointerUp for consistent behavior
+                onPointerUp={handleFlip}
+             >✕</button>
           </div>
 
           <div className="swipe-card__synergy">
@@ -183,17 +193,15 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
           <div className="swipe-card__back-actions">
             <button 
                className="swipe-card__btn-photos" 
-               onClick={handleFlip}
-               onTouchStart={stopPropagation}
+               onPointerUp={handleFlip}
                disabled={!hasPhotos}
             >
                {hasPhotos ? "📸 View Photos" : "🚫 No Gallery Photos"}
             </button>
           </div>
         </div>
-
       </div>
-    </TinderCard>
+    </Motion.div>
   );
 });
 
