@@ -8,7 +8,6 @@ import PublicRoute from './context/PublicRoute.jsx';
 import ProtectedRoute from './context/ProtectedRoute.jsx'; 
 import HeartbeatLoader from './components/heartbeatLoader/HeartbeatLoader'; // لودر برای زمان‌های انتظار
 
-// 🔥 Lazy Loading: صفحات سنگین را فقط در زمان نیاز دانلود کن
 const SignupPage = lazy(() => import('./pages/signupPage/SignupPage'));
 const Login = lazy(() => import('./pages/signinPage/SigninPage'));
 const InitialQuizzesPage = lazy(() => import('./pages/initialQuizzesPage/InitialQuizzesPage'));
