@@ -63,7 +63,6 @@ const ViewAllMatchesPage = () => {
     fetchMatches();
   }, [type, currentPage, API_URL]);
 
-  // 3. هندل کردن محدودیت‌های پلن (Visual Locking)
   const userPlan = currentUser?.subscription?.plan || "free";
   
   const limits = {
@@ -72,8 +71,7 @@ const ViewAllMatchesPage = () => {
     gold: { mutual: 999, sent: 999, incoming: 999 }
   };
   
-  // محاسبه ایندکس کلی کاربر در دیتابیس برای اعمال قفل
-  // (چون صفحه صفحه می‌گیریم، باید ایندکس واقعی رو حساب کنیم)
+  
   const baseIndex = (currentPage - 1) * usersPerPage;
   const currentLimit = limits[userPlan]?.[type] || 0;
 
