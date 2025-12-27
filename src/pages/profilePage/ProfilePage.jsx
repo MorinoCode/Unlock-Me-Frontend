@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
-import { Country, City } from 'country-state-city';
+// import { Country, City } from 'country-state-city'; // ❌ حذف شد
 import Cropper from "react-easy-crop"; 
 import "./ProfilePage.css";
 
@@ -38,8 +38,34 @@ const ProfilePage = () => {
     currentPassword: "", newPassword: "", confirmPassword: ""
   });
 
-  const countries = Country.getAllCountries();
+  // ✅ استیت‌های جدید برای جایگزینی کتابخانه
+  const [availableLocations, setAvailableLocations] = useState([]);
   const [cities, setCities] = useState([]);
+
+  // ✅ 1. گرفتن لیست کشورها از بک‌اند
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/locations`);
+        if (res.ok) {
+          const data = await res.json();
+          setAvailableLocations(data);
+        }
+      } catch (err) { console.error("Error fetching locations:", err); }
+    };
+    fetchLocations();
+  }, [API_URL]);
+
+  // ✅ 2. آپدیت کردن لیست شهرها وقتی کشور تغییر میکند
+  useEffect(() => {
+    if (formData.countryCode && availableLocations.length > 0) {
+      const selectedLocation = availableLocations.find(l => l.countryCode === formData.countryCode);
+      // بک‌اند آرایه‌ای از رشته‌ها برمی‌گرداند: ["Stockholm", "Malmö", ...]
+      setCities(selectedLocation ? selectedLocation.cities : []);
+    } else {
+      setCities([]);
+    }
+  }, [formData.countryCode, availableLocations]);
 
   const onFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -91,13 +117,15 @@ const ProfilePage = () => {
           const data = await res.json();
           const serverCountry = data.location?.country || data.country || "";
           const serverCity = data.location?.city || data.city || "";
-          const countryObj = countries.find(c => c.name === serverCountry);
+          // نکته: اینجا ما هنوز availableLocations رو نداریم (چون async هست)
+          // پس به دیتای خود یوزر اعتماد میکنیم. اگر countryCode نبود، یوزر باید دوباره انتخاب کنه.
+          
           setFormData({
             name: data.name || "",
             bio: data.bio || "",
             phone: data.phone || "",
             country: serverCountry,
-            countryCode: countryObj?.isoCode || "",
+            countryCode: data.location?.countryCode || data.countryCode || "", // سعی میکنیم کد رو از پروفایل یوزر بخونیم
             city: serverCity,
             avatar: data.avatar || "",
             gallery: data.gallery || [],
@@ -113,9 +141,6 @@ const ProfilePage = () => {
     fetchFullProfile();
   }, [currentUser, API_URL]);
 
-  useEffect(() => {
-    if (formData.countryCode) setCities(City.getCitiesOfCountry(formData.countryCode));
-  }, [formData.countryCode]);
 
   const fetchAllInterestOptions = async () => {
     try {
@@ -281,21 +306,35 @@ const ProfilePage = () => {
                   <label className="profile-form__label">Phone</label>
                   <input className="profile-form__input" value={formData.phone} onChange={(e)=>setFormData({...formData, phone:e.target.value})} />
                 </div>
+                
+                {/* ✅ Country Select اصلاح شده */}
                 <div className="profile-form__group">
                   <label className="profile-form__label">Country*</label>
                   <select className="profile-form__select" value={formData.country} onChange={(e)=> {
-                    const selected = countries.find(c => c.name === e.target.value);
-                    setFormData({...formData, country: e.target.value, countryCode: selected?.isoCode || "", city: ""});
+                    // پیدا کردن آبجکت کشور از لیست بک‌اند
+                    const selected = availableLocations.find(c => c.country === e.target.value);
+                    setFormData({...formData, country: e.target.value, countryCode: selected?.countryCode || "", city: ""});
                   }}>
-                    {countries.map(c => <option key={c.isoCode} value={c.name} className="profile-form__option">{c.flag} {c.name}</option>)}
+                    <option value="">Select Country</option>
+                    {availableLocations.map(loc => (
+                      <option key={loc.countryCode} value={loc.country} className="profile-form__option">
+                        {loc.countryCode === "SE" ? "🇸🇪" : "🏳️"} {loc.country}
+                      </option>
+                    ))}
                   </select>
                 </div>
+
+                {/* ✅ City Select اصلاح شده */}
                 <div className="profile-form__group">
                   <label className="profile-form__label">City*</label>
-                  <select className="profile-form__select" value={formData.city} onChange={(e)=>setFormData({...formData, city: e.target.value})}>
-                    {cities.map((c, i) => <option key={i} value={c.name} className="profile-form__option">{c.name}</option>)}
+                  <select className="profile-form__select" value={formData.city} onChange={(e)=>setFormData({...formData, city: e.target.value})} disabled={!formData.countryCode}>
+                    <option value="">Select City</option>
+                    {cities.map((cityName, i) => (
+                      <option key={i} value={cityName} className="profile-form__option">{cityName}</option>
+                    ))}
                   </select>
                 </div>
+
                 <div className="profile-form__group profile-form__group--full">
                   <label className="profile-form__label">Birthday*</label>
                   <div className="profile-form__row">

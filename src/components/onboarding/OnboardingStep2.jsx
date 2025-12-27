@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Country, City } from "country-state-city";
 import "./onboardingSteps.css";
 
 /* =========================
    SearchableSelect Component
+   (بدون تغییر باقی می‌ماند چون منطق UI سالم است)
 ========================= */
 const SearchableSelect = ({
   options,
@@ -96,12 +96,61 @@ const OnboardingStep2 = ({
   onBack,
   loading,
 }) => {
-  const [countries] = useState(Country.getAllCountries());
+  // استیت برای ذخیره دیتای خام که از بک‌اند می‌آید
+  const [availableLocations, setAvailableLocations] = useState([]);
+  const [fetchingLoc, setFetchingLoc] = useState(true);
 
-  const cities = useMemo(() => {
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+  // 1. دریافت لیست کشورها و شهرها از بک‌اند
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        setFetchingLoc(true);
+        // فرض بر این است که بک‌اند روی این آدرس لیست را برمی‌گرداند
+        const res = await fetch(`${API_URL}/api/locations`); 
+        const data = await res.json();
+        
+        if (Array.isArray(data)) {
+          setAvailableLocations(data);
+        }
+      } catch (err) {
+        console.error("Failed to load locations:", err);
+      } finally {
+        setFetchingLoc(false);
+      }
+    };
+
+    fetchLocations();
+  }, [API_URL]);
+
+  // 2. آماده‌سازی لیست کشورها برای کامپوننت Select
+  const countryOptions = useMemo(() => {
+    return availableLocations.map((loc) => ({
+      name: loc.country,       // نام برای نمایش
+      isoCode: loc.countryCode, // کد برای ذخیره و فیلتر
+      // اگر بک‌اند پرچم ندارد، می‌توانیم دستی اضافه کنیم یا حذف کنیم
+      flag: loc.countryCode === "SE" ? "🇸🇪" : "🏳️" 
+    }));
+  }, [availableLocations]);
+
+  // 3. فیلتر کردن شهرها بر اساس کشور انتخاب شده
+  const cityOptions = useMemo(() => {
     if (!formData.countryCode) return [];
-    return City.getCitiesOfCountry(formData.countryCode) || [];
-  }, [formData.countryCode]);
+
+    // پیدا کردن آبجکت کشور انتخاب شده در دیتای بک‌اند
+    const selectedLocation = availableLocations.find(
+      (loc) => loc.countryCode === formData.countryCode
+    );
+
+    if (!selectedLocation || !selectedLocation.cities) return [];
+
+    // تبدیل آرایه رشته‌ای ["Stockholm", ...] به آرایه آبجکت [{name: "Stockholm"}, ...]
+    // چون SearchableSelect انتظار آبجکت دارد
+    return selectedLocation.cities.map((cityName) => ({
+      name: cityName,
+    }));
+  }, [formData.countryCode, availableLocations]);
 
   const isNextDisabled = !formData.country || !formData.city;
 
@@ -112,9 +161,10 @@ const OnboardingStep2 = ({
       <div className="onboarding-step__input-group onboarding-step__input-group--location">
         {/* Country */}
         <SearchableSelect
-          options={countries}
+          options={countryOptions}
           value={formData.country}
-          placeholder="Select or Type Country"
+          placeholder={fetchingLoc ? "Loading Countries..." : "Select Country"}
+          disabled={fetchingLoc} // تا وقتی لود نشده غیرفعال باشد
           renderOption={(c) => (
             <span className="searchable-select__option-content">
               {c.flag} {c.name}
@@ -126,7 +176,7 @@ const OnboardingStep2 = ({
                 ...formData,
                 country: selected.name,
                 countryCode: selected.isoCode,
-                city: "",
+                city: "", // ریست کردن شهر وقتی کشور عوض می‌شود
               });
             } else {
               setFormData({
@@ -141,12 +191,14 @@ const OnboardingStep2 = ({
 
         {/* City */}
         <SearchableSelect
-          options={cities}
+          options={cityOptions}
           value={formData.city}
           placeholder={
-            formData.country ? "Select or Type City" : "Select Country First"
+            !formData.country 
+              ? "Select Country First" 
+              : (cityOptions.length === 0 ? "No cities found" : "Select or Type City")
           }
-          disabled={!formData.country}
+          disabled={!formData.country || cityOptions.length === 0}
           onChange={(selected) => {
             if (selected) {
               setFormData({ ...formData, city: selected.name });
