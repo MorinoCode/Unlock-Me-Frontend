@@ -19,6 +19,7 @@ import ViewAllMatchesPage from './pages/viewAllMatchesPage/ViewAllMatchesPage.js
 import ChatPage from './pages/chatPage/ChatPage.jsx';
 import MessagesPage from './pages/MessagesInboxPage/MessagesInboxPage.jsx';
 import ProfilePage from './pages/profilePage/ProfilePage.jsx';
+import SwipePage from './pages/swipePage/SwipePage.jsx';
 
 const MainLayout = () => {
   return (
@@ -57,6 +58,7 @@ const App = () => {
                 <Route path="/messages" element={<MessagesPage />} />
                 <Route path="/chat/:receiverId" element={<ChatPage />} />
                 <Route path="/myprofile" element={<ProfilePage />} />
+                <Route path="/swipe" element={<SwipePage />} />
                 
              </Route>
           </Route>
