@@ -4,17 +4,18 @@ import UserCard from "../../components/userCard/UserCard";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
 import { Pagination } from "../../components/pagination/Pagination"; 
 import "./ViewAllMatchesPage.css";
+import { useAuth } from "../../context/useAuth";
 
 const ViewAllMatchesPage = () => {
-  const { type } = useParams(); // type: 'mutual', 'sent', 'incoming'
+  const { type } = useParams(); 
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   // State
   const [users, setUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
+  const { currentUser } = useAuth();
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,40 +23,31 @@ const ViewAllMatchesPage = () => {
   const [totalCount, setTotalCount] = useState(0);
   const usersPerPage = 20;
 
-  // 1. تنظیم تایتل صفحه
   useEffect(() => {
     if (type === "mutual") setTitle("Mutual Matches");
     else if (type === "sent") setTitle("People You Liked");
     else if (type === "incoming") setTitle("People Who Liked You");
   }, [type]);
 
-  // 2. فچ کردن دیتا با Pagination
   useEffect(() => {
     const fetchMatches = async () => {
       try {
         setLoading(true);
         
-        // دریافت اطلاعات کاربر (برای چک کردن پلن)
-        const userRes = await fetch(`${API_URL}/api/user/location`, { credentials: "include" });
-        const userData = await userRes.json();
-        setCurrentUser(userData);
-
-        // آماده‌سازی پارامترها
         const queryParams = new URLSearchParams({
             type: type, 
             page: currentPage,
             limit: usersPerPage
         });
 
-        // درخواست به اندپوینت جدید (matches-dashboard)
-        const res = await fetch(`${API_URL}/api/explore/matches-dashboard?${queryParams}`, { 
+        const res = await fetch(`${API_URL}/api/user/matches/matches-dashboard?${queryParams}`, { 
             credentials: "include" 
         });
         
         if (!res.ok) throw new Error("Failed to fetch dashboard matches");
         
         const data = await res.json();
-
+        console.log(data);
         setUsers(data.users || []);
         if (data.pagination) {
             setTotalPages(data.pagination.totalPages);

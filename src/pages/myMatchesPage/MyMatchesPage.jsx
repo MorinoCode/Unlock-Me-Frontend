@@ -16,8 +16,7 @@ const MyMatchesPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
-        const res = await fetch(`${API_URL}/api/user/matches`, { credentials: "include" });
+        const res = await fetch(`${API_URL}/api/user/matches/matches-dashboard`, { credentials: "include" });
         const dashboardData = await res.json();
         setData(dashboardData);
       } catch (err) {

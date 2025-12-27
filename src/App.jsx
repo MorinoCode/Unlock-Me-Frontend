@@ -12,7 +12,7 @@ import InitialQuizzesInterestsPage from './pages/initialQuizzesInterestsPage/Ini
 import InitialQuizzesQuestionsPage from './pages/initialQuizzesQuestionsPage/InitialQuizzesQuestionsPage.jsx';
 import HomePage from './pages/homePage/HomePage';
 import ExplorePage from './pages/explorePage/ExplorePage';
-import ViewAllMatchedUsersPage from './pages/viewAllMatchedUsersPage/ViewAllMatchedUsersPage.jsx';
+import ViewAllMatchedExploreUsersPage from './pages/viewAllMatchedExploreUsersPage/ViewAllMatchedExploreUsersPage.jsx';
 import UserDetailPage from './pages/userDetailPage/UserDetailPage.jsx';
 import MyMatchesPage from './pages/myMatchesPage/MyMatchesPage.jsx';
 import ViewAllMatchesPage from './pages/viewAllMatchesPage/ViewAllMatchesPage.jsx';
@@ -50,7 +50,7 @@ const App = () => {
                 <Route path='/initial-quizzes/questionsbycategory' element={<InitialQuizzesQuestionsPage />} />
 
                 <Route path='/explore' element={<ExplorePage />} />
-                <Route path="/explore/view-all/:category" element={<ViewAllMatchedUsersPage />} />
+                <Route path="/explore/view-all/:category" element={<ViewAllMatchedExploreUsersPage />} />
                 <Route path="/user-profile/:userId" element={<UserDetailPage />} />
                 <Route path="/mymatches" element={<MyMatchesPage />} />
                 <Route path="/mymatches/view-all/:type" element={<ViewAllMatchesPage />} />
