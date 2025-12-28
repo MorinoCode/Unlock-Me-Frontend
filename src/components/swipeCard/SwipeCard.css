@@ -1,25 +1,23 @@
 :root {
-  --bg-dark: #0f172a;
-  --card-dark: #0b0f19;
-  --text-light: #e6eef8;
-  --card-radius: 20px;
-  --card-padding: 24px;
-  --accent-green: #10b981;
-  --accent-like: #22c55e;
-  --accent-nope: #ef4444;
-  --accent-super: #3b82f6;
+  --swipe-bg-dark: #0f172a;
+  --swipe-text-light: #e6eef8;
+  --swipe-radius: 20px;
+  --swipe-padding: 24px;
 }
 
-.swipe-card-wrapper {
+.swipe-card {
   position: absolute;
   width: 100%;
   height: 100%;
-  max-width: 430px;
-  border-radius: var(--card-radius);
+  max-width: 400px;
+  max-height: 700px;
+  border-radius: var(--swipe-radius);
   cursor: grab;
-  perspective: 1000px; /* عمق سه بعدی */
+  perspective: 1000px;
 }
-.swipe-card-wrapper:active { cursor: grabbing; }
+.swipe-card:active {
+  cursor: grabbing;
+}
 
 .swipe-card__inner {
   position: relative;
@@ -27,257 +25,328 @@
   height: 100%;
   text-align: left;
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  transform-style: preserve-3d; /* حیاتی برای سه بعدی */
-  border-radius: var(--card-radius);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  background-color: var(--bg-dark);
+  transform-style: preserve-3d;
+  border-radius: var(--swipe-radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  background-color: var(--swipe-bg-dark);
 }
 .swipe-card__inner--flipped {
   transform: rotateY(180deg);
 }
 
-/* --- تنظیمات حیاتی لایه‌ها (FIX) --- */
-
-.swipe-card__front,
-.swipe-card__back {
+.swipe-card__face {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden; /* مخفی کردن پشت لایه */
+  backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border-radius: var(--card-radius);
+  border-radius: var(--swipe-radius);
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
-
-/* حالت پیش‌فرض (کارت رو به جلو) */
-.swipe-card__front {
+.swipe-card__face--front {
   z-index: 2;
-  pointer-events: auto; /* فعال */
+  pointer-events: auto;
   background-size: cover;
   background-position: center;
-  justify-content: flex-end;
+  background-color: #2c2c2c;
 }
-
-.swipe-card__back {
+.swipe-card__face--back {
   transform: rotateY(180deg);
-  background: #0f172a;
-  padding: var(--card-padding);
+  background: #1e293b;
+  padding: var(--swipe-padding);
   gap: 12px;
   z-index: 1;
-  pointer-events: none; /* غیرفعال وقتی پشت کارت است */
 }
 
-/* حالت چرخیده (کارت رو به پشت) */
-.swipe-card__inner--flipped .swipe-card__front {
-  z-index: 1;
-  pointer-events: none; /* غیرفعال کردن جلو تا کلیک‌ها به پشت برسد */
-}
-
-.swipe-card__inner--flipped .swipe-card__back {
-  z-index: 2;
-  pointer-events: auto; /* فعال کردن پشت */
-}
-
-/* --- سایر استایل‌ها --- */
-
-.swipe-card__touch-area {
+.swipe-card__stories {
   position: absolute;
-  top: 0;
+  top: 8px;
   left: 0;
   width: 100%;
-  height: 70%;
-  z-index: 10;
-  cursor: pointer;
+  padding: 0 12px;
+  display: flex;
+  gap: 4px;
+  z-index: 20;
+  box-sizing: border-box;
+}
+.swipe-card__story-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+.swipe-card__story-bar--active {
+  background: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+.swipe-card__story-bar--seen {
+  background: #fff;
 }
 
-.swipe-card__overlay {
-  background: linear-gradient(0deg, rgba(2,6,23,0.95) 8%, rgba(2,6,23,0.6) 32%, rgba(2,6,23,0.0) 100%);
-  padding: var(--card-padding);
-  padding-bottom: calc(var(--card-padding) + 10px);
-  text-align: left;
-  color: var(--text-light);
+.swipe-card__touch-zone {
+  position: absolute;
+  top: 0;
+  height: 70%;
+  width: 50%;
+  z-index: 10;
+}
+.swipe-card__touch-zone--left {
+  left: 0;
+}
+.swipe-card__touch-zone--right {
+  right: 0;
+}
+
+/* Info Area Update */
+.swipe-card__info {
+  margin-top: auto;
+  width: 100%;
+  z-index: 15;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.95) 15%,
+    rgba(0, 0, 0, 0.5) 60%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  padding-bottom: 25px;
+  padding-top: 80px;
+}
+.swipe-card__details-overlay {
+  padding: 0 var(--swipe-padding);
+  color: var(--swipe-text-light);
   width: 100%;
   box-sizing: border-box;
   pointer-events: none;
 }
-.swipe-card__overlay > * { pointer-events: auto; }
+.swipe-card__details-overlay > * {
+  pointer-events: auto;
+}
 
+/* Name */
 .swipe-card__name {
-  font-size: 2.4rem;
+  font-size: 2rem;
   font-weight: 800;
   margin: 0;
-  line-height: 1.0;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  line-height: 1.1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  margin-bottom: 8px;
 }
 .swipe-card__age {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-left: 8px;
-  opacity: 0.9;
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin-left: 6px;
+}
+
+/* ✅ Meta Row (Location + Voice) */
+.swipe-card__meta-row {
+  display: flex;
+  justify-content: space-between; /* دو طرف فاصله میندازه */
+  align-items: center;
+  width: 100%;
 }
 
 .swipe-card__location {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255,255,255,0.1);
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  margin-top: 8px;
-  color: #dbeafe;
-  backdrop-filter: blur(4px);
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-.swipe-card__btn-flip {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: var(--text-light);
-  padding: 8px 14px;
-  border-radius: 28px;
-  font-size: 0.9rem;
+/* Voice Button */
+.swipe-card__voice-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--swipe-text-light);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
   font-weight: 700;
-  cursor: pointer;
-  z-index: 60;
-  backdrop-filter: blur(8px);
-}
-
-.swipe-card__btn-audio-inline {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: var(--text-light);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   backdrop-filter: blur(4px);
-  width: fit-content;
+  min-width: 90px;
+  justify-content: center;
 }
-.swipe-card__btn-audio-inline.playing {
-  background: rgba(239, 68, 68, 0.3);
-  border-color: rgba(239, 68, 68, 0.5);
-  animation: pulse 1.5s infinite;
+.swipe-card__voice-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
+/* Stamps */
 .swipe-card__stamp {
   position: absolute;
-  top: 60px;
+  top: 80px;
   padding: 8px 16px;
-  border: 5px solid;
-  border-radius: 10px;
-  font-size: 2.2rem;
+  border-width: 5px;
+  border-style: solid;
+  border-radius: 12px;
+  font-size: 3rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 2px;
-  opacity: 0;
   z-index: 80;
   pointer-events: none;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(2px);
 }
-.swipe-card__stamp--like { left: 30px; color: var(--accent-like); border-color: var(--accent-like); transform: rotate(-15deg); }
-.swipe-card__stamp--nope { right: 30px; color: var(--accent-nope); border-color: var(--accent-nope); transform: rotate(15deg); }
-.swipe-card__stamp--super { left: 50%; transform: translateX(-50%); bottom: 150px; top: auto; color: var(--accent-super); border-color: var(--accent-super); }
-.swipe-card__stamp--visible { opacity: 1; transition: opacity 0.2s; }
-
-/* --- BACK SIDE CONTENT --- */
-
-.swipe-card__back-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 100;
+.swipe-card__stamp--like {
+  left: 40px;
+  color: #ec4899;
+  border-color: #ec4899;
+  transform: rotate(-15deg);
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+}
+.swipe-card__stamp--nope {
+  right: 40px;
+  color: #ef4444;
+  border-color: #ef4444;
+  transform: rotate(15deg);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+.swipe-card__stamp--super {
+  bottom: 200px;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #eab308;
+  border-color: #eab308;
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
+}
+.swipe-card__stamp--force-visible {
+  opacity: 1 !important;
+  transition: opacity 0.1s;
 }
 
-.swipe-card__title {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #c7b2ff;
-  text-transform: uppercase;
-  margin: 0;
-}
-
-/* دکمه CLOSE */
-.swipe-card__btn-close {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  font-size: 1.2rem;
+/* DNA Button & Back Side (Same as before) */
+.swipe-card__action-btn {
+  position: absolute;
   cursor: pointer;
+  z-index: 60;
+  backdrop-filter: blur(4px);
+  color: var(--swipe-text-light);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.swipe-card__action-btn--dna {
+  top: 25px;
+  right: 16px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.swipe-card__action-btn--close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+.swipe-card__match-stats {
   display: flex;
   align-items: center;
-  justify-content: center;
-  
-  /* اطمینان از کلیک‌پذیری */
-  position: relative;
-  z-index: 1000;
-  pointer-events: auto;
-  
-  transition: transform 0.2s, background-color 0.2s;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
-
-.swipe-card__btn-close:hover {
-  transform: scale(1.1);
-  background-color: rgba(255, 255, 255, 0.2);
-}
-.swipe-card__btn-close:active {
-  transform: scale(0.9);
-}
-
-.swipe-card__synergy-text {
-  font-size: 0.95rem;
-  color: #cbd5e1;
-  font-style: italic;
-  border-left: 3px solid var(--accent-nope);
-  padding-left: 12px;
-}
-
-.swipe-card__dna-list {
+.swipe-card__match-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: conic-gradient(#ec4899 0% 90%, rgba(255, 255, 255, 0.1) 90% 100%);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.2);
 }
-.swipe-card__dna-row {
-  background: rgba(30,41,59,0.5);
-  padding: 12px;
-  border-radius: 12px;
+.swipe-card__match-circle::before {
+  content: "";
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  background: #1e293b;
+  border-radius: 50%;
+}
+.swipe-card__match-percent {
+  position: relative;
+  z-index: 2;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+.swipe-card__match-label {
+  position: relative;
+  z-index: 2;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+.swipe-card__back-header {
   display: flex;
   justify-content: space-between;
-  border: 1px solid rgba(255,255,255,0.05);
+  align-items: center;
 }
-.swipe-card__dna-label { font-weight: 700; font-size: 0.9rem; color:#e2e8f0; display:flex; gap:6px; }
-.swipe-card__dna-value { color:#cbd5e1; font-size:0.9rem; }
-.dna-icon--purple { color: #c084fc; }
-.dna-icon--blue { color: #60a5fa; }
-.dna-icon--pink { color: #f472b6; }
-.dna-icon--green { color: #4ade80; }
-
-.swipe-card__back-actions {
-  margin-top: auto;
+.swipe-card__back-title {
+  color: #a78bfa;
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
 }
-.swipe-card__btn-photos {
-  width: 100%;
-  background: linear-gradient(90deg,#3b82f6,#2563eb);
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 30px;
-  font-weight: 700;
-  cursor: pointer;
-  position: relative;
-  z-index: 100;
-  pointer-events: auto;
+.swipe-card__synergy-desc {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  font-style: italic;
+  line-height: 1.4;
 }
-.swipe-card__btn-photos:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+.swipe-card__dna-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.swipe-card__dna-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+.swipe-card__dna-label {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.swipe-card__dna-value {
+  color: #f1f5f9;
+  font-size: 0.85rem;
+}
+.swipe-card__icon--purple {
+  color: #c084fc;
+}
+.swipe-card__icon--pink {
+  color: #f472b6;
+}
+.swipe-card__icon--blue {
+  color: #60a5fa;
+}
+.swipe-card__icon--green {
+  color: #4ade80;
+}

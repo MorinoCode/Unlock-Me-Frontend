@@ -1,17 +1,33 @@
-import React, { useState, useRef, useImperativeHandle, useEffect } from 'react';
+import React, { useState, useRef, useImperativeHandle, useEffect, useMemo } from 'react';
 import { motion as Motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import './SwipeCard.css';
 
 const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFeedback, index }, ref) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0); 
   const audioRef = useRef(null);
-  const navigate = useNavigate();
 
-  // Framer Motion Hooks
+  const photos = useMemo(() => {
+    return [user.avatar, ...(user.gallery || [])].filter(Boolean);
+  }, [user]);
+
+  const displayPhotos = photos.length > 0 ? photos : ['/default-avatar.png'];
+  const matchPercentage = user.matchScore || 0;
+
+  const getTraitDisplay = (textTrait, numericTrait, fallback) => {
+    if (textTrait) return textTrait; 
+    if (numericTrait !== undefined && numericTrait !== null) return `${numericTrait}/100`; 
+    return fallback; 
+  };
+
   const controls = useAnimation();
   const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const likeOpacity = useTransform(x, [20, 150], [0, 1]);
+  const nopeOpacity = useTransform(x, [-20, -150], [0, 1]);
+  const superOpacity = useTransform(y, [-20, -150], [0, 1]);
   const rotate = useTransform(x, [-200, 200], [-25, 25]);
   const opacity = useTransform(x, [-300, -200, 0, 200, 300], [0, 1, 1, 1, 0]);
 
@@ -24,13 +40,16 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
         x: xTarget,
         y: yTarget,
         opacity: 0,
-        transition: { duration: 0.3 }
+        transition: { duration: 0.2 } 
       });
       if (onSwipe) onSwipe(dir, user, index);
       if (onCardLeftScreen) onCardLeftScreen(index);
     },
     async restoreCard() {
       await controls.start({ x: 0, y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 20 } });
+    },
+    flip() {
+        setIsFlipped(prev => !prev);
     }
   }));
 
@@ -45,159 +64,142 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
   }, [user._id]);
 
   const handleDragEnd = async (event, info) => {
-    const offset = info.offset.x;
+    const offsetX = info.offset.x;
+    const offsetY = info.offset.y;
     const velocity = info.velocity.x;
     const swipeThreshold = 100;
 
-    if (Math.abs(offset) > swipeThreshold || Math.abs(velocity) > 500) {
-      const dir = offset > 0 ? "right" : "left";
-      
-      if (isFlipped) {
-        controls.start({ x: 0, y: 0 });
-        return;
-      }
-
-      await controls.start({ x: dir === "right" ? 1000 : -1000, opacity: 0 });
+    if (Math.abs(offsetX) > swipeThreshold || Math.abs(velocity) > 500) {
+      const dir = offsetX > 0 ? "right" : "left";
+      if (isFlipped) { controls.start({ x: 0, y: 0 }); return; }
+      await controls.start({ x: dir === "right" ? 1000 : -1000, opacity: 0, transition: { duration: 0.2 } });
       if (onSwipe) onSwipe(dir, user, index);
       if (onCardLeftScreen) onCardLeftScreen(index);
+    } else if (offsetY < -swipeThreshold) {
+       await controls.start({ y: -1000, opacity: 0, transition: { duration: 0.2 } });
+       if (onSwipe) onSwipe('up', user, index);
+       if (onCardLeftScreen) onCardLeftScreen(index);
     } else {
       controls.start({ x: 0, y: 0 });
     }
   };
 
   const handleFlip = (e) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    if (isPlaying && audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    }
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    if (isPlaying && audioRef.current) { audioRef.current.pause(); setIsPlaying(false); }
     setIsFlipped(!isFlipped);
-    console.log("Flipped state:", !isFlipped); // Added console log for verification
   };
 
   const handleAudioToggle = (e) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     if (!user.voiceIntro || !audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play().catch(() => {});
-      setIsPlaying(true);
+    if (isPlaying) { audioRef.current.pause(); setIsPlaying(false); }
+    else { audioRef.current.play().catch(() => {}); setIsPlaying(true); }
+  };
+
+  const handleNextPhoto = (e) => {
+    e.stopPropagation(); 
+    if (currentPhotoIndex < displayPhotos.length - 1) {
+        setCurrentPhotoIndex(prev => prev + 1);
     }
   };
 
-  const handleProfileClick = () => {
-    if (!isFlipped) navigate(`/user-profile/${user._id}`);
+  const handlePrevPhoto = (e) => {
+    e.stopPropagation();
+    if (currentPhotoIndex > 0) {
+        setCurrentPhotoIndex(prev => prev - 1);
+    }
   };
-
-  const hasPhotos = user.gallery && user.gallery.length > 0;
 
   return (
     <Motion.div
-      className="swipe-card-wrapper"
+      className="swipe-card"
       drag={!isFlipped} 
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       onDragEnd={handleDragEnd}
       animate={controls}
-      style={{ x, rotate, opacity }}
+      style={{ x, y, rotate, opacity }}
       whileTap={{ scale: 1.02 }}
     >
       <div className={`swipe-card__inner ${isFlipped ? 'swipe-card__inner--flipped' : ''}`}>
 
         {/* --- FRONT SIDE --- */}
-        <div className="swipe-card__front" style={{ backgroundImage: `url(${user.avatar || '/default-avatar.png'})` }}>
+        <div className="swipe-card__face swipe-card__face--front" style={{ backgroundImage: `url(${displayPhotos[currentPhotoIndex]})` }}>
           
-          <div className={`swipe-card__stamp swipe-card__stamp--like ${actionFeedback === 'right' ? 'swipe-card__stamp--visible' : ''}`}>LIKE</div>
-          <div className={`swipe-card__stamp swipe-card__stamp--nope ${actionFeedback === 'left' ? 'swipe-card__stamp--visible' : ''}`}>NOPE</div>
-          <div className={`swipe-card__stamp swipe-card__stamp--super ${actionFeedback === 'up' ? 'swipe-card__stamp--visible' : ''}`}>SUPER</div>
+          <div className="swipe-card__stories">
+             {displayPhotos.map((_, idx) => (
+                 <div key={idx} className={`swipe-card__story-bar ${idx === currentPhotoIndex ? 'swipe-card__story-bar--active' : ''} ${idx < currentPhotoIndex ? 'swipe-card__story-bar--seen' : ''}`}></div>
+             ))}
+          </div>
 
-          <button 
-            className="swipe-card__btn-flip" 
-            onPointerUp={handleFlip} 
-            // Removed onPointerDown to avoid double firing or conflicts
-          >
-             🧬 DNA Breakdown
-          </button>
+          <div className="swipe-card__touch-zone swipe-card__touch-zone--left" onPointerUp={handlePrevPhoto} style={{ display: currentPhotoIndex === 0 ? 'none' : 'block' }}></div>
+          <div className="swipe-card__touch-zone swipe-card__touch-zone--right" onPointerUp={handleNextPhoto} style={{ display: currentPhotoIndex === displayPhotos.length - 1 ? 'none' : 'block' }}></div>
 
-          <div 
-            className="swipe-card__touch-area"
-            onClick={handleProfileClick}
-          ></div>
+          <Motion.div style={{ opacity: likeOpacity }} className={`swipe-card__stamp swipe-card__stamp--like ${actionFeedback === 'right' ? 'swipe-card__stamp--force-visible' : ''}`}>LIKE</Motion.div>
+          <Motion.div style={{ opacity: nopeOpacity }} className={`swipe-card__stamp swipe-card__stamp--nope ${actionFeedback === 'left' ? 'swipe-card__stamp--force-visible' : ''}`}>NOPE</Motion.div>
+          <Motion.div style={{ opacity: superOpacity }} className={`swipe-card__stamp swipe-card__stamp--super ${actionFeedback === 'up' ? 'swipe-card__stamp--force-visible' : ''}`}>SUPER</Motion.div>
 
-          <div className="swipe-card__overlay">
-             <h2 className="swipe-card__name">
-               {user.name} <span className="swipe-card__age">{user.age}</span>
-             </h2>
-             <div className="swipe-card__location">
-               📍 {user.location?.city || "Unknown"}, {user.location?.country || "Unknown"}
+          <button className="swipe-card__action-btn swipe-card__action-btn--dna" onPointerUp={handleFlip}>🧬 DNA</button>
+
+          {/* Info Area */}
+          <div className="swipe-card__info">
+             <div className="swipe-card__details-overlay">
+               
+               <h2 className="swipe-card__name">
+                 {user.name} <span className="swipe-card__age">{user.age}</span>
+               </h2>
+               {/* ✅ ردیف لوکیشن و ویس روبروی هم */}
+               <div className="swipe-card__meta-row">
+                   <div className="swipe-card__location">
+                     📍 {user.location?.city || "Unknown"}, {user.location?.country || "Unknown"}
+                   </div>
+
+                   {/* دکمه ویس سمت راست قرار گرفت */}
+                   <button className={`swipe-card__voice-btn ${isPlaying ? 'swipe-card__voice-btn--playing' : ''}`} onPointerUp={handleAudioToggle} disabled={!user.voiceIntro}>
+
+                      {isPlaying ? '⏸' : (user.voiceIntro ? '🎤 Voice' : '🎤 No Voice')}
+                   </button>
+               </div>
+               
+               {user.voiceIntro && <audio ref={audioRef} src={user.voiceIntro} onEnded={() => setIsPlaying(false)} />}
              </div>
-
-             <div style={{ marginTop: '15px' }}>
-                <button 
-                    className={`swipe-card__btn-audio-inline ${isPlaying ? 'playing' : ''}`}
-                    onPointerUp={handleAudioToggle}
-                    disabled={!user.voiceIntro}
-                >
-                  {isPlaying ? '⏸ Pause Voice' : (user.voiceIntro ? '▶ Play Voice Intro' : '🎤 No Voice Intro')}
-                </button>
-             </div>
-             
-             {user.voiceIntro && <audio ref={audioRef} src={user.voiceIntro} onEnded={() => setIsPlaying(false)} />}
           </div>
         </div>
 
-        {/* --- BACK SIDE --- */}
-        <div className="swipe-card__back">
+        {/* --- BACK SIDE (DNA) --- */}
+        <div className="swipe-card__face swipe-card__face--back">
           <div className="swipe-card__back-header">
-             <h3 className="swipe-card__title">DNA Breakdown</h3>
-             <button 
-                type="button"
-                className="swipe-card__btn-close" 
-                // Using only onPointerUp for consistent behavior
-                onPointerUp={handleFlip}
-             >✕</button>
+             <h3 className="swipe-card__back-title">DNA Analysis</h3>
+             <button type="button" className="swipe-card__action-btn swipe-card__action-btn--close" onPointerUp={handleFlip}>✕</button>
           </div>
 
-          <div className="swipe-card__synergy">
-            <div className="swipe-card__synergy-text">
-               "Strong Synergy: Great potential for a balanced partnership based on your shared {user.dna?.dominantTrait || 'traits'}."
+          <div className="swipe-card__match-stats">
+             <div className="swipe-card__match-circle">
+                <span className="swipe-card__match-percent">{matchPercentage}%</span>
+                <span className="swipe-card__match-label">Match</span>
+             </div>
+             <div className="swipe-card__synergy-desc">
+               "Strong Synergy with {user.name}."
             </div>
           </div>
 
-          <div className="swipe-card__dna-list">
-             <div className="swipe-card__dna-row">
-                <span className="swipe-card__dna-label"><span className="dna-icon--purple">✦</span> Logic</span>
-                <span className="swipe-card__dna-value">{user.dna?.personalityType || "Intuitive"}</span>
+          <div className="swipe-card__dna-grid">
+             <div className="swipe-card__dna-item">
+                <span className="swipe-card__dna-label"><span className="swipe-card__icon--purple">✦</span> Logic</span>
+                <span className="swipe-card__dna-value">{getTraitDisplay(user.dna?.personalityType, user.dna?.Logic, "Intuitive")}</span>
              </div>
-             <div className="swipe-card__dna-row">
-                <span className="swipe-card__dna-label"><span className="dna-icon--pink">✦</span> Emotion</span>
-                <span className="swipe-card__dna-value">Emotionally Intelligent</span>
+             <div className="swipe-card__dna-item">
+                <span className="swipe-card__dna-label"><span className="swipe-card__icon--pink">✦</span> Emotion</span>
+                <span className="swipe-card__dna-value">{getTraitDisplay(user.dna?.emotionalType, user.dna?.Emotion, "High EQ")}</span>
              </div>
-             <div className="swipe-card__dna-row">
-                <span className="swipe-card__dna-label"><span className="dna-icon--blue">✦</span> Energy</span>
-                <span className="swipe-card__dna-value">{user.dna?.dominantTrait || "Calm & Steady"}</span>
+             <div className="swipe-card__dna-item">
+                <span className="swipe-card__dna-label"><span className="swipe-card__icon--blue">✦</span> Energy</span>
+                <span className="swipe-card__dna-value">{getTraitDisplay(user.dna?.dominantTrait, user.dna?.Energy, "Calm")}</span>
              </div>
-             <div className="swipe-card__dna-row">
-                <span className="swipe-card__dna-label"><span className="dna-icon--green">✦</span> Passion</span>
-                <span className="swipe-card__dna-value">{user.interests?.[0] || "General"}</span>
+             <div className="swipe-card__dna-item">
+                <span className="swipe-card__dna-label"><span className="swipe-card__icon--green">✦</span> Passion</span>
+                <span className="swipe-card__dna-value">{user.interests?.[0] || (user.dna?.Creativity ? `${user.dna.Creativity}/100` : "General")}</span>
              </div>
-          </div>
-
-          <div className="swipe-card__back-actions">
-            <button 
-               className="swipe-card__btn-photos" 
-               onPointerUp={handleFlip}
-               disabled={!hasPhotos}
-            >
-               {hasPhotos ? "📸 View Photos" : "🚫 No Gallery Photos"}
-            </button>
           </div>
         </div>
       </div>
