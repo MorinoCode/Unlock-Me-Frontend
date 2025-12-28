@@ -8,13 +8,22 @@ const BlindGameCard = ({ session, currentUser, socketRef }) => {
   const partnerAnswer = isUser1 ? currentQ.u2Answer : currentQ.u1Answer;
 
   const handleOptionClick = (index) => {
-    if (myAnswer !== null) return;
+    console.log("Option Clicked Index:", index);
+    console.log("Current Session ID:", session._id);
+    
+    if (myAnswer !== null) {
+      console.log("You have already answered this question.");
+      return;
+    }
     
     if (socketRef.current) {
       socketRef.current.emit('submit_blind_answer', { 
         sessionId: session._id, 
         choiceIndex: index 
       });
+      console.log("Answer emitted to server...");
+    } else {
+      console.error("Socket not connected!");
     }
   };
 
