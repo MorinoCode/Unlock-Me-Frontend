@@ -6,6 +6,7 @@ import PromoBanner from '../../components/promoBanner/PromoBanner';
 import './SwipePage.css';
 import HeartbeatLoader from '../../components/heartbeatLoader/HeartbeatLoader';
 import { useNavigate } from 'react-router-dom';
+import { IoClose, IoHeart, IoStar, IoChatbubbleEllipses, IoPerson } from "react-icons/io5";
 
 const SwipePage = () => {
   const [users, setUsers] = useState([]);
@@ -31,10 +32,19 @@ const SwipePage = () => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (showUpsell || matchModal || icebreakerUser) return;
+      const idx = topIndexRef.current;
       switch(e.key) {
         case 'ArrowLeft': triggerSwipe('left'); break;
         case 'ArrowRight': triggerSwipe('right'); break;
         case 'ArrowUp': triggerSwipe('up'); break;
+        case ' ': 
+             e.preventDefault();
+             if (idx >= 0 && idx < users.length) childRefs[idx]?.current?.flip();
+             break;
+        case 'Enter':
+             e.preventDefault();
+             handleProfileNavigation(); 
+             break;
         default: break;
       }
     };
@@ -56,11 +66,38 @@ const SwipePage = () => {
     finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchCards(); }, []);
+  // ✅ تغییر ۱: چک کردن حافظه برای بازیابی حالت قبلی هنگام بازگشت
+  useEffect(() => { 
+    const savedUsers = sessionStorage.getItem('swipe_restore_users');
+    
+    if (savedUsers) {
+        try {
+            const parsedUsers = JSON.parse(savedUsers);
+            if (Array.isArray(parsedUsers) && parsedUsers.length > 0) {
+                // اگر دیتای ذخیره شده معتبر بود، آن را بازیابی کن
+                setUsers(parsedUsers);
+                setTopIndex(parsedUsers.length - 1);
+                topIndexRef.current = parsedUsers.length - 1;
+                setLoading(false);
+                
+                // پاک کردن حافظه تا در دفعات بعدی (رفرش کامل) دیتای جدید بیاید
+                sessionStorage.removeItem('swipe_restore_users');
+            } else {
+                fetchCards();
+            }
+        } catch (e) {
+          console.error(e)
+            fetchCards();
+        }
+    } else {
+        // اگر دیتایی نبود، طبق معمول از سرور بگیر
+        fetchCards(); 
+    }
+  }, []);
 
   const handleSwipe = async (direction, user, index) => {
     setFeedback(direction);
-    setTimeout(() => setFeedback(null), 450);
+    setTimeout(() => setFeedback(null), 300);
 
     const userPlan = currentUser?.subscription?.plan || "free";
     const isPositive = direction === 'right' || direction === 'up';
@@ -101,6 +138,19 @@ const SwipePage = () => {
     }
   };
 
+  // ✅ تغییر ۲: ذخیره لیست کاربران قبل از رفتن به پروفایل
+  const handleProfileNavigation = () => {
+    const idx = topIndexRef.current;
+    if (idx >= 0 && idx < users.length) {
+       const currentUser = users[idx];
+       
+       // ذخیره وضعیت فعلی (کاربران باقی‌مانده) در حافظه
+       sessionStorage.setItem('swipe_restore_users', JSON.stringify(users));
+       
+       navigate(`/user-profile/${currentUser._id}`);
+    }
+  };
+
   const handleChatClick = () => {
     const idx = topIndexRef.current;
     if (idx >= 0 && idx < users.length) {
@@ -119,8 +169,7 @@ const SwipePage = () => {
   return (
     <ExploreBackgroundLayout>
       <div className="swipe-page">
-        
-        <div className="swipe-page__card-container">
+        <div className="swipe-page__container">
           {users.map((user, index) => (
             <SwipeCard
               ref={childRefs[index]}
@@ -134,33 +183,54 @@ const SwipePage = () => {
           ))}
 
           {users.length === 0 && !loading && (
-             <div className="empty-state">
+             <div className="swipe-page__empty-state">
                 <h2>That's everyone!</h2>
-                <button onClick={fetchCards} style={{padding:'12px 24px', borderRadius:30, marginTop:20, cursor:'pointer', border:'none', background:'#2563eb', color:'white', fontWeight:'bold'}}>Refresh</button>
+                <button onClick={fetchCards} className="swipe-page__refresh-btn">Refresh</button>
              </div>
           )}
         </div>
 
-        <div className="swipe-page__actions">
-            <button className="action-btn-circle btn-nope" onClick={() => triggerSwipe('left')}>👎</button>
-            <button className="action-btn-pill" onClick={() => triggerSwipe('up')}>⭐ Super Like</button>
-            <button className="action-btn-circle btn-chat-page" onClick={handleChatClick}>💬</button>
-            <button className="action-btn-circle btn-like" onClick={() => triggerSwipe('right')}>❤️</button>
+        <div className="swipe-page__controls">
+            <button className="swipe-page__control-btn swipe-page__btn--nope" onClick={() => triggerSwipe('left')}>
+                <IoClose />
+            </button>
+            
+            <button className="swipe-page__control-btn swipe-page__btn--super" onClick={() => triggerSwipe('up')}>
+                <IoStar />
+            </button>
+
+            <button className="swipe-page__control-btn swipe-page__btn--profile" onClick={handleProfileNavigation}>
+                <IoPerson />
+            </button>
+
+            <button className="swipe-page__control-btn swipe-page__btn--chat" onClick={handleChatClick}>
+                <IoChatbubbleEllipses />
+            </button>
+
+            <button className="swipe-page__control-btn swipe-page__btn--like" onClick={() => triggerSwipe('right')}>
+                <IoHeart />
+            </button>
+        </div>
+
+        <div className="swipe-page__keyboard-help">
+             <div className="swipe-page__key-item"><span className="swipe-page__key-box">←</span> Nope</div>
+             <div className="swipe-page__key-item"><span className="swipe-page__key-box">↑</span> Super</div>
+             <div className="swipe-page__key-item"><span className="swipe-page__key-box">Enter</span> Profile</div>
+             <div className="swipe-page__key-item"><span className="swipe-page__key-box">→</span> Like</div>
         </div>
 
         {icebreakerUser && (
             <div className="swipe-page__modal-overlay">
-                <div className="icebreaker-modal">
+                <div className="swipe-page__modal swipe-page__modal--icebreaker">
                     <h3>🧊 Icebreaker</h3>
                     <p>"{icebreakerUser.icebreaker || `Ask about ${icebreakerUser.name}'s bio!`}"</p>
-                    <div className="icebreaker-modal-actions">
-                        <button className="btn-cancel" onClick={() => setIcebreakerUser(null)}>Cancel</button>
-                        <button className="btn-proceed" onClick={proceedToChat}>Start Chat</button>
+                    <div className="swipe-page__modal-actions">
+                        <button className="swipe-page__btn-cancel" onClick={() => setIcebreakerUser(null)}>Cancel</button>
+                        <button className="swipe-page__btn-proceed" onClick={proceedToChat}>Start Chat</button>
                     </div>
                 </div>
             </div>
         )}
-
         {showUpsell && (
            <div className="swipe-page__modal-overlay">
              <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
@@ -171,21 +241,19 @@ const SwipePage = () => {
                  onClick={() => { window.location.href = '/upgrade'; }}
                  onClose={() => setShowUpsell(false)}
                />
-               <button className="swipe-page__modal-close" onClick={() => setShowUpsell(false)}>Maybe later</button>
+               <button className="swipe-page__modal-close-text" onClick={() => setShowUpsell(false)}>Maybe later</button>
              </div>
            </div>
         )}
-        
         {matchModal && (
           <div className="swipe-page__modal-overlay">
-             <div className="match-modal">
+             <div className="swipe-page__modal swipe-page__modal--match">
                  <h1>It's a Match! 🎉</h1>
                  <p>You matched with {matchModal.name}</p>
                  <button onClick={() => setMatchModal(null)}>Keep Swiping</button>
              </div>
           </div>
         )}
-
       </div>
     </ExploreBackgroundLayout>
   );
