@@ -2,7 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { socket } from "../../socket";
+import toast from "react-hot-toast";
 import "./ChatPage.css";
+import { RiSendPlane2Fill } from "react-icons/ri";
+
 
 const ChatPage = () => {
   const { receiverId } = useParams();
@@ -18,7 +21,11 @@ const ChatPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
   const [activeActionId, setActiveActionId] = useState(null);
-  
+
+  // --- Spark / AI Wingman State ---
+  const [sparkSuggestions, setSparkSuggestions] = useState([]);
+  const [isSparkLoading, setIsSparkLoading] = useState(false);
+  const [showSpark, setShowSpark] = useState(false);
 
   const scrollRef = useRef(null);
   const msgRefs = useRef({});
@@ -99,7 +106,6 @@ const ChatPage = () => {
     const target = msgRefs.current[msgId];
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "center" });
-      // BEM class for highlighting
       target.classList.add("chat-page__row--highlight");
       setTimeout(() => target.classList.remove("chat-page__row--highlight"), 1000);
     }
@@ -129,6 +135,7 @@ const ChatPage = () => {
       setMessages(prev => [...prev, saved]);
       setNewMessage(""); 
       setReplyingTo(null);
+      setShowSpark(false); // Close suggestions on send
       socket.emit("stop_typing", { receiverId });
     }
   };
@@ -148,7 +155,7 @@ const ChatPage = () => {
         };
         mediaRecorder.current.start();
         setIsRecording(true);
-      } catch (err) { alert("Mic access denied" , err); }
+      } catch (err) { toast.error("Mic access denied") ; console.log(err); }
     } else {
       mediaRecorder.current.stop();
       setIsRecording(false);
@@ -165,6 +172,34 @@ const ChatPage = () => {
     if (res.ok) {
       const updated = await res.json();
       setMessages(prev => prev.map(m => m._id === id ? { ...m, reactions: updated.reactions } : m));
+    }
+  };
+
+  const handleSpark = async () => {
+    if (showSpark) {
+      setShowSpark(false);
+      return;
+    }
+    setIsSparkLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/chat/spark`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ receiverId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSparkSuggestions(data.suggestions);
+        setShowSpark(true);
+      } else {
+        toast.error("Wingman is currently unavailable 😴");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Connection failed");
+    } finally {
+      setIsSparkLoading(false);
     }
   };
 
@@ -254,6 +289,32 @@ const ChatPage = () => {
       )}
 
       <footer className="chat-page__footer">
+        
+        {/* --- SPARK SUGGESTIONS --- */}
+        {showSpark && (
+          <div className="chat-page__spark-panel">
+            <div className="chat-page__spark-header">
+              <span className="chat-page__spark-title">✨ Wingman Suggestions</span>
+              <button className="chat-page__spark-close" onClick={() => setShowSpark(false)}>×</button>
+            </div>
+            <div className="chat-page__spark-list">
+              {sparkSuggestions.map((item, idx) => (
+                <button 
+                  key={idx} 
+                  className="chat-page__spark-chip"
+                  onClick={() => {
+                    setNewMessage(item.text);
+                    setShowSpark(false);
+                  }}
+                >
+                  <span className="chat-page__spark-type">{item.type}</span>
+                  <span className="chat-page__spark-text">{item.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {replyingTo && (
           <div className="chat-page__reply-preview">
             <div className="chat-page__reply-content">
@@ -263,7 +324,18 @@ const ChatPage = () => {
             <button className="chat-page__cancel-reply" onClick={() => setReplyingTo(null)}>×</button>
           </div>
         )}
+
         <form className="chat-page__form" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+          {/* --- SPARK BUTTON --- */}
+          <button 
+            type="button" 
+            className={`chat-page__spark-btn ${isSparkLoading ? "chat-page__spark-btn--loading" : ""}`} 
+            onClick={handleSpark}
+            title="Ask AI Wingman"
+          >
+            {isSparkLoading ? "..." : "✨"}
+          </button>
+
           <label htmlFor="file-up" className="chat-page__attach-label">📎</label>
           <input type="file" id="file-up" className="chat-page__file-input" hidden onChange={(e) => {
             const reader = new FileReader();
@@ -282,7 +354,7 @@ const ChatPage = () => {
           <button type="button" onClick={toggleRecording} className={`chat-page__mic-btn ${isRecording ? "chat-page__mic-btn--active" : ""}`}>
             {isRecording ? "🎤" : "🎤"}
           </button>
-          <button type="submit" className="chat-page__send-btn">✦</button>
+          <button type="submit" className="chat-page__send-btn"><RiSendPlane2Fill /></button>
         </form>
       </footer>
     </div>
