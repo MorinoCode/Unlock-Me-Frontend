@@ -58,7 +58,7 @@ const Navbar = () => {
       ]
     : [
         { to: "/how-it-works", label: "How it works", icon: "⚙️" },
-        { to: "/about", label: "About", icon: "ℹ️" },
+        { to: "/about-us", label: "About", icon: "ℹ️" },
       ];
 
   return (
