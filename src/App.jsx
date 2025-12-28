@@ -24,6 +24,7 @@ const ProfilePage = lazy(() => import('./pages/profilePage/ProfilePage.jsx'));
 const SwipePage = lazy(() => import('./pages/swipePage/SwipePage.jsx'));
 const NotFoundPage = lazy(() => import('./pages/notFound/NotFoundPage.jsx'));
 const ReportProblemPage = lazy(() => import('./pages/reportProblemPage/ReportProblemPage'));
+const HowItWorksPage = lazy(() => import('./pages/howItWorksPage/HowItWorksPage'));
 
 const MainLayout = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
           <Routes>
             
             <Route path='/' element={<> <Navbar/> <HomePage /> </>} />
+            <Route path="/how-it-works" element={<><Navbar/><HowItWorksPage /></>} />
 
             <Route element={<PublicRoute />}>
               <Route path='/signup' element={<SignupPage />} />
@@ -72,6 +74,7 @@ const App = () => {
 
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/report-problem" element={<ReportProblemPage />} />
+            
 
           </Routes>
         </Suspense>
