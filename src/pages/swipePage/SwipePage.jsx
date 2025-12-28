@@ -86,6 +86,7 @@ const SwipePage = () => {
                 fetchCards();
             }
         } catch (e) {
+          console.error(e)
             fetchCards();
         }
     } else {
