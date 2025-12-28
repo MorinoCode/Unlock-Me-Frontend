@@ -55,6 +55,7 @@ const Navbar = () => {
         { to: "/explore", label: "Explore", icon: "🌍" },
         { to: "/mymatches", label: "Matches", icon: "🔥" },
         { to: "/messages", label: "Messages", icon: "💬" },
+        { to: "/blind-date", label: "BlindDate", icon: "💬" },
       ]
     : [
         { to: "/how-it-works", label: "How it works", icon: "⚙️" },
