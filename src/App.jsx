@@ -27,6 +27,7 @@ const NotFoundPage = lazy(() => import('./pages/notFound/NotFoundPage.jsx'));
 const ReportProblemPage = lazy(() => import('./pages/reportProblemPage/ReportProblemPage'));
 const HowItWorksPage = lazy(() => import('./pages/howItWorksPage/HowItWorksPage'));
 const AboutPage = lazy(() => import('./pages/aboutPage/AboutPage'));
+const BlindDatePage = lazy(() => import('./pages/blindDatePage/BlindDatePage'));
 
 const MainLayout = () => {
   return (
@@ -90,6 +91,7 @@ const App = () => {
                   
                   <Route path="/myprofile" element={<ProfilePage />} />
                   <Route path="/swipe" element={<SwipePage />} />
+                  <Route path="/blind-date" element={<BlindDatePage />} />
                   
                </Route>
             </Route>
