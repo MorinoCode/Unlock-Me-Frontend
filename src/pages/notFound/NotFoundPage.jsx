@@ -10,8 +10,6 @@ const NotFoundPage = () => {
   };
 
   const handleReport = () => {
-    
-    console.log("Report problem clicked");
     navigate('/report-problem');
   };
 

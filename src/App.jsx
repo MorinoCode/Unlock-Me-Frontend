@@ -23,6 +23,7 @@ const MessagesPage = lazy(() => import('./pages/MessagesInboxPage/MessagesInboxP
 const ProfilePage = lazy(() => import('./pages/profilePage/ProfilePage.jsx'));
 const SwipePage = lazy(() => import('./pages/swipePage/SwipePage.jsx'));
 const NotFoundPage = lazy(() => import('./pages/notFound/NotFoundPage.jsx'));
+const ReportProblemPage = lazy(() => import('./pages/reportProblemPage/ReportProblemPage'));
 
 const MainLayout = () => {
   return (
@@ -70,6 +71,7 @@ const App = () => {
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />
+            <Route path="/report-problem" element={<ReportProblemPage />} />
 
           </Routes>
         </Suspense>
