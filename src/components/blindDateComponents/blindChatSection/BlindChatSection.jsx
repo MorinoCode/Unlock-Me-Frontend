@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './BlindChatSection.css';
 
 const BlindChatSection = ({ session, currentUser, socketRef }) => {
@@ -13,12 +13,9 @@ const BlindChatSection = ({ session, currentUser, socketRef }) => {
     scrollToBottom();
   }, [session.messages]);
 
-  const myMessagesCount = session.messages.filter(m => m.sender === currentUser._id).length;
-  const isLimitReached = session.currentStage === 3 && myMessagesCount >= 10;
-
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!messageText.trim() || isLimitReached) return;
+    if (!messageText.trim()) return;
 
     if (socketRef.current) {
       socketRef.current.emit('send_blind_message', {
@@ -29,42 +26,52 @@ const BlindChatSection = ({ session, currentUser, socketRef }) => {
     }
   };
 
+  const myMessagesCount = session.messages.filter(m => m.sender === currentUser._id).length;
+  const isLimitReached = session.currentStage === 3 && myMessagesCount >= 10;
+
   return (
     <div className="blind-chat-section">
-      <div className="blind-chat-section__messages-container">
-        {session.messages.map((msg, idx) => (
-          <div 
-            key={idx} 
-            className={`blind-chat-section__message-bubble ${msg.sender === currentUser._id ? 'blind-chat-section__message-bubble--me' : 'blind-chat-section__message-bubble--partner'}`}
-          >
-            {msg.text}
-          </div>
-        ))}
+      <div className="blind-chat-section__messages">
+        {session.messages.length === 0 ? (
+          <p className="blind-chat-section__empty">Start the conversation...</p>
+        ) : (
+          session.messages.map((msg, idx) => (
+            <div 
+              key={idx} 
+              className={`blind-chat-section__bubble ${
+                msg.sender === currentUser._id ? 'blind-chat-section__bubble--me' : 'blind-chat-section__bubble--partner'
+              }`}
+            >
+              {msg.text}
+            </div>
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
 
-      <form className="blind-chat-section__input-area" onSubmit={handleSendMessage}>
-        {session.currentStage === 3 && (
-          <div className="blind-chat-section__counter">
-            {10 - myMessagesCount} messages left
-          </div>
-        )}
+      <form className="blind-chat-section__form" onSubmit={handleSendMessage}>
         <input 
-          type="text" 
           className="blind-chat-section__input"
-          placeholder={isLimitReached ? "Limit reached" : "Type a message..."}
+          type="text" 
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
+          placeholder={isLimitReached ? "Limit reached" : "Type a message..."}
           disabled={isLimitReached}
         />
         <button 
-          type="submit" 
-          className="blind-chat-section__send-btn"
+          className="blind-chat-section__send-btn" 
+          type="submit"
           disabled={!messageText.trim() || isLimitReached}
         >
           Send
         </button>
       </form>
+      
+      {session.currentStage === 3 && (
+        <span className="blind-chat-section__limit-info">
+          {10 - myMessagesCount} messages left
+        </span>
+      )}
     </div>
   );
 };
