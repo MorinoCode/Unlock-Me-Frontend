@@ -1,58 +1,82 @@
 import React from "react";
 import CompatibilityChart from "../compatibilityChart/CompatibilityChart";
+import { IoCheckmarkCircle, IoWarning, IoBulb, IoAnalytics } from "react-icons/io5";
 import "./AIInsightSection.css";
 
 const AIInsightSection = ({ user }) => {
+  // اگر دیتای insights هنوز لود نشده یا وجود ندارد، از مقادیر دیفالت استفاده کن
+  const insights = user.insights || { synergies: [], frictions: [], dnaComparison: { me: {}, other: {} } };
   const score = user.matchScore || 0;
-  const dna = user.dna || { Logic: 50, Emotion: 50, Energy: 50, Creativity: 50, Discipline: 50 };
-
-  const getMatchAnalysis = (s) => {
-    if (s >= 95) return "Soulmate Paradox: Your cosmic alignment is nearly perfect. Every psychological layer suggests a profound, effortless connection.";
-    if (s >= 85) return "High Resonance: Exceptional harmony detected. You both process emotions and logic on highly compatible frequencies.";
-    if (s >= 70) return "Strong Synergy: Great potential for a balanced partnership where your strengths beautifully cover each other's gaps.";
-    if (s >= 50) return "Curiosity Spark: A healthy mix of similarities and growth-triggering differences. A journey of discovery awaits.";
-    return "Contrasting Dynamics: Your worldviews differ significantly, which could lead to a fascinating 'opposites attract' story.";
-  };
-
-  const getDnaTraitDesc = (trait, value) => {
-    const labels = {
-      Logic: value > 70 ? "Highly analytical and objective." : "Intuitive and pattern-oriented.",
-      Emotion: value > 70 ? "Deeply empathetic and expressive." : "Stoic and emotionally contained.",
-      Energy: value > 70 ? "Vibrant, active, and outgoing." : "Calm, reflective, and steady.",
-      Creativity: value > 70 ? "Visionary and unconventional." : "Practical and tradition-valuing.",
-      Discipline: value > 70 ? "Structured and highly organized." : "Spontaneous and adaptable."
-    };
-    return labels[trait];
-  };
+  
+  // اگر هیچ تحلیل خاصی وجود نداشت (مثلاً برای کاربر جدید)
+  const hasInsights = insights.synergies.length > 0 || insights.frictions.length > 0;
 
   return (
     <section className="ai-insight">
       <div className="ai-insight__header">
-        <span className="ai-insight__icon">✨</span>
-        <h3 className="ai-insight__title">AI Behavioral Analysis</h3>
+        <div className="ai-insight__header-icon-box">
+           <IoAnalytics />
+        </div>
+        <div className="ai-insight__header-text">
+            <h3 className="ai-insight__title">AI Relationship Dynamics</h3>
+            <p className="ai-insight__subtitle">Why you match (and where you clash)</p>
+        </div>
+        <div className="ai-insight__score-badge">
+            <span className="ai-insight__score-val">{score}%</span>
+        </div>
       </div>
 
       <div className="ai-insight__content">
-        <div className="ai-insight__chart-side">
-          <CompatibilityChart dna={dna} />
+        
+        {/* --- 1. بخش نمودار راداری (چپ) --- */}
+        <div className="ai-insight__chart-column">
+          <CompatibilityChart 
+             myDNA={insights.dnaComparison?.me || user.dna} 
+             otherDNA={insights.dnaComparison?.other || {}} 
+          />
+          <p className="ai-insight__chart-caption">Comparing your personality DNA vs. theirs</p>
         </div>
-        <div className="ai-insight__text-side">
-          <div className="ai-insight__verdict">
-            <h4 className="ai-insight__heading">Overall Compatibility</h4>
-            <p className="ai-insight__verdict-text">{getMatchAnalysis(score)}</p>
-          </div>
+
+        {/* --- 2. بخش کارت‌های تحلیل (راست) --- */}
+        <div className="ai-insight__cards-column">
           
-          <div className="ai-insight__dna-section">
-            <h4 className="ai-insight__heading">DNA Breakdown</h4>
-            <div className="ai-insight__traits-list">
-              {Object.entries(dna).map(([trait, value]) => (
-                <div key={trait} className="ai-insight__trait-row">
-                  <span className="ai-insight__trait-label">{trait}:</span>
-                  <span className="ai-insight__trait-desc">{getDnaTraitDesc(trait, value)}</span>
-                </div>
-              ))}
+          {/* اگر دیتایی نبود */}
+          {!hasInsights && (
+             <div className="ai-insight__empty">
+                <p>Not enough data yet to generate deep insights. Keep chatting to learn more!</p>
+             </div>
+          )}
+
+          {/* نقاط قوت (Synergies) */}
+          {insights.synergies.map((item, idx) => (
+            <div key={`syn-${idx}`} className="ai-card ai-card--synergy">
+              <div className="ai-card__header">
+                <IoCheckmarkCircle className="ai-card__icon" />
+                <h4 className="ai-card__title">{item.title}</h4>
+              </div>
+              <p className="ai-card__desc">{item.description}</p>
+              <div className="ai-card__tip-box">
+                 <IoBulb className="ai-card__tip-icon"/>
+                 <span className="ai-card__tip-text">{item.tip}</span>
+              </div>
             </div>
-          </div>
+          ))}
+
+          {/* چالش‌ها (Frictions) */}
+          {insights.frictions.map((item, idx) => (
+            <div key={`fric-${idx}`} className="ai-card ai-card--friction">
+              <div className="ai-card__header">
+                <IoWarning className="ai-card__icon" />
+                <h4 className="ai-card__title">{item.title}</h4>
+              </div>
+              <p className="ai-card__desc">{item.description}</p>
+              <div className="ai-card__tip-box">
+                 <IoBulb className="ai-card__tip-icon"/>
+                 <span className="ai-card__tip-text">{item.tip}</span>
+              </div>
+            </div>
+          ))}
+
         </div>
       </div>
     </section>
