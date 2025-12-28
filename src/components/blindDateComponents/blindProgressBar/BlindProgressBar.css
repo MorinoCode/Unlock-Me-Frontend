@@ -1,0 +1,54 @@
+.blind-progress-bar {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto 30px;
+  padding: 0 10px;
+}
+
+.blind-progress-bar__info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.blind-progress-bar__stage {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.blind-progress-bar__count {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.blind-progress-bar__track {
+  display: flex;
+  gap: 8px;
+  height: 6px;
+  width: 100%;
+}
+
+.blind-progress-bar__step {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.blind-progress-bar__step--active .blind-progress-bar__fill {
+  width: 100%;
+}
+
+.blind-progress-bar__fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #8b5cf6, #d946ef);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
