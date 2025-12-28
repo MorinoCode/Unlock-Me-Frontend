@@ -1,0 +1,113 @@
+:root {
+  --nf-bg-dark: #1e1a33;
+  --nf-bg-light: #4c1d95;
+  --nf-accent: #ec4899;
+  --nf-text-white: #ffffff;
+  --nf-text-muted: #cbd5e1;
+}
+
+.not-found-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, var(--nf-bg-dark) 0%, var(--nf-bg-light) 100%);
+  color: var(--nf-text-white);
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.not-found-content {
+  max-width: 600px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.not-found-number {
+  font-size: 10rem;
+  font-weight: 900;
+  margin: 0;
+  line-height: 1;
+  background: linear-gradient(to bottom, #ffffff 20%, var(--nf-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+}
+
+.not-found-title {
+  font-size: 2.5rem;
+  margin: 20px 0 15px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.not-found-text {
+  font-size: 1.125rem;
+  color: var(--nf-text-muted);
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.not-found-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.nf-btn {
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+}
+
+.nf-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px -10px rgba(0,0,0,0.5);
+}
+
+.nf-btn-primary {
+  background: var(--nf-accent);
+  color: white;
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+}
+
+.nf-btn-primary:hover {
+  background: #db2777;
+  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.6);
+}
+
+.nf-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--nf-text-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.nf-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 480px) {
+  .not-found-number {
+    font-size: 6rem;
+  }
+  .not-found-title {
+    font-size: 1.8rem;
+  }
+  .nf-btn {
+    width: 100%;
+  }
+}
