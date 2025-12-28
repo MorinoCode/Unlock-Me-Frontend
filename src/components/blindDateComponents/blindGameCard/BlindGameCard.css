@@ -1,0 +1,92 @@
+.blind-game-card {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  perspective: 1000px;
+}
+
+.blind-game-card__question-box {
+  background: rgba(30, 41, 59, 0.8);
+  padding: 30px;
+  border-radius: 20px;
+  margin-bottom: 25px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.blind-game-card__text {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  color: #f8fafc;
+  text-align: center;
+  font-weight: 600;
+}
+
+.blind-game-card__options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.blind-game-card__option-btn {
+  position: relative;
+  padding: 18px 24px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1e293b;
+  color: #94a3b8;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.blind-game-card__option-btn:hover:not(:disabled) {
+  background: #334155;
+  border-color: #8b5cf6;
+  color: #ffffff;
+  transform: translateX(5px);
+}
+
+.blind-game-card__option-btn--selected {
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed) !important;
+  color: white !important;
+  border-color: transparent;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.blind-game-card__option-btn--partner {
+  border-left: 5px solid #10b981;
+}
+
+.blind-game-card__partner-indicator {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  color: #10b981;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.blind-game-card__waiting {
+  margin-top: 30px;
+  text-align: center;
+  color: #a78bfa;
+  font-size: 0.9rem;
+}
+
+.blind-game-card__loader {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(139, 92, 246, 0.1);
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  animation: blind-spin 1s linear infinite;
+}
+
+@keyframes blind-spin {
+  to { transform: rotate(360deg); }
+}

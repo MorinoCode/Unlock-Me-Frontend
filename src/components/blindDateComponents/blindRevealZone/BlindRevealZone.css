@@ -1,0 +1,72 @@
+.blind-reveal-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 30px;
+  border: 2px dashed rgba(139, 92, 246, 0.4);
+  animation: reveal-fade-in 0.5s ease;
+}
+
+.blind-reveal-zone__display {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin: 40px 0;
+}
+
+.blind-reveal-zone__avatar-box {
+  width: 100px;
+  height: 100px;
+  background: #1e293b;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #334155;
+  transition: all 0.5s ease;
+}
+
+.blind-reveal-zone__avatar-box--ready {
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.blind-reveal-zone__mask {
+  font-size: 40px;
+}
+
+.blind-reveal-zone__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 250px;
+}
+
+.blind-reveal-zone__btn {
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.blind-reveal-zone__btn--yes {
+  background: #8b5cf6;
+  color: white;
+}
+
+.blind-reveal-zone__btn--no {
+  background: #334155;
+  color: #94a3b8;
+}
+
+@keyframes reveal-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
