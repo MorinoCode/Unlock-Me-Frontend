@@ -22,3 +22,15 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #6366f1; 
 }
+
+.glass-toast {
+  background: rgba(30, 41, 59, 0.8) !important; 
+  color: #fff !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}

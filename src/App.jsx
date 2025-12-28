@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider';
 import Navbar from './components/navbar/Navbar.jsx';
+import { Toaster } from 'react-hot-toast';
 
 import PublicRoute from './context/PublicRoute.jsx'; 
 import ProtectedRoute from './context/ProtectedRoute.jsx'; 
@@ -24,6 +25,8 @@ const ProfilePage = lazy(() => import('./pages/profilePage/ProfilePage.jsx'));
 const SwipePage = lazy(() => import('./pages/swipePage/SwipePage.jsx'));
 const NotFoundPage = lazy(() => import('./pages/notFound/NotFoundPage.jsx'));
 const ReportProblemPage = lazy(() => import('./pages/reportProblemPage/ReportProblemPage'));
+const HowItWorksPage = lazy(() => import('./pages/howItWorksPage/HowItWorksPage'));
+const AboutPage = lazy(() => import('./pages/aboutPage/AboutPage'));
 
 const MainLayout = () => {
   return (
@@ -38,10 +41,31 @@ const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            className: 'glass-toast',
+            success: {
+              iconTheme: {
+                primary: '#22c55e', 
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444', 
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
         <Suspense fallback={<HeartbeatLoader />}>
           <Routes>
             
             <Route path='/' element={<> <Navbar/> <HomePage /> </>} />
+            <Route path="/how-it-works" element={<><Navbar/><HowItWorksPage /></>} />
+            <Route path="/about-us" element={<><Navbar/><AboutPage /></>} />
 
             <Route element={<PublicRoute />}>
               <Route path='/signup' element={<SignupPage />} />
@@ -72,6 +96,7 @@ const App = () => {
 
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/report-problem" element={<ReportProblemPage />} />
+            
 
           </Routes>
         </Suspense>

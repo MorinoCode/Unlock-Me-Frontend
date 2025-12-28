@@ -1,0 +1,10 @@
+/* Page Wrapper styling */
+.how-it-works-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* background color is handled inside the component, 
+     but setting it here too prevents white flashes during load */
+  background-color: #0f172a; 
+}
