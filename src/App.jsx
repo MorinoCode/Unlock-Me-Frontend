@@ -1,15 +1,14 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider';
 import Navbar from './components/navbar/Navbar.jsx';
 import Footer from './components/footer/Footer.jsx';
 import { Toaster } from 'react-hot-toast';
-
 import PublicRoute from './context/PublicRoute.jsx'; 
 import ProtectedRoute from './context/ProtectedRoute.jsx'; 
-import HeartbeatLoader from './components/heartbeatLoader/HeartbeatLoader'; 
+import HeartbeatLoader from './components/heartbeatLoader/HeartbeatLoader.jsx';
 
-
+// Lazy-loaded pages
 const SignupPage = lazy(() => import('./pages/signupPage/SignupPage'));
 const Login = lazy(() => import('./pages/signinPage/SigninPage'));
 const InitialQuizzesPage = lazy(() => import('./pages/initialQuizzesPage/InitialQuizzesPage'));
@@ -31,16 +30,20 @@ const HowItWorksPage = lazy(() => import('./pages/howItWorksPage/HowItWorksPage'
 const AboutPage = lazy(() => import('./pages/aboutPage/AboutPage'));
 const BlindDatePage = lazy(() => import('./pages/blindDatePage/BlindDatePage'));
 const FeedPage = lazy(() => import('./pages/feedPage/FeedPage'));
-//comment
+
+// Layout for protected pages
 const MainLayout = () => {
+  const location = useLocation();
+  const noFooterRoutes = ['/chat', "/swipe","/blind-date"];
+  const hideFooter = noFooterRoutes.some(path => location.pathname.startsWith(path));
+
   return (
-    <>
-      <Navbar />
-      <Outlet />
-      <Footer/>
-    </>
-  );
-};
+  <>
+    <Navbar />
+    <Outlet />
+    {!hideFooter && <Footer/>}
+  </>
+)};
 
 const App = () => {
   return (
@@ -51,65 +54,57 @@ const App = () => {
           reverseOrder={false}
           toastOptions={{
             className: 'glass-toast',
-            success: {
-              iconTheme: {
-                primary: '#22c55e', 
-                secondary: '#fff',
-              },
-            },
-            error: {
-              iconTheme: {
-                primary: '#ef4444', 
-                secondary: '#fff',
-              },
-            },
+            success: { iconTheme: { primary: '#22c55e', secondary: '#fff' } },
+            error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
           }}
         />
+
         <Suspense fallback={<HeartbeatLoader />}>
           <Routes>
-            
-            <Route path='/' element={<> <Navbar/> <HomePage /> </>} />
-            <Route path="/how-it-works" element={<><Navbar/><HowItWorksPage /></>} />
-            <Route path="/about-us" element={<><Navbar/><AboutPage /></>} />
 
+            {/* Public Pages */}
+            <Route path='/' element={<><Navbar/><HomePage /></>} />
+            <Route path='/how-it-works' element={<><Navbar/><HowItWorksPage /></>} />
+            <Route path='/about-us' element={<><Navbar/><AboutPage /></>} />
+
+            {/* Auth Pages */}
+            <Route element={<PublicRoute />}>
               <Route path='/signup' element={<SignupPage />} />
               <Route path='/signin' element={<Login />} />
-            <Route element={<PublicRoute />}>
             </Route>
 
+            {/* Protected Pages */}
             <Route element={<ProtectedRoute />}>
-               <Route element={<MainLayout />}>
-               
-                  <Route path='/initial-quizzes' element={<InitialQuizzesPage />} />
-                  <Route path='/initial-quizzes/interests' element={<InitialQuizzesInterestsPage />} />
-                  <Route path='/initial-quizzes/questionsbycategory' element={<InitialQuizzesQuestionsPage />} />
+              <Route element={<MainLayout />}>
+                <Route path='/initial-quizzes' element={<InitialQuizzesPage />} />
+                <Route path='/initial-quizzes/interests' element={<InitialQuizzesInterestsPage />} />
+                <Route path='/initial-quizzes/questionsbycategory' element={<InitialQuizzesQuestionsPage />} />
 
-                  <Route path='/explore' element={<ExplorePage />} />
-                  <Route path="/explore/view-all/:category" element={<ViewAllMatchedExploreUsersPage />} />
-                  <Route path="/user-profile/:userId" element={<UserDetailPage />} />
-                  
-                  <Route path="/mymatches" element={<MyMatchesPage />} />
-                  <Route path="/mymatches/view-all/:type" element={<ViewAllMatchesPage />} />
-                  <Route path="/messages" element={<MessagesPage />} />
-                  <Route path="/chat/:receiverId" element={<ChatPage />} />
-                  
-                  <Route path="/myprofile" element={<ProfilePage />} />
-                  <Route path="/swipe" element={<SwipePage />} />
-                  <Route path="/blind-date" element={<BlindDatePage />} />
-                  <Route path="/feed" element={<FeedPage />} />
-                  
-               </Route>
+                <Route path='/explore' element={<ExplorePage />} />
+                <Route path="/explore/view-all/:category" element={<ViewAllMatchedExploreUsersPage />} />
+                <Route path="/user-profile/:userId" element={<UserDetailPage />} />
+
+                <Route path="/mymatches" element={<MyMatchesPage />} />
+                <Route path="/mymatches/view-all/:type" element={<ViewAllMatchesPage />} />
+                <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/chat/:receiverId" element={<ChatPage />} />
+
+                <Route path="/myprofile" element={<ProfilePage />} />
+                <Route path="/swipe" element={<SwipePage />} />
+                <Route path="/blind-date" element={<BlindDatePage />} />
+                <Route path="/feed" element={<FeedPage />} />
+              </Route>
             </Route>
 
-            <Route path="*" element={<NotFoundPage />} />
+            {/* Other Routes */}
             <Route path="/report-problem" element={<ReportProblemPage />} />
-            
+            <Route path="*" element={<NotFoundPage />} />
 
           </Routes>
         </Suspense>
       </AuthProvider>
     </BrowserRouter>
   );
-}
+};
 
 export default App;
