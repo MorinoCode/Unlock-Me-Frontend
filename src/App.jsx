@@ -29,8 +29,7 @@ const ReportProblemPage = lazy(() => import('./pages/reportProblemPage/ReportPro
 const HowItWorksPage = lazy(() => import('./pages/howItWorksPage/HowItWorksPage'));
 const AboutPage = lazy(() => import('./pages/aboutPage/AboutPage'));
 const BlindDatePage = lazy(() => import('./pages/blindDatePage/BlindDatePage'));
-const FeedPage = lazy(() => import('./pages/feedPage/FeedPage'));
-
+//comment
 const MainLayout = () => {
   return (
     <>
@@ -70,9 +69,9 @@ const App = () => {
             <Route path="/how-it-works" element={<><Navbar/><HowItWorksPage /></>} />
             <Route path="/about-us" element={<><Navbar/><AboutPage /></>} />
 
-            <Route element={<PublicRoute />}>
               <Route path='/signup' element={<SignupPage />} />
               <Route path='/signin' element={<Login />} />
+            <Route element={<PublicRoute />}>
             </Route>
 
             <Route element={<ProtectedRoute />}>
