@@ -43,6 +43,7 @@ const Navbar = () => {
   const signout = async () => {
     await fetch(`${API_URL}/api/user/signout`, { method: "POST", credentials: "include" });
     setCurrentUser(null);
+    localStorage.removeItem("unlock-me-user");
     setMobileOpen(false);
     navigate("/");
   };
