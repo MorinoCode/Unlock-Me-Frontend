@@ -8,6 +8,7 @@ import PublicRoute from './context/PublicRoute.jsx';
 import ProtectedRoute from './context/ProtectedRoute.jsx'; 
 import HeartbeatLoader from './components/heartbeatLoader/HeartbeatLoader'; 
 
+
 const SignupPage = lazy(() => import('./pages/signupPage/SignupPage'));
 const Login = lazy(() => import('./pages/signinPage/SigninPage'));
 const InitialQuizzesPage = lazy(() => import('./pages/initialQuizzesPage/InitialQuizzesPage'));
@@ -92,6 +93,7 @@ const App = () => {
                   <Route path="/myprofile" element={<ProfilePage />} />
                   <Route path="/swipe" element={<SwipePage />} />
                   <Route path="/blind-date" element={<BlindDatePage />} />
+                  <Route path="/feed" element={<FeedPage />} />
                   
                </Route>
             </Route>
