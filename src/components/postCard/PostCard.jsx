@@ -16,14 +16,14 @@ const PostCard = ({ post, currentUser, onLike, onDelete }) => {
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-const currentUserId = currentUser._id
+  // استفاده از _id مطابق Context شما
+  const currentUserId = currentUser?._id;
 
-  
-  // ✅ شناسایی صاحب پست
-  const authorId = post.author?._id 
+  // شناسایی صاحب پست
+  const authorId = post.author?._id || post.author;
   const isOwner = currentUserId && authorId && currentUserId.toString() === authorId.toString();
 
-  // ✅ چک کردن وضعیت لایک با Optional Chaining برای جلوگیری از کرش
+  // چک کردن وضعیت لایک
   const isLiked = post.likes?.some(id => id?.toString() === currentUserId?.toString());
 
   const goToProfile = (e, userId) => {
@@ -50,9 +50,30 @@ const currentUserId = currentUser._id
       setShowComments(true);
     } catch (err) {
       toast.error("Failed to load comments");
-      console.log(err);
+      console.err(err)
     } finally {
       setLoadingComments(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Delete this comment?")) return;
+
+    try {
+      const response = await fetch(`${API_URL}/api/posts/comments/${commentId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        setComments(prev => prev.filter(c => c._id !== commentId));
+        toast.success("Comment deleted");
+      } else {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+    } catch (err) {
+      toast.error(err.message);
     }
   };
 
@@ -106,7 +127,6 @@ const currentUserId = currentUser._id
 
       <div className="post-interaction-bar">
         <div className="post-btns">
-          {/* ✅ دکمه لایک با استایل شرطی */}
           <button 
             className={`post-action-button ${isLiked ? 'is-liked' : ''}`} 
             onClick={() => onLike(post._id)}
@@ -132,24 +152,48 @@ const currentUserId = currentUser._id
       {showComments && (
         <div className="post-comments-wrap">
           <div className="post-comments-scroll">
-          {loadingComments && <HeartbeatLoader/>}
-            {comments.map(c => (
-              <div key={c._id} className="post-single-comment">
-                <div className="comment-main-body">
-                  <strong className="comment-user-link" onClick={(e) => goToProfile(e, c.author?._id)}>
-                    {c.author?.name}:
-                  </strong>
-                  <span>{c.content}</span>
-                </div>
-                <button className="comment-reply-link" onClick={() => {
-                  setReplyTo(c);
-                  setCommentText("");
-                }}>
-                  <Reply size={12} /> Reply
-                </button>
-              </div>
-            ))}
+            {loadingComments && <HeartbeatLoader/>}
+            {comments.length > 0 ? (
+              comments.map(c => {
+                // منطق شناسایی دسترسی برای حذف کامنت
+                const isCommentAuthor = c.author?._id === currentUserId || c.author === currentUserId;
+                const isPostOwner = isOwner; // از متغیر بالایی استفاده می‌کنیم
+
+                return (
+                  <div key={c._id} className="post-single-comment">
+                    <div className="comment-main-row">
+                      <div className="comment-main-body">
+                        <strong className="comment-user-link" onClick={(e) => goToProfile(e, c.author?._id)}>
+                          {c.author?.name}:
+                        </strong>
+                        <span>{c.content}</span>
+                      </div>
+                      
+                      {/* نمایش دکمه حذف برای صاحب کامنت یا صاحب پست */}
+                      {(isCommentAuthor || isPostOwner) && (
+                        <button 
+                          className="comment-delete-small-btn"
+                          onClick={() => handleDeleteComment(c._id)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                    
+                    <button className="comment-reply-link" onClick={() => {
+                      setReplyTo(c);
+                      setCommentText("");
+                    }}>
+                      <Reply size={12} /> Reply
+                    </button>
+                  </div>
+                );
+              })
+            ) : !loadingComments && (
+              <p className="no-comments-msg">No comments yet.</p>
+            )}
           </div>
+          
           <form onSubmit={handleAddComment} className="post-comment-field-container">
             {replyTo && (
               <div className="replying-to-bar">
@@ -161,9 +205,11 @@ const currentUserId = currentUser._id
               <input 
                 value={commentText} 
                 onChange={e => setCommentText(e.target.value)} 
-                placeholder="Add a comment..."
+                placeholder={replyTo ? "Write a reply..." : "Add a comment..."}
               />
-              <button type="submit" disabled={isSubmitting}><Send size={18} /></button>
+              <button type="submit" disabled={isSubmitting || !commentText.trim()}>
+                {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+              </button>
             </div>
           </form>
         </div>
