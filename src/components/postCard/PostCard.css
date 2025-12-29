@@ -1,0 +1,299 @@
+/* Container اصلی کارت پست */
+.post-card-box {
+  background: rgba(30, 41, 59, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-card-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* بخش هدر پست (آواتار و نام کاربر) */
+.post-card-top {
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.post-avatar-frame {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(99, 102, 241, 0.5);
+  background: #1e293b;
+}
+
+.post-avatar-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.post-author-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #f1f5f9;
+}
+
+.post-delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: none;
+  color: #ef4444;
+  padding: 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.post-delete-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+/* بخش مدیا (عکس پست) */
+.post-media-frame {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.post-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.post-card-box:hover .post-img {
+  transform: scale(1.03);
+}
+
+/* نوار تعامل (لایک و مسیج) */
+.post-interaction-bar {
+  padding: 16px 18px;
+}
+
+.post-btns {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.post-action-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.post-action-button:active {
+  transform: scale(0.8);
+}
+
+.post-action-button.liked svg {
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5));
+}
+
+.post-stats {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 6px;
+}
+
+.post-caption {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #cbd5e1;
+}
+
+.post-caption strong {
+  color: #fff;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* بخش کامنت‌ها */
+.post-comments-wrap {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.post-comments-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 15px 18px;
+}
+
+/* استایل اسکرول بار برای بخش کامنت */
+.post-comments-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.post-comments-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.post-single-comment {
+  margin-bottom: 12px;
+}
+
+.comment-content-row {
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.comment-author {
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-right: 6px;
+}
+
+.comment-text {
+  color: #94a3b8;
+}
+
+.comment-reply-link {
+  background: none;
+  border: none;
+  color: #818cf8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 0;
+  margin-top: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.8;
+}
+
+.comment-reply-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* اینپوت کامنت و ریپلای */
+.post-comment-field-container {
+  padding: 12px 18px 18px;
+}
+
+.replying-to-bar {
+  background: rgba(129, 140, 248, 0.15);
+  padding: 6px 12px;
+  border-radius: 8px 8px 0 0;
+  font-size: 0.78rem;
+  color: #a5b4fc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-bottom: none;
+}
+
+.cancel-reply {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.cancel-reply:hover {
+  color: #ef4444;
+}
+
+.comment-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 14px;
+  border-radius: 14px;
+}
+
+.post-comment-field-container:has(.replying-to-bar) .comment-input-wrapper {
+  border-radius: 0 0 14px 14px;
+}
+
+.comment-input-wrapper input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.comment-input-wrapper input::placeholder {
+  color: #475569;
+}
+
+.comment-input-wrapper button {
+  background: none;
+  border: none;
+  color: #6366f1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.comment-input-wrapper button:hover:not(:disabled) {
+  transform: scale(1.1);
+  color: #818cf8;
+}
+
+.comment-input-wrapper button:disabled {
+  color: #334155;
+  cursor: not-allowed;
+}
+
+/* انیمیشن چرخش لودینگ */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.no-comments-msg {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #475569;
+  padding: 10px 0;
+}

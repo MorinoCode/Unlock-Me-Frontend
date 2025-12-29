@@ -1,0 +1,204 @@
+.feed-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 100px 15px 50px;
+  min-height: 100vh;
+}
+
+.feed-header-tabs {
+  display: flex;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 90px;
+  z-index: 100;
+}
+
+.feed-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.feed-tab.active {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.feed-main-content {
+  width: 100%;
+}
+
+.posts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.feed-loading-state {
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+  color: #6366f1;
+}
+
+.feed-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.create-post-fab {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.create-post-fab:hover {
+  transform: scale(1.1) rotate(90deg);
+}
+
+@media (max-width: 640px) {
+  .feed-wrapper {
+    padding-top: 90px;
+  }
+  .create-post-fab {
+    bottom: 30px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+  }
+  .feed-header-tabs {
+    top: 85px;
+  }
+}
+.feed-wrapper {
+  max-width: 1200px; /* افزایش عرض برای دسکتاپ */
+  margin: 0 auto;
+  padding: 100px 20px 50px;
+  min-height: 100vh;
+}
+
+.feed-main-content {
+  width: 100%;
+}
+
+/* سیستم گرید هوشمند */
+.posts-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, 1fr); /* ۳ ستون دسکتاپ */
+}
+
+/* تبلت */
+@media (max-width: 1024px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr); /* ۲ ستون تبلت */
+  }
+}
+
+/* موبایل */
+@media (max-width: 640px) {
+  .posts-grid {
+    grid-template-columns: 1fr; /* ۱ ستون موبایل */
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .feed-wrapper {
+    padding-top: 85px;
+  }
+}
+
+/* استایل‌های تکمیلی PostCard برای گرید */
+.post-card-box {
+  height: fit-content;
+  background: rgba(30, 41, 41, 0.4);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.post-delete-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.post-delete-btn:hover {
+  color: #ef4444;
+}
+
+.double-click-heart {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: heartPop 0.8s ease-out forwards;
+  pointer-events: none;
+  opacity: 0;
+}
+
+@keyframes heartPop {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+.reply-btn {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+}
+
+.reply-indicator {
+  font-size: 0.75rem;
+  color: #8b5cf6;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
