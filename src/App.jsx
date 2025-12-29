@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider';
 import Navbar from './components/navbar/Navbar.jsx';
+import Footer from './components/footer/Footer.jsx';
 import { Toaster } from 'react-hot-toast';
 
 import PublicRoute from './context/PublicRoute.jsx'; 
@@ -36,6 +37,7 @@ const MainLayout = () => {
     <>
       <Navbar />
       <Outlet />
+      <Footer/>
     </>
   );
 };
