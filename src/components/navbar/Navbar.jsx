@@ -4,20 +4,7 @@ import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/useAuth.js";
 import { useSocket } from "../../context/useSocket.js"; 
 import {
-  Compass,
-  Heart,
-  MessageSquare,
-  Ghost,
-  Info,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  Key,
-  Flame,
-  StickyNote,
-  Bell,
-  CheckCircle2,
+  Compass, Heart, MessageSquare, Ghost, Info, Settings, LogOut, Menu, X, Key, Flame, StickyNote, Bell, CheckCircle2,
 } from "lucide-react";
 import "./Navbar.css";
 import defaultAvatar from "../../assets/default-avatar.png";
@@ -39,6 +26,28 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState([]);
   const dropdownRef = useRef(null);
 
+  // ۱. Fetch initial notifications from Database when online
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (!currentUser?._id) return;
+      try {
+        const res = await fetch(`${API_URL}/api/notifications`, { credentials: "include" });
+        const data = await res.json();
+        if (res.ok) {
+          setNotifications(data.notifications || []);
+          // تعداد نوتیفیکیشن‌های خوانده نشده را فیلتر کنید
+          const unread = data.notifications.filter(n => !n.isRead).length;
+          setNotificationsCount(unread);
+        }
+      } catch (err) {
+        console.error("Error loading saved notifications:", err);
+      }
+    };
+
+    fetchNotifications();
+  }, [currentUser, API_URL]);
+
+  // Handle scroll detection
   useEffect(() => {
     let lastY = window.scrollY;
     const onScroll = () => {
@@ -51,50 +60,59 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Sync avatar
   useEffect(() => {
     if (!currentUser?._id) return;
     fetch(`${API_URL}/api/user/user/${currentUser._id}`, { credentials: "include" })
       .then((r) => r.json())
-      .then((d) => d.avatar && setAvatar(d.avatar))
-      .catch((err) => console.error("Error fetching avatar:", err));
+      .then((d) => d.avatar && setAvatar(d.avatar));
   }, [currentUser, API_URL]);
 
+  // Click outside close
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setShowDropdown(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Real-time listener
   useEffect(() => {
     if (!socket) return;
     const handleNewNotif = (data) => {
       setNotificationsCount((prev) => prev + 1);
-      setNotifications((prev) => [data, ...prev].slice(0, 10));
+      setNotifications((prev) => [data, ...prev].slice(0, 15));
     };
     socket.on("new_notification", handleNewNotif);
     return () => socket.off("new_notification", handleNewNotif);
   }, [socket]);
 
-  const handleNotificationClick = (notif) => {
+  const handleNotificationClick = async (notif) => {
     setShowDropdown(false);
+    
+    // اختیاری: آپدیت وضعیت خوانده شده در دیتابیس
+    try {
+      await fetch(`${API_URL}/api/notifications/mark-read/${notif._id}`, {
+        method: 'PATCH',
+        credentials: "include"
+      });
+    } catch (err) { console.log(err); }
+
     switch (notif.type) {
       case "NEW_MESSAGE": case "MESSAGE": navigate(`/chat/${notif.targetId}`); break;
       case "NEW_COMMENT": case "LIKE": case "COMMENT": navigate(`/feed`); break;
-      case "MATCH": case "REVEAL_SUCCESS": navigate(`/mymatches`); break;
+      case "MATCH": navigate(`/mymatches`); break;
       case "BLIND_MESSAGE": navigate(`/blind-date`); break;
       default: break;
     }
   };
 
   const goToProfile = (e, userId) => {
-    e.stopPropagation(); // جلوگیری از اجرای کلیک نوتیفیکیشن
+    e.stopPropagation();
     setShowDropdown(false);
     setMobileOpen(false);
-    navigate(`/user-profile/${userId}`);
+    if(userId) navigate(`/user-profile/${userId}`);
   };
 
   const signout = async () => {
@@ -104,7 +122,7 @@ const Navbar = () => {
       localStorage.removeItem("unlock-me-user");
       setMobileOpen(false);
       navigate("/");
-    } catch (err) { console.error("Logout failed:", err); }
+    } catch (err) { console.error(err); }
   };
 
   const noNavPaths = ["/chat", "/initial"];
@@ -123,6 +141,12 @@ const Navbar = () => {
         { to: "/how-it-works", label: "How it works", icon: <Settings size={20} /> },
         { to: "/about-us", label: "About", icon: <Info size={20} /> },
       ];
+
+  const toggleDropdown = (e) => {
+    e.stopPropagation();
+    setShowDropdown(!showDropdown);
+    if (!showDropdown) setNotificationsCount(0);
+  };
 
   return (
     <>
@@ -146,9 +170,7 @@ const Navbar = () => {
             {links.map((l) => (
               <Link key={l.to} to={l.to} className={`navbar__link ${location.pathname === l.to ? "navbar__link--active" : ""}`}>
                 {l.icon}<span className="navbar__label">{l.label}</span>
-                {location.pathname === l.to && (
-                  <Motion.div layoutId="activeNav" className="navbar__active-indicator" />
-                )}
+                {location.pathname === l.to && <Motion.div layoutId="activeNav" className="navbar__active-indicator" />}
               </Link>
             ))}
           </div>
@@ -156,7 +178,7 @@ const Navbar = () => {
           <div className="navbar__actions">
             {currentUser && (
               <div className="navbar__notif-container" ref={dropdownRef}>
-                <div className="navbar__notification-wrapper" onClick={(e) => { e.stopPropagation(); setShowDropdown(!showDropdown); if(!showDropdown) setNotificationsCount(0); }}>
+                <div className="navbar__notification-wrapper" onClick={toggleDropdown}>
                   <Bell size={22} className="navbar__notification-icon" />
                   {notificationsCount > 0 && <span className="navbar__notification-badge">{notificationsCount}</span>}
                 </div>
@@ -167,17 +189,12 @@ const Navbar = () => {
                       <div className="navbar__dropdown-list">
                         {notifications.length > 0 ? (
                           notifications.map((n, idx) => (
-                            
                             <div key={idx} className="navbar__dropdown-item" onClick={() => handleNotificationClick(n)}>
                                <div className="navbar__dropdown-avatar" onClick={(e) => goToProfile(e, n.targetId)}>
                                   {n.senderAvatar ? <img src={n.senderAvatar} alt=""/> : "👤"}
                                </div>
                                <div className="navbar__dropdown-info">
-                                  <p>
-                                    <strong onClick={(e) => goToProfile(e, n.senderId)} style={{cursor: 'pointer'}}>
-                                      {n.senderName}
-                                    </strong> {n.message}
-                                  </p>
+                                  <p><strong onClick={(e) => goToProfile(e, n.targetId)} style={{cursor: 'pointer'}}>{n.senderName}</strong> {n.message}</p>
                                </div>
                             </div>
                           ))
@@ -209,11 +226,7 @@ const Navbar = () => {
           {mobileOpen && (
             <Motion.div className="navbar__sidebar" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
               <div className="navbar__sidebar-content">
-                <div className="navbar__sidebar-header">
-                  <span>Navigation</span>
-                  <button className="navbar__close-btn" onClick={() => setMobileOpen(false)}><X size={24} /></button>
-                </div>
-
+                <div className="navbar__sidebar-header"><span>Navigation</span><button className="navbar__close-btn" onClick={() => setMobileOpen(false)}><X size={24} /></button></div>
                 {currentUser && (
                   <div className="navbar__sidebar-user-card" onClick={(e) => goToProfile(e, currentUser._id)}>
                     <img src={avatar} alt="User" className="navbar__sidebar-avatar" />
@@ -223,27 +236,19 @@ const Navbar = () => {
                     </div>
                   </div>
                 )}
-
                 <div className="navbar__sidebar-links">
                   {links.map((l) => (
                     <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)} className={`navbar__sidebar-link ${location.pathname === l.to ? "navbar__sidebar-link--active" : ""}`}>
                       {l.icon} <span>{l.label}</span>
-                      {location.pathname === l.to && (
-                        <Motion.div layoutId="activeNavMobile" className="navbar__active-indicator-mobile" />
-                      )}
+                      {location.pathname === l.to && <Motion.div layoutId="activeNavMobile" className="navbar__active-indicator-mobile" />}
                     </Link>
                   ))}
                 </div>
-
                 <div className="navbar__sidebar-footer">
                   {currentUser ? (
-                    <button onClick={signout} className="navbar__sidebar-logout">
-                      <LogOut size={20} /> <span>Logout</span>
-                    </button>
+                    <button onClick={signout} className="navbar__sidebar-logout"><LogOut size={20} /> <span>Logout</span></button>
                   ) : (
-                    <Link to="/signin" className="navbar__sidebar-link" onClick={() => setMobileOpen(false)}>
-                      <Key size={20} /> <span>Sign In</span>
-                    </Link>
+                    <Link to="/signin" className="navbar__sidebar-link" onClick={() => setMobileOpen(false)}><Key size={20} /> <span>Sign In</span></Link>
                   )}
                 </div>
               </div>
