@@ -4,7 +4,7 @@ import FormInput from "../../components/formInput/FormInput";
 import FormSelect from "../../components/formSelect/FormSelect";
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
 import "./SignupPage.css";
-import { useAuth } from "../../context/useAuth";
+import { useAuth } from "../../context/useAuth.js";
 
 const SignupPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -26,7 +26,8 @@ const SignupPage = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { name, email, password, confirmPassword, gender, lookingFor } = formData;
+  const { name, email, password, confirmPassword, gender, lookingFor } =
+    formData;
 
   const genderOptions = [
     { value: "Female", label: "Female" },
@@ -38,43 +39,44 @@ const SignupPage = () => {
   useEffect(() => {
     const newErrors = {};
 
-    if (touched.name && name.trim().length < 2) 
+    if (touched.name && name.trim().length < 2)
       newErrors.name = "Name is too short";
-    
-    if (touched.email && !/\S+@\S+\.\S+/.test(email)) 
+
+    if (touched.email && !/\S+@\S+\.\S+/.test(email))
       newErrors.email = "Invalid email format";
-    
-    if (touched.password && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password))
+
+    if (
+      touched.password &&
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)
+    )
       newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
-    
+
     if (touched.confirmPassword && confirmPassword !== password)
       newErrors.confirmPassword = "Passwords do not match";
-    
-    if (touched.gender && !gender) 
-      newErrors.gender = "Gender is required";
-    
-    if (touched.lookingFor && !lookingFor) 
+
+    if (touched.gender && !gender) newErrors.gender = "Gender is required";
+
+    if (touched.lookingFor && !lookingFor)
       newErrors.lookingFor = "This field is required";
 
     setErrors(newErrors);
 
-    const isValid = 
+    const isValid =
       name.trim().length >= 2 &&
       /\S+@\S+\.\S+/.test(email) &&
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password) &&
       confirmPassword === password &&
       password !== "" &&
-      gender !== "" && 
+      gender !== "" &&
       lookingFor !== "";
 
     setIsFormValid(isValid);
-
-  }, [formData, touched]); 
+  }, [formData, touched]);
 
   // ---------- Handlers ----------
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setServerMessage(""); 
+    setServerMessage("");
   };
 
   const handleBlur = (e) => {
@@ -90,7 +92,7 @@ const SignupPage = () => {
       const response = await fetch(`${API_URL}/api/user/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", 
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -101,7 +103,7 @@ const SignupPage = () => {
           "unlock-me-user",
           JSON.stringify({ id: data.user.id, name: data.user.name })
         );
-        
+
         await checkAuth();
         navigate("/initial-quizzes");
       } else {
@@ -120,10 +122,15 @@ const SignupPage = () => {
       <div className="signup-page">
         <div className="signup-page__card">
           <h2 className="signup-page__title">UnlockMe</h2>
-          <p className="signup-page__subtitle">Create your profile and start unlocking!</p>
+          <p className="signup-page__subtitle">
+            Create your profile and start unlocking!
+          </p>
 
-          <form className="signup-page__form" onSubmit={handleSubmit} noValidate>
-            
+          <form
+            className="signup-page__form"
+            onSubmit={handleSubmit}
+            noValidate
+          >
             <FormInput
               name="name"
               placeholder="Name"
@@ -184,7 +191,9 @@ const SignupPage = () => {
               error={touched.lookingFor && errors.lookingFor}
             />
 
-            {serverMessage && <div className="signup-page__message">{serverMessage}</div>}
+            {serverMessage && (
+              <div className="signup-page__message">{serverMessage}</div>
+            )}
 
             <button
               type="submit"
@@ -196,7 +205,10 @@ const SignupPage = () => {
           </form>
 
           <div className="signup-page__footer">
-            Already have an account? <a href="/signin" className="signup-page__link">Sign In</a>
+            Already have an account?{" "}
+            <a href="/signin" className="signup-page__link">
+              Sign In
+            </a>
           </div>
         </div>
       </div>
