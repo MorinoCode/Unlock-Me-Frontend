@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/useAuth"; 
+import { useAuth } from "../../context/useAuth.js";
 
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
 import InterestsHeader from "../../components/interestsHeader/InterestsHeader";
@@ -11,7 +11,7 @@ import "./InitialQuizzesInterestsPage.css";
 
 const InitialQuizzesInterestsPage = () => {
   const navigate = useNavigate();
-  const { currentUser ,  checkAuth } = useAuth(); 
+  const { currentUser, checkAuth } = useAuth();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const [loading, setLoading] = useState(true);
   const [selectedInterests, setSelectedInterests] = useState([]);
@@ -33,7 +33,7 @@ const InitialQuizzesInterestsPage = () => {
         return res.json();
       })
       .then((data) => {
-        const options = data; 
+        const options = data;
         setInterestOptions(Array.isArray(options) ? options : []);
       })
       .catch((err) => console.error("Fetch error:", err))
@@ -55,7 +55,7 @@ const InitialQuizzesInterestsPage = () => {
   const handleNext = async () => {
     if (selectedInterests.length === 0) return;
 
-    setLoading(true); 
+    setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/user/onboarding/interests`, {
         method: "POST",
@@ -70,8 +70,8 @@ const InitialQuizzesInterestsPage = () => {
     } catch (err) {
       console.error("Submission error:", err);
       alert("Failed to save interests. Please try again.");
-      setLoading(false); 
-    } 
+      setLoading(false);
+    }
   };
 
   const isNextDisabled = loading || selectedInterests.length < 3;
@@ -79,27 +79,26 @@ const InitialQuizzesInterestsPage = () => {
   return (
     <BackgroundLayout>
       {loading && <HeartbeatLoader text="Updating your profile..." />}
-      
+
       <div className="interests-page__card">
-        
         <div className="interests-page__header-wrapper">
-             <InterestsHeader name={name} />
+          <InterestsHeader name={name} />
         </div>
-        
+
         <div className="interests-page__grid-wrapper">
-             <InterestsGrid 
-                options={interestOptions} 
-                selectedInterests={selectedInterests} 
-                onToggle={toggleInterest} 
-             />
+          <InterestsGrid
+            options={interestOptions}
+            selectedInterests={selectedInterests}
+            onToggle={toggleInterest}
+          />
         </div>
 
         <div className="interests-page__actions-wrapper">
-            <InterestsActions 
-                loading={loading} 
-                disabled={isNextDisabled} 
-                onNext={handleNext} 
-            />
+          <InterestsActions
+            loading={loading}
+            disabled={isNextDisabled}
+            onNext={handleNext}
+          />
         </div>
       </div>
     </BackgroundLayout>

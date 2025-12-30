@@ -9,7 +9,7 @@ import { useAuth } from "../../context/useAuth.js";
 const InitialQuizzesQuestionsPage = () => {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-  const {  checkAuth } = useAuth(); 
+  const { checkAuth } = useAuth();
   const [allQuestions, setAllQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -20,10 +20,13 @@ const InitialQuizzesQuestionsPage = () => {
       try {
         setLoading(true);
 
-        const interestRes = await fetch(`${API_URL}/api/user/onboarding/get-user-interests`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const interestRes = await fetch(
+          `${API_URL}/api/user/onboarding/get-user-interests`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         const interestData = await interestRes.json();
         const categories = interestData.userInterestedCategories;
 
@@ -32,22 +35,25 @@ const InitialQuizzesQuestionsPage = () => {
           return;
         }
 
-        const questionsRes = await fetch(`${API_URL}/api/user/onboarding/questions-by-category`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ selectedCategories: categories }),
-          credentials: "include",
-        });
-        
+        const questionsRes = await fetch(
+          `${API_URL}/api/user/onboarding/questions-by-category`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ selectedCategories: categories }),
+            credentials: "include",
+          }
+        );
+
         const questionsData = await questionsRes.json();
 
-        const flattened = questionsData.flatMap(cat => 
-          cat.questions.map(q => ({
+        const flattened = questionsData.flatMap((cat) =>
+          cat.questions.map((q) => ({
             ...q,
-            category: cat.categoryLabel
+            category: cat.categoryLabel,
           }))
         );
-        
+
         setAllQuestions(flattened);
       } catch (err) {
         console.error("Error fetching quiz data:", err);
@@ -61,12 +67,12 @@ const InitialQuizzesQuestionsPage = () => {
 
   const handleAnswer = (option) => {
     const currentQuestion = allQuestions[currentIndex];
-    
+
     const newAnswer = {
       category: currentQuestion.category,
       questionText: currentQuestion.questionText,
       selectedText: option.text,
-      trait: option.trait
+      trait: option.trait,
     };
 
     const updatedAnswers = [...answers, newAnswer];
@@ -82,16 +88,19 @@ const InitialQuizzesQuestionsPage = () => {
   const submitFinalResults = async (finalAnswers) => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/user/onboarding/saveUserInterestCategoriesQuestinsAnswer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quizResults: finalAnswers }), 
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${API_URL}/api/user/onboarding/saveUserInterestCategoriesQuestinsAnswer`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quizResults: finalAnswers }),
+          credentials: "include",
+        }
+      );
 
       if (res.ok) {
         await checkAuth();
-        navigate("/explore"); 
+        navigate("/explore");
       } else {
         throw new Error("Failed to save results");
       }
@@ -123,16 +132,16 @@ const InitialQuizzesQuestionsPage = () => {
     <BackgroundLayout>
       <div className="quiz-page">
         <div className="quiz-page__progress-section">
-            <QuizProgressBar progress={progress} />
+          <QuizProgressBar progress={progress} />
         </div>
-        
+
         <div className="quiz-page__card-section">
-            <QuizCard 
-              question={currentQuestion} 
-              onAnswer={handleAnswer} 
-              currentIndex={currentIndex} 
-              totalQuestions={allQuestions.length} 
-            />
+          <QuizCard
+            question={currentQuestion}
+            onAnswer={handleAnswer}
+            currentIndex={currentIndex}
+            totalQuestions={allQuestions.length}
+          />
         </div>
       </div>
     </BackgroundLayout>

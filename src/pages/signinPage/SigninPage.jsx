@@ -8,7 +8,7 @@ import "./SigninPage.css";
 const SigninPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-  const {  checkAuth } = useAuth();
+  const { checkAuth } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -27,9 +27,7 @@ const SigninPage = () => {
 
   const { email, password } = formData;
 
-  
   useEffect(() => {
-    
     const newErrors = {};
 
     if (touched.email && !/\S+@\S+\.\S+/.test(email)) {
@@ -40,8 +38,7 @@ const SigninPage = () => {
       touched.password &&
       !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)
     ) {
-      newErrors.password =
-        "Min 6 chars, uppercase, lowercase, number & symbol";
+      newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
     }
 
     setErrors(newErrors);
@@ -94,21 +91,14 @@ const SigninPage = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <BackgroundLayout>
       <div className="signin-card">
         <h2 className="signin-card__title">UnlockMe</h2>
-        <p className="signin-card__subtitle">
-          Sign in and unlock connections!
-        </p>
+        <p className="signin-card__subtitle">Sign in and unlock connections!</p>
 
-        <form
-          onSubmit={handleSubmit}
-          className="signin-card__form"
-          noValidate
-        >
+        <form onSubmit={handleSubmit} className="signin-card__form" noValidate>
           <FormInput
             name="email"
             type="email"

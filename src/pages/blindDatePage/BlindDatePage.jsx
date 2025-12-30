@@ -8,7 +8,7 @@ import BlindInterestsModal from "../../components/blindDateComponents/blindInter
 import BlindRevealZone from "../../components/blindDateComponents/blindRevealZone/BlindRevealZone";
 import BlindFinalReveal from "../../components/blindDateComponents/blindFinalReveal/BlindFinalReveal";
 import "./BlindDatePage.css";
-import { useAuth } from "../../context/useAuth";
+import { useAuth } from "../../context/useAuth.js";
 
 const BlindDatePage = () => {
   const { currentUser } = useAuth();
