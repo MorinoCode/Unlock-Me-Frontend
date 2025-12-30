@@ -50,11 +50,13 @@ const App = () => {
 
             {/* Public Pages */}
             <Route element={<PublicRoute />}>
+            <Route element={<MainLayout />}>
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/signin" element={<Login />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/about-us" element={<AboutPage />} />
+              </Route>
             </Route>
 
             {/* Protected Pages */}
