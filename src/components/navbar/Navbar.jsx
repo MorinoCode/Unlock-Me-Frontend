@@ -228,7 +228,7 @@ const Navbar = () => {
               <div className="navbar__sidebar-content">
                 <div className="navbar__sidebar-header"><span>Navigation</span><button className="navbar__close-btn" onClick={() => setMobileOpen(false)}><X size={24} /></button></div>
                 {currentUser && (
-                  <div className="navbar__sidebar-user-card" onClick={(e) => goToProfile(e, currentUser._id)}>
+                  <div className="navbar__sidebar-user-card" onClick={() => navigate("/myprofile")} >
                     <img src={avatar} alt="User" className="navbar__sidebar-avatar" />
                     <div className="navbar__sidebar-info">
                       <span className="navbar__sidebar-name">{currentUser.name}</span>
