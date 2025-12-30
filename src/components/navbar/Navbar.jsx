@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion as Motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "../../context/useAuth";
-import { 
-  Compass, Heart, MessageSquare, Ghost, 
-  Info, Settings, LogOut, Menu, X, User, Key, 
-  Flame, StickyNote 
+import { useAuth } from "../../context/useAuth.js";
+import { useSocket } from "../../context/useSocket.js"; 
+import {
+  Compass, Heart, MessageSquare, Ghost, Info, Settings, LogOut, Menu, X, Key, Flame, StickyNote, Bell, CheckCircle2,
 } from "lucide-react";
 import "./Navbar.css";
 import defaultAvatar from "../../assets/default-avatar.png";
 
 const Navbar = () => {
   const { currentUser, setCurrentUser } = useAuth();
+  const { socket } = useSocket();
   const location = useLocation();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -21,6 +21,33 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [avatar, setAvatar] = useState(defaultAvatar);
 
+  const [notificationsCount, setNotificationsCount] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const dropdownRef = useRef(null);
+
+  // ۱. Fetch initial notifications from Database when online
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (!currentUser?._id) return;
+      try {
+        const res = await fetch(`${API_URL}/api/notifications`, { credentials: "include" });
+        const data = await res.json();
+        if (res.ok) {
+          setNotifications(data.notifications || []);
+          // تعداد نوتیفیکیشن‌های خوانده نشده را فیلتر کنید
+          const unread = data.notifications.filter(n => !n.isRead).length;
+          setNotificationsCount(unread);
+        }
+      } catch (err) {
+        console.error("Error loading saved notifications:", err);
+      }
+    };
+
+    fetchNotifications();
+  }, [currentUser, API_URL]);
+
+  // Handle scroll detection
   useEffect(() => {
     let lastY = window.scrollY;
     const onScroll = () => {
@@ -33,25 +60,74 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Sync avatar
   useEffect(() => {
     if (!currentUser?._id) return;
     fetch(`${API_URL}/api/user/user/${currentUser._id}`, { credentials: "include" })
-      .then(r => r.json())
-      .then(d => d.avatar && setAvatar(d.avatar));
+      .then((r) => r.json())
+      .then((d) => d.avatar && setAvatar(d.avatar));
   }, [currentUser, API_URL]);
 
-  const signout = async () => {
-    await fetch(`${API_URL}/api/user/signout`, { method: "POST", credentials: "include" });
-    setCurrentUser(null);
-    localStorage.removeItem("unlock-me-user");
+  // Click outside close
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setShowDropdown(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Real-time listener
+  useEffect(() => {
+    if (!socket) return;
+    const handleNewNotif = (data) => {
+      setNotificationsCount((prev) => prev + 1);
+      setNotifications((prev) => [data, ...prev].slice(0, 15));
+    };
+    socket.on("new_notification", handleNewNotif);
+    return () => socket.off("new_notification", handleNewNotif);
+  }, [socket]);
+
+  const handleNotificationClick = async (notif) => {
+    setShowDropdown(false);
+    
+    // اختیاری: آپدیت وضعیت خوانده شده در دیتابیس
+    try {
+      await fetch(`${API_URL}/api/notifications/mark-read/${notif._id}`, {
+        method: 'PATCH',
+        credentials: "include"
+      });
+    } catch (err) { console.log(err); }
+
+    switch (notif.type) {
+      case "NEW_MESSAGE": case "MESSAGE": navigate(`/chat/${notif.targetId}`); break;
+      case "NEW_COMMENT": case "LIKE": case "COMMENT": navigate(`/feed`); break;
+      case "MATCH": navigate(`/mymatches`); break;
+      case "BLIND_MESSAGE": navigate(`/blind-date`); break;
+      default: break;
+    }
+  };
+
+  const goToProfile = (e, userId) => {
+    e.stopPropagation();
+    setShowDropdown(false);
     setMobileOpen(false);
-    navigate("/");
+    if(userId) navigate(`/user-profile/${userId}`);
+  };
+
+  const signout = async () => {
+    try {
+      await fetch(`${API_URL}/api/user/signout`, { method: "POST", credentials: "include" });
+      setCurrentUser(null);
+      localStorage.removeItem("unlock-me-user");
+      setMobileOpen(false);
+      navigate("/");
+    } catch (err) { console.error(err); }
   };
 
   const noNavPaths = ["/chat", "/initial"];
-  if (noNavPaths.some(path => location.pathname.startsWith(path))) return null;
+  if (noNavPaths.some((path) => location.pathname.startsWith(path))) return null;
 
-  // لیست روت‌های هوشمند
   const links = currentUser
     ? [
         { to: "/swipe", label: "Swipe", icon: <Flame size={20} /> },
@@ -66,26 +142,21 @@ const Navbar = () => {
         { to: "/about-us", label: "About", icon: <Info size={20} /> },
       ];
 
+  const toggleDropdown = (e) => {
+    e.stopPropagation();
+    setShowDropdown(!showDropdown);
+    if (!showDropdown) setNotificationsCount(0);
+  };
+
   return (
     <>
       <AnimatePresence>
         {mobileOpen && (
-          <Motion.div
-            className="navbar__overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setMobileOpen(false)}
-          />
+          <Motion.div className="navbar__overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} />
         )}
       </AnimatePresence>
 
-      <Motion.nav
-        className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}
-        initial={{ y: 0 }}
-        animate={{ y: hidden ? -100 : 0 }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
-      >
+      <Motion.nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`} initial={{ y: 0 }} animate={{ y: hidden ? -100 : 0 }} transition={{ duration: 0.4, ease: "easeInOut" }}>
         <div className="navbar__container">
           <Link to="/" className="navbar__logo" onClick={() => setMobileOpen(false)}>
             <div className="navbar__logo-icon">U</div>
@@ -95,104 +166,89 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* منوی دسکتاپ */}
           <div className="navbar__menu navbar__menu--desktop">
-            {links.map(l => (
-              <Link 
-                key={l.to} 
-                to={l.to} 
-                className={`navbar__link ${location.pathname === l.to ? "navbar__link--active" : ""}`}
-              >
-                {l.icon}
-                <span className="navbar__label">{l.label}</span>
-                {location.pathname === l.to && (
-                  <Motion.div layoutId="activeNav" className="navbar__active-indicator" />
-                )}
+            {links.map((l) => (
+              <Link key={l.to} to={l.to} className={`navbar__link ${location.pathname === l.to ? "navbar__link--active" : ""}`}>
+                {l.icon}<span className="navbar__label">{l.label}</span>
+                {location.pathname === l.to && <Motion.div layoutId="activeNav" className="navbar__active-indicator" />}
               </Link>
             ))}
           </div>
 
           <div className="navbar__actions">
-            {currentUser ? (
-              <div className="navbar__user-section">
-                <Link to="/myprofile" className="navbar__profile navbar__profile--desktop">
-                  <div className="navbar__avatar-wrapper">
-                    <img src={avatar} alt="Profile" className="navbar__profile-avatar" />
-                    <div className="navbar__status-dot" />
-                  </div>
-                  <span className="navbar__profile-name">{currentUser.name}</span>
-                </Link>
-                <button onClick={signout} className="navbar__icon-btn navbar__icon-btn--logout navbar__icon-btn--desktop">
-                  <LogOut size={20} />
-                </button>
+            {currentUser && (
+              <div className="navbar__notif-container" ref={dropdownRef}>
+                <div className="navbar__notification-wrapper" onClick={toggleDropdown}>
+                  <Bell size={22} className="navbar__notification-icon" />
+                  {notificationsCount > 0 && <span className="navbar__notification-badge">{notificationsCount}</span>}
+                </div>
+                <AnimatePresence>
+                  {showDropdown && (
+                    <Motion.div className="navbar__dropdown" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 15 }}>
+                      <div className="navbar__dropdown-header"><span>Notifications</span></div>
+                      <div className="navbar__dropdown-list">
+                        {notifications.length > 0 ? (
+                          notifications.map((n, idx) => (
+                            <div key={idx} className="navbar__dropdown-item" onClick={() => handleNotificationClick(n)}>
+                               <div className="navbar__dropdown-avatar" onClick={(e) => goToProfile(e, n.targetId)}>
+                                  {n.senderAvatar ? <img src={n.senderAvatar} alt=""/> : "👤"}
+                               </div>
+                               <div className="navbar__dropdown-info">
+                                  <p><strong onClick={(e) => goToProfile(e, n.targetId)} style={{cursor: 'pointer'}}>{n.senderName}</strong> {n.message}</p>
+                               </div>
+                            </div>
+                          ))
+                        ) : (<div className="navbar__dropdown-empty">No notifications</div>)}
+                      </div>
+                    </Motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            ) : (
-              <Link to="/signin" className="navbar__btn-login navbar__btn-login--desktop">
-                <Key size={18} />
-                <span>Sign In</span>
-              </Link>
             )}
 
-            {/* دکمه همبرگری موبایل */}
-            <button className="navbar__burger" onClick={() => setMobileOpen(true)}>
-              <Menu size={28} />
-            </button>
+            {currentUser ? (
+              <div className="navbar__user-section navbar__user-section--desktop">
+                <Link to="/myprofile" className="navbar__profile">
+                  <div className="navbar__avatar-wrapper"><img src={avatar} alt="Profile" className="navbar__profile-avatar" /></div>
+                  <span className="navbar__profile-name">{currentUser.name}</span>
+                </Link>
+                <button onClick={signout} className="navbar__icon-btn--logout"><LogOut size={20} /></button>
+              </div>
+            ) : (
+              <Link to="/signin" className="navbar__btn-login navbar__btn-login--desktop"><Key size={18} /><span>Sign In</span></Link>
+            )}
+
+            <button className="navbar__burger" onClick={() => setMobileOpen(true)}><Menu size={28} /></button>
           </div>
         </div>
 
-        {/* سایدبار موبایل */}
         <AnimatePresence>
           {mobileOpen && (
-            <Motion.div 
-              className="navbar__sidebar"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            >
+            <Motion.div className="navbar__sidebar" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
               <div className="navbar__sidebar-content">
-                <div className="navbar__sidebar-header">
-                  <span>Navigation</span>
-                  <button className="navbar__close-btn" onClick={() => setMobileOpen(false)}>
-                    <X size={24} />
-                  </button>
-                </div>
-
+                <div className="navbar__sidebar-header"><span>Navigation</span><button className="navbar__close-btn" onClick={() => setMobileOpen(false)}><X size={24} /></button></div>
                 {currentUser && (
-                  <Link to="/myprofile" className="navbar__sidebar-profile" onClick={() => setMobileOpen(false)}>
-                    <img src={avatar} alt="User" />
-                    <div className="navbar__sidebar-user-info">
+                  <div className="navbar__sidebar-user-card" onClick={(e) => goToProfile(e, currentUser._id)}>
+                    <img src={avatar} alt="User" className="navbar__sidebar-avatar" />
+                    <div className="navbar__sidebar-info">
                       <span className="navbar__sidebar-name">{currentUser.name}</span>
                       <span className="navbar__sidebar-status">Active Now</span>
                     </div>
-                  </Link>
+                  </div>
                 )}
-
                 <div className="navbar__sidebar-links">
-                  {links.map(l => (
-                    <Link 
-                      key={l.to} 
-                      to={l.to} 
-                      onClick={() => setMobileOpen(false)}
-                      className={`navbar__sidebar-link ${location.pathname === l.to ? "navbar__sidebar-link--active" : ""}`}
-                    >
-                      {l.icon}
-                      <span>{l.label}</span>
+                  {links.map((l) => (
+                    <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)} className={`navbar__sidebar-link ${location.pathname === l.to ? "navbar__sidebar-link--active" : ""}`}>
+                      {l.icon} <span>{l.label}</span>
+                      {location.pathname === l.to && <Motion.div layoutId="activeNavMobile" className="navbar__active-indicator-mobile" />}
                     </Link>
                   ))}
-                  
-                  <div className="navbar__sidebar-divider" />
-
+                </div>
+                <div className="navbar__sidebar-footer">
                   {currentUser ? (
-                    <button onClick={signout} className="navbar__sidebar-link navbar__sidebar-link--danger">
-                      <LogOut size={20} />
-                      <span>Logout</span>
-                    </button>
+                    <button onClick={signout} className="navbar__sidebar-logout"><LogOut size={20} /> <span>Logout</span></button>
                   ) : (
-                    <Link to="/signin" onClick={() => setMobileOpen(false)} className="navbar__sidebar-link">
-                      <Key size={20} />
-                      <span>Sign In</span>
-                    </Link>
+                    <Link to="/signin" className="navbar__sidebar-link" onClick={() => setMobileOpen(false)}><Key size={20} /> <span>Sign In</span></Link>
                   )}
                 </div>
               </div>
