@@ -7,12 +7,12 @@ import "./SwipePage.css";
 import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
 import { useNavigate } from "react-router-dom";
 import {
-  IoClose,
-  IoHeart,
-  IoStar,
-  IoChatbubbleEllipses,
-  IoPerson,
-} from "react-icons/io5";
+  ThumbsDown ,
+  Heart,
+  HandHeart ,
+  MessageCircle,
+  User,
+} from "lucide-react";
 
 const SwipePage = () => {
   const [users, setUsers] = useState([]);
@@ -196,14 +196,14 @@ const SwipePage = () => {
     <ExploreBackgroundLayout>
       <div className="swipe-page">
         <div className="swipe-page__container">
-          {users.map((user, index) => (
+          {users.map((userSwipe, index) => (
             <SwipeCard
               ref={childRefs[index]}
-              key={user._id}
-              user={user}
+              key={userSwipe._id}
+              userSwipe={userSwipe}
               index={index}
               actionFeedback={index === topIndex ? feedback : null}
-              onSwipe={(dir) => handleSwipe(dir, user, index)}
+              onSwipe={(dir) => handleSwipe(dir, userSwipe, index)}
               onCardLeftScreen={(idx) => handleCardLeftScreen(idx)}
             />
           ))}
@@ -223,35 +223,35 @@ const SwipePage = () => {
             className="swipe-page__control-btn swipe-page__btn--nope"
             onClick={() => triggerSwipe("left")}
           >
-            <IoClose />
+            <ThumbsDown  />
           </button>
 
           <button
             className="swipe-page__control-btn swipe-page__btn--super"
             onClick={() => triggerSwipe("up")}
           >
-            <IoStar />
+            <HandHeart  />
           </button>
 
           <button
             className="swipe-page__control-btn swipe-page__btn--profile"
             onClick={handleProfileNavigation}
           >
-            <IoPerson />
+            <User />
           </button>
 
           <button
             className="swipe-page__control-btn swipe-page__btn--chat"
             onClick={handleChatClick}
           >
-            <IoChatbubbleEllipses />
+            <MessageCircle />
           </button>
 
           <button
             className="swipe-page__control-btn swipe-page__btn--like"
             onClick={() => triggerSwipe("right")}
           >
-            <IoHeart />
+            <Heart />
           </button>
         </div>
 

@@ -8,6 +8,7 @@ const UserCard = ({ user, isLocked: parentLocked, userPlan }) => {
   const [liked, setLiked] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+  console.log(user);
 
   // محاسبه قفل بودن
   const score = user.matchScore || 0;
@@ -102,7 +103,7 @@ const UserCard = ({ user, isLocked: parentLocked, userPlan }) => {
           <div className="user-card__image-wrapper">
              <img 
               src={user.avatar || "/default-avatar.png"} 
-              alt={user.name} 
+              alt={user.username} 
               className="user-card__image"
             />
           </div>
