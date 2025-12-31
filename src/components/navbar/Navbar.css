@@ -394,8 +394,19 @@
   font-weight: 700;
   font-size: 1rem;
 }
-
-@media (max-width: 1141px) {
+@media (max-width : 1235px) {
+  .navbar__link{
+  gap: 0px;
+  padding: 10px 15px;
+}
+}
+@media (max-width : 1143px) {
+  .navbar__link{
+  gap: 0px;
+  padding: 10px 8px;
+}
+}
+@media (max-width: 1053px) {
   .navbar__menu--desktop,
   .navbar__user-section--desktop,
   .navbar__btn-login--desktop {
