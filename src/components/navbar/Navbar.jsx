@@ -210,7 +210,7 @@ const Navbar = () => {
               <div className="navbar__user-section navbar__user-section--desktop">
                 <Link to="/myprofile" className="navbar__profile">
                   <div className="navbar__avatar-wrapper"><img src={avatar} alt="Profile" className="navbar__profile-avatar" /></div>
-                  <span className="navbar__profile-name">{currentUser.name}</span>
+                  <span className="navbar__profile-name">{currentUser.username}</span>
                 </Link>
                 <button onClick={signout} className="navbar__icon-btn--logout"><LogOut size={20} /></button>
               </div>
@@ -231,7 +231,7 @@ const Navbar = () => {
                   <div className="navbar__sidebar-user-card" onClick={() => navigate("/myprofile")} >
                     <img src={avatar} alt="User" className="navbar__sidebar-avatar" />
                     <div className="navbar__sidebar-info">
-                      <span className="navbar__sidebar-name">{currentUser.name}</span>
+                      <span className="navbar__sidebar-name">{currentUser.username}</span>
                       <span className="navbar__sidebar-status">Active Now</span>
                     </div>
                   </div>

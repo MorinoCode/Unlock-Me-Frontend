@@ -114,6 +114,10 @@
   align-items: center;
   gap: 12px;
 }
+.navbar__profile:hover{
+  transform: scale(1.1);
+  border: 1px solid #6366f1;
+}
 .navbar__profile {
   display: flex;
   align-items: center;
@@ -182,6 +186,10 @@
   color: #94a3b8;
   position: relative;
   padding: 8px;
+}
+.navbar__notification-wrapper:hover{
+  color: #6366f1;
+  transform: scale(1.1);
 }
 .navbar__notification-badge {
   position: absolute;
