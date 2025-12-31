@@ -16,6 +16,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 60px;
   margin-bottom: 40px;
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -294,7 +295,10 @@
   .promo-card { flex-direction: column; text-align: center; gap: 20px; }
 }
 
-@media screen and (max-width: 409px) {
+@media screen and (max-width: 449px) {
+  .matches-page__title{
+    font-size: 1.6rem;
+  }
   .matches-page__badge {
     padding: 6px 12px;
     font-size: 11px;
