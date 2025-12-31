@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
       if (res.ok) {
         const data = await res.json();
         setCurrentUser(data);
+        console.log(data);
         return true;
       }
 
