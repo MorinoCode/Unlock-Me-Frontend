@@ -80,7 +80,7 @@
 
 .quiz-card__option-btn:hover {
   background: rgba(99, 102, 241, 0.1);
-  border-color: #6366f1;
+  border-color: #63f1a1;
   transform: translateX(5px);
   color: #fff;
 }
