@@ -6,12 +6,26 @@ import BackgroundLayout from "../../components/layout/backgroundLayout/Backgroun
 import "./SignupPage.css";
 import { useAuth } from "../../context/useAuth.js";
 
+// کلمات ممنوعه برای نام کاربری
+const FORBIDDEN_USERNAMES = [
+  "admin",
+  "support",
+  "root",
+  "superuser",
+  "help",
+  "info",
+  "manager",
+  "unlockme",
+  "moderator"
+];
+
 const SignupPage = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
   const { checkAuth } = useAuth();
 
   const [formData, setFormData] = useState({
+    username: "",
     name: "",
     email: "",
     password: "",
@@ -26,8 +40,7 @@ const SignupPage = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { name, email, password, confirmPassword, gender, lookingFor } =
-    formData;
+  const { username, name, email, password, confirmPassword, gender, lookingFor } = formData;
 
   const genderOptions = [
     { value: "Female", label: "Female" },
@@ -39,29 +52,49 @@ const SignupPage = () => {
   useEffect(() => {
     const newErrors = {};
 
+    // 1. Username Validation (Strict)
+    if (touched.username) {
+      if (username.length < 3) {
+        newErrors.username = "Username must be at least 3 characters";
+      } else if (FORBIDDEN_USERNAMES.includes(username)) {
+        newErrors.username = "This username is not available";
+      } else if (!/^[a-z0-9_]+$/.test(username)) {
+        // چون ورودی را خودکار lowercase می‌کنیم، اینجا فقط a-z را چک می‌کنیم
+        newErrors.username = "Only lowercase letters, numbers, and underscores allowed";
+      }
+    }
+
+    // 2. Name Validation
     if (touched.name && name.trim().length < 2)
       newErrors.name = "Name is too short";
 
+    // 3. Email Validation
     if (touched.email && !/\S+@\S+\.\S+/.test(email))
       newErrors.email = "Invalid email format";
 
+    // 4. Password Validation
     if (
       touched.password &&
       !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)
     )
       newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
 
+    // 5. Confirm Password
     if (touched.confirmPassword && confirmPassword !== password)
       newErrors.confirmPassword = "Passwords do not match";
 
+    // 6. Selects
     if (touched.gender && !gender) newErrors.gender = "Gender is required";
-
     if (touched.lookingFor && !lookingFor)
       newErrors.lookingFor = "This field is required";
 
     setErrors(newErrors);
 
+    // Form Validity Check
     const isValid =
+      username.length >= 3 &&
+      /^[a-z0-9_]+$/.test(username) &&
+      !FORBIDDEN_USERNAMES.includes(username) &&
       name.trim().length >= 2 &&
       /\S+@\S+\.\S+/.test(email) &&
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password) &&
@@ -75,8 +108,25 @@ const SignupPage = () => {
 
   // ---------- Handlers ----------
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setServerMessage("");
+    let value = e.target.value;
+    const name = e.target.name;
+
+    // اعمال تغییرات خاص روی Username
+    if (name === "username") {
+      // تبدیل به حروف کوچک و حذف فاصله
+      value = value.toLowerCase().replace(/\s/g, "");
+    }
+
+    setFormData({ ...formData, [name]: value });
+    
+    // پاک کردن پیام سرور هنگام تایپ مجدد
+    if (serverMessage) setServerMessage("");
+    
+    // ریست کردن ارور فیلد جاری برای UX بهتر (اختیاری)
+    if (errors[name]) {
+         // می‌توان اینجا ارور را نال نکرد تا افکت لحظه‌ای بماند، یا نال کرد
+         // setErrors(prev => ({...prev, [name]: null}));
+    }
   };
 
   const handleBlur = (e) => {
@@ -107,7 +157,14 @@ const SignupPage = () => {
         await checkAuth();
         navigate("/initial-quizzes");
       } else {
-        setServerMessage(data.message || "Signup failed");
+        // مدیریت هوشمند ارورهای یونیک بودن (Username/Email)
+        if (data.message && data.message.toLowerCase().includes("username")) {
+            setErrors(prev => ({ ...prev, username: "Username is already taken" }));
+        } else if (data.message && data.message.toLowerCase().includes("email")) {
+             setErrors(prev => ({ ...prev, email: "Email is already registered" }));
+        } else {
+            setServerMessage(data.message || "Signup failed");
+        }
       }
     } catch (err) {
       setServerMessage("Server error. Try again later.");
@@ -131,14 +188,25 @@ const SignupPage = () => {
             onSubmit={handleSubmit}
             noValidate
           >
+            {/* --- Username Field --- */}
+            <FormInput
+              name="username"
+              placeholder="Username (e.g. user_123)"
+              value={username}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.username && errors.username}
+              autoFocus
+            />
+
+            {/* --- Name Field --- */}
             <FormInput
               name="name"
-              placeholder="Name"
+              placeholder="Full Name"
               value={name}
               onChange={handleChange}
               onBlur={handleBlur}
               error={touched.name && errors.name}
-              autoFocus
             />
 
             <FormInput
