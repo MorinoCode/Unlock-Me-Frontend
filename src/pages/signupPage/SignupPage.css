@@ -5,11 +5,11 @@
   align-items: center;
   width: 100%;
   padding: 1.5rem;
-  /* Background is handled by BackgroundLayout, so removed here */
 }
 
 /* Element: .signup-page__card */
 .signup-page__card {
+  margin-top: 3rem;
   width: 100%;
   max-width: 420px;
   padding: 2.5rem;
