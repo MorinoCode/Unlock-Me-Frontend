@@ -1,11 +1,7 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
 import "./onboardingSteps.css";
 
-/* =========================
-   SearchableSelect Component
-   (بدون تغییر باقی می‌ماند چون منطق UI سالم است)
-========================= */
-const SearchableSelect = ({
+const SearchableSelect = memo(({
   options,
   value,
   onChange,
@@ -16,6 +12,10 @@ const SearchableSelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(value || "");
   const wrapperRef = useRef(null);
+
+  React.useLayoutEffect(() => {
+    setSearchTerm(value || "");
+  }, [value]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -35,7 +35,7 @@ const SearchableSelect = ({
     );
   }, [options, searchTerm]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = useCallback((e) => {
     const text = e.target.value;
     setSearchTerm(text);
     setIsOpen(true);
@@ -49,13 +49,17 @@ const SearchableSelect = ({
     } else if (text === "") {
       onChange(null);
     }
-  };
+  }, [options, onChange]);
 
-  const handleSelect = (option) => {
+  const handleSelect = useCallback((option) => {
     onChange(option);
     setSearchTerm(option.name);
     setIsOpen(false);
-  };
+  }, [onChange]);
+
+  const handleFocus = useCallback(() => {
+    if (!disabled) setIsOpen(true);
+  }, [disabled]);
 
   return (
     <div className="searchable-select" ref={wrapperRef}>
@@ -66,16 +70,22 @@ const SearchableSelect = ({
         placeholder={placeholder}
         disabled={disabled}
         onChange={handleInputChange}
-        onFocus={() => !disabled && setIsOpen(true)}
+        onFocus={handleFocus}
+        autoComplete="off"
+        aria-autocomplete="list"
+        aria-expanded={isOpen}
+        role="combobox"
       />
 
       {isOpen && !disabled && filteredOptions.length > 0 && (
-        <ul className="searchable-select__list">
+        <ul className="searchable-select__list" role="listbox">
           {filteredOptions.map((opt, index) => (
             <li
               key={opt.isoCode || `${opt.name}-${index}`}
               className="searchable-select__option"
               onClick={() => handleSelect(opt)}
+              role="option"
+              aria-selected={opt.name === value}
             >
               {renderOption ? renderOption(opt) : opt.name}
             </li>
@@ -84,11 +94,10 @@ const SearchableSelect = ({
       )}
     </div>
   );
-};
+});
 
-/* =========================
-      Main Component
-========================= */
+SearchableSelect.displayName = "SearchableSelect";
+
 const OnboardingStep2 = ({
   formData,
   setFormData,
@@ -96,61 +105,107 @@ const OnboardingStep2 = ({
   onBack,
   loading,
 }) => {
-  // استیت برای ذخیره دیتای خام که از بک‌اند می‌آید
   const [availableLocations, setAvailableLocations] = useState([]);
   const [fetchingLoc, setFetchingLoc] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+  const abortControllerRef = useRef(null);
 
-  // 1. دریافت لیست کشورها و شهرها از بک‌اند
   useEffect(() => {
+    abortControllerRef.current = new AbortController();
+    
+    const timeoutId = setTimeout(() => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        setErrorMessage("Request timeout. Please try again.");
+        setFetchingLoc(false);
+      }
+    }, 15000);
+
     const fetchLocations = async () => {
       try {
         setFetchingLoc(true);
-        // فرض بر این است که بک‌اند روی این آدرس لیست را برمی‌گرداند
-        const res = await fetch(`${API_URL}/api/locations`); 
+        const res = await fetch(`${API_URL}/api/locations`, {
+          signal: abortControllerRef.current.signal,
+        }); 
+        
+        if (!res.ok) throw new Error("Failed to fetch locations");
+        
         const data = await res.json();
         
         if (Array.isArray(data)) {
           setAvailableLocations(data);
+          setErrorMessage("");
         }
       } catch (err) {
-        console.error("Failed to load locations:", err);
+        if (err.name !== "AbortError") {
+          console.error("Failed to load locations:", err);
+          setErrorMessage("Failed to load locations. Please refresh.");
+        }
       } finally {
+        clearTimeout(timeoutId);
         setFetchingLoc(false);
       }
     };
 
     fetchLocations();
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [API_URL]);
 
-  // 2. آماده‌سازی لیست کشورها برای کامپوننت Select
   const countryOptions = useMemo(() => {
     return availableLocations.map((loc) => ({
-      name: loc.country,       // نام برای نمایش
-      isoCode: loc.countryCode, // کد برای ذخیره و فیلتر
-      // اگر بک‌اند پرچم ندارد، می‌توانیم دستی اضافه کنیم یا حذف کنیم
+      name: loc.country,
+      isoCode: loc.countryCode,
       flag: loc.countryCode === "SE" ? "🇸🇪" : "🏳️" 
     }));
   }, [availableLocations]);
 
-  // 3. فیلتر کردن شهرها بر اساس کشور انتخاب شده
   const cityOptions = useMemo(() => {
     if (!formData.countryCode) return [];
 
-    // پیدا کردن آبجکت کشور انتخاب شده در دیتای بک‌اند
     const selectedLocation = availableLocations.find(
       (loc) => loc.countryCode === formData.countryCode
     );
 
     if (!selectedLocation || !selectedLocation.cities) return [];
 
-    // تبدیل آرایه رشته‌ای ["Stockholm", ...] به آرایه آبجکت [{name: "Stockholm"}, ...]
-    // چون SearchableSelect انتظار آبجکت دارد
     return selectedLocation.cities.map((cityName) => ({
       name: cityName,
     }));
   }, [formData.countryCode, availableLocations]);
+
+  const handleCountryChange = useCallback((selected) => {
+    if (selected) {
+      setFormData({
+        ...formData,
+        country: selected.name,
+        countryCode: selected.isoCode,
+        city: "",
+      });
+    } else {
+      setFormData({
+        ...formData,
+        country: "",
+        countryCode: "",
+        city: "",
+      });
+    }
+  }, [formData, setFormData]);
+
+  const handleCityChange = useCallback((selected) => {
+    if (selected) {
+      setFormData({ ...formData, city: selected.name });
+    } else {
+      setFormData({ ...formData, city: "" });
+    }
+  }, [formData, setFormData]);
 
   const isNextDisabled = !formData.country || !formData.city;
 
@@ -158,38 +213,26 @@ const OnboardingStep2 = ({
     <div className="onboarding-step">
       <h2 className="onboarding-step__title">Where do you live?</h2>
 
+      {errorMessage && (
+        <div className="onboarding-step__error-message" role="alert">
+          {errorMessage}
+        </div>
+      )}
+
       <div className="onboarding-step__input-group onboarding-step__input-group--location">
-        {/* Country */}
         <SearchableSelect
           options={countryOptions}
           value={formData.country}
           placeholder={fetchingLoc ? "Loading Countries..." : "Select Country"}
-          disabled={fetchingLoc} // تا وقتی لود نشده غیرفعال باشد
+          disabled={fetchingLoc}
           renderOption={(c) => (
             <span className="searchable-select__option-content">
               {c.flag} {c.name}
             </span>
           )}
-          onChange={(selected) => {
-            if (selected) {
-              setFormData({
-                ...formData,
-                country: selected.name,
-                countryCode: selected.isoCode,
-                city: "", // ریست کردن شهر وقتی کشور عوض می‌شود
-              });
-            } else {
-              setFormData({
-                ...formData,
-                country: "",
-                countryCode: "",
-                city: "",
-              });
-            }
-          }}
+          onChange={handleCountryChange}
         />
 
-        {/* City */}
         <SearchableSelect
           options={cityOptions}
           value={formData.city}
@@ -199,18 +242,15 @@ const OnboardingStep2 = ({
               : (cityOptions.length === 0 ? "No cities found" : "Select or Type City")
           }
           disabled={!formData.country || cityOptions.length === 0}
-          onChange={(selected) => {
-            if (selected) {
-              setFormData({ ...formData, city: selected.name });
-            } else {
-              setFormData({ ...formData, city: "" });
-            }
-          }}
+          onChange={handleCityChange}
         />
       </div>
 
       <div className="onboarding-step__actions">
-        <button className="onboarding-step__btn onboarding-step__btn--secondary" onClick={onBack}>
+        <button 
+          className="onboarding-step__btn onboarding-step__btn--secondary" 
+          onClick={onBack}
+        >
           Back
         </button>
 
@@ -218,8 +258,16 @@ const OnboardingStep2 = ({
           className="onboarding-step__btn onboarding-step__btn--primary"
           onClick={onNext}
           disabled={isNextDisabled || loading}
+          aria-busy={loading}
         >
-          {loading ? "Saving..." : "Next"}
+          {loading ? (
+            <>
+              <span className="onboarding-step__spinner" aria-hidden="true"></span>
+              Saving...
+            </>
+          ) : (
+            "Next"
+          )}
         </button>
       </div>
     </div>
