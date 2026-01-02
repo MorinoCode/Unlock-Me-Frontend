@@ -51,7 +51,9 @@ const SigninPage = () => {
   }, [formData, touched, email, password]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const value =
+      e.target.name === "email" ? e.target.value.trim() : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value });
     setServerMessage("");
   };
 
@@ -81,7 +83,6 @@ const SigninPage = () => {
         return;
       }
 
-      // ✅ فقط همین خط اضافه / اصلاح شده
       await checkAuth();
       navigate("/explore");
     } catch (err) {
@@ -108,6 +109,9 @@ const SigninPage = () => {
             onBlur={handleBlur}
             error={touched.email && errors.email}
             autoFocus
+            autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
           />
 
           <FormInput
