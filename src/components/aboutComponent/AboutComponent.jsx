@@ -9,7 +9,7 @@ const AboutComponent = ({ values = [], stats = [] }) => {
   return (
     <div className="about-component">
       
-      {/* --- Hero Section --- */}
+     
       <section className="about-component__hero">
         <div className="about-component__hero-content">
           <Motion.h1 
