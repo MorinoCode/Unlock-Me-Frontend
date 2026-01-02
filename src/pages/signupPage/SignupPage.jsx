@@ -56,10 +56,12 @@ const SignupPage = () => {
     if (touched.username) {
       if (username.length < 3) {
         newErrors.username = "Username must be at least 3 characters";
+      } else if (username.length > 15) { 
+        // ✅ چک کردن طول بیش از ۱۵ کاراکتر
+        newErrors.username = "Username cannot exceed 15 characters";
       } else if (FORBIDDEN_USERNAMES.includes(username)) {
         newErrors.username = "This username is not available";
       } else if (!/^[a-z0-9_]+$/.test(username)) {
-        // چون ورودی را خودکار lowercase می‌کنیم، اینجا فقط a-z را چک می‌کنیم
         newErrors.username = "Only lowercase letters, numbers, and underscores allowed";
       }
     }
@@ -154,7 +156,7 @@ const SignupPage = () => {
       if (response.ok) {
         localStorage.setItem(
           "unlock-me-user",
-          JSON.stringify({ id: data.user.id, name: data.user.name })
+          JSON.stringify({ id: data.user.id, name: data.user.name  , username : data.user.username})
         );
 
         await checkAuth();
