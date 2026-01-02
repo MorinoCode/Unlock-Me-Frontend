@@ -116,6 +116,9 @@ const SignupPage = () => {
       // تبدیل به حروف کوچک و حذف فاصله
       value = value.toLowerCase().replace(/\s/g, "");
     }
+    if (name === "email") {
+      value = value.toLowerCase().trim();
+    }
 
     setFormData({ ...formData, [name]: value });
     
@@ -197,6 +200,9 @@ const SignupPage = () => {
               onBlur={handleBlur}
               error={touched.username && errors.username}
               autoFocus
+              autoComplete="username"
+              autoCapitalize="none" 
+              autoCorrect="off"
             />
 
             {/* --- Name Field --- */}
@@ -207,6 +213,8 @@ const SignupPage = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               error={touched.name && errors.name}
+              autoComplete="name"
+              autoCapitalize="words"
             />
 
             <FormInput
@@ -217,6 +225,9 @@ const SignupPage = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               error={touched.email && errors.email}
+              autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
             />
 
             <FormInput
