@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import FormInput from "../../components/formInput/FormInput";
 import FormSelect from "../../components/formSelect/FormSelect";
@@ -6,7 +6,6 @@ import BackgroundLayout from "../../components/layout/backgroundLayout/Backgroun
 import "./SignupPage.css";
 import { useAuth } from "../../context/useAuth.js";
 
-// کلمات ممنوعه برای نام کاربری
 const FORBIDDEN_USERNAMES = [
   "admin",
   "support",
@@ -39,110 +38,124 @@ const SignupPage = () => {
   const [serverMessage, setServerMessage] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [isRateLimited, setIsRateLimited] = useState(false);
 
   const { username, name, email, password, confirmPassword, gender, lookingFor } = formData;
 
-  const genderOptions = [
+  const genderOptions = useMemo(() => [
     { value: "Female", label: "Female" },
     { value: "Male", label: "Male" },
     { value: "Other", label: "Other" },
-  ];
+  ], []);
 
-  // ---------- Validation Logic ----------
-  useEffect(() => {
+  const usernameRegex = useMemo(() => /^[a-z0-9_]+$/, []);
+  const emailRegex = useMemo(() => /\S+@\S+\.\S+/, []);
+  const passwordRegex = useMemo(() => /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/, []);
+
+  const validateForm = useCallback(() => {
     const newErrors = {};
 
-    // 1. Username Validation (Strict)
     if (touched.username) {
       if (username.length < 3) {
         newErrors.username = "Username must be at least 3 characters";
-      } else if (username.length > 15) { 
-        // ✅ چک کردن طول بیش از ۱۵ کاراکتر
+      } else if (username.length > 15) {
         newErrors.username = "Username cannot exceed 15 characters";
-      } else if (FORBIDDEN_USERNAMES.includes(username)) {
+      } else if (FORBIDDEN_USERNAMES.includes(username.toLowerCase())) {
         newErrors.username = "This username is not available";
-      } else if (!/^[a-z0-9_]+$/.test(username)) {
+      } else if (!usernameRegex.test(username)) {
         newErrors.username = "Only lowercase letters, numbers, and underscores allowed";
       }
     }
 
-    // 2. Name Validation
-    if (touched.name && name.trim().length < 2)
+    if (touched.name && name.trim().length < 2) {
       newErrors.name = "Name is too short";
+    }
 
-    // 3. Email Validation
-    if (touched.email && !/\S+@\S+\.\S+/.test(email))
+    if (touched.email && !emailRegex.test(email)) {
       newErrors.email = "Invalid email format";
+    }
 
-    // 4. Password Validation
-    if (
-      touched.password &&
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)
-    )
+    if (touched.password && !passwordRegex.test(password)) {
       newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
+    }
 
-    // 5. Confirm Password
-    if (touched.confirmPassword && confirmPassword !== password)
+    if (touched.confirmPassword && confirmPassword !== password) {
       newErrors.confirmPassword = "Passwords do not match";
+    }
 
-    // 6. Selects
-    if (touched.gender && !gender) newErrors.gender = "Gender is required";
-    if (touched.lookingFor && !lookingFor)
+    if (touched.gender && !gender) {
+      newErrors.gender = "Gender is required";
+    }
+
+    if (touched.lookingFor && !lookingFor) {
       newErrors.lookingFor = "This field is required";
+    }
 
     setErrors(newErrors);
 
-    // Form Validity Check
     const isValid =
       username.length >= 3 &&
-      /^[a-z0-9_]+$/.test(username) &&
-      !FORBIDDEN_USERNAMES.includes(username) &&
+      username.length <= 15 &&
+      usernameRegex.test(username) &&
+      !FORBIDDEN_USERNAMES.includes(username.toLowerCase()) &&
       name.trim().length >= 2 &&
-      /\S+@\S+\.\S+/.test(email) &&
-      /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password) &&
+      emailRegex.test(email) &&
+      passwordRegex.test(password) &&
       confirmPassword === password &&
-      password !== "" &&
+      password.length > 0 &&
       gender !== "" &&
       lookingFor !== "";
 
     setIsFormValid(isValid);
-  }, [formData, touched]);
+  }, [username, name, email, password, confirmPassword, gender, lookingFor, touched, usernameRegex, emailRegex, passwordRegex]);
 
-  // ---------- Handlers ----------
-  const handleChange = (e) => {
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      validateForm();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [validateForm]);
+
+  useEffect(() => {
+    if (attemptCount >= 5) {
+      setIsRateLimited(true);
+      const timer = setTimeout(() => {
+        setIsRateLimited(false);
+        setAttemptCount(0);
+      }, 60000);
+      return () => clearTimeout(timer);
+    }
+  }, [attemptCount]);
+
+  const handleChange = useCallback((e) => {
     let value = e.target.value;
-    const name = e.target.name;
+    const fieldName = e.target.name;
 
-    // اعمال تغییرات خاص روی Username
-    if (name === "username") {
-      // تبدیل به حروف کوچک و حذف فاصله
+    if (fieldName === "username") {
       value = value.toLowerCase().replace(/\s/g, "");
     }
-    if (name === "email") {
+    if (fieldName === "email") {
       value = value.toLowerCase().trim();
     }
 
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({ ...prev, [fieldName]: value }));
     
-    // پاک کردن پیام سرور هنگام تایپ مجدد
     if (serverMessage) setServerMessage("");
-    
-    // ریست کردن ارور فیلد جاری برای UX بهتر (اختیاری)
-    if (errors[name]) {
-         // می‌توان اینجا ارور را نال نکرد تا افکت لحظه‌ای بماند، یا نال کرد
-         // setErrors(prev => ({...prev, [name]: null}));
-    }
-  };
+  }, [serverMessage]);
 
-  const handleBlur = (e) => {
-    setTouched({ ...touched, [e.target.name]: true });
-  };
+  const handleBlur = useCallback((e) => {
+    setTouched(prev => ({ ...prev, [e.target.name]: true }));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || loading || isRateLimited) return;
 
     setLoading(true);
+    setAttemptCount(prev => prev + 1);
+
     try {
       const response = await fetch(`${API_URL}/api/user/signup`, {
         method: "POST",
@@ -154,21 +167,15 @@ const SignupPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem(
-          "unlock-me-user",
-          JSON.stringify({ id: data.user.id, name: data.user.name  , username : data.user.username})
-        );
-
         await checkAuth();
         navigate("/initial-quizzes");
       } else {
-        // مدیریت هوشمند ارورهای یونیک بودن (Username/Email)
         if (data.message && data.message.toLowerCase().includes("username")) {
-            setErrors(prev => ({ ...prev, username: "Username is already taken" }));
+          setErrors(prev => ({ ...prev, username: "Username is already taken" }));
         } else if (data.message && data.message.toLowerCase().includes("email")) {
-             setErrors(prev => ({ ...prev, email: "Email is already registered" }));
+          setErrors(prev => ({ ...prev, email: "Email is already registered" }));
         } else {
-            setServerMessage(data.message || "Signup failed");
+          setServerMessage(data.message || "Signup failed");
         }
       }
     } catch (err) {
@@ -193,7 +200,6 @@ const SignupPage = () => {
             onSubmit={handleSubmit}
             noValidate
           >
-            {/* --- Username Field --- */}
             <FormInput
               name="username"
               placeholder="Username (e.g. user_123)"
@@ -205,9 +211,9 @@ const SignupPage = () => {
               autoComplete="username"
               autoCapitalize="none" 
               autoCorrect="off"
+              maxLength={15}
             />
 
-            {/* --- Name Field --- */}
             <FormInput
               name="name"
               placeholder="Full Name"
@@ -240,6 +246,7 @@ const SignupPage = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               error={touched.password && errors.password}
+              autoComplete="new-password"
             />
 
             <FormInput
@@ -250,6 +257,7 @@ const SignupPage = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               error={touched.confirmPassword && errors.confirmPassword}
+              autoComplete="new-password"
             />
 
             <FormSelect
@@ -276,12 +284,25 @@ const SignupPage = () => {
               <div className="signup-page__message">{serverMessage}</div>
             )}
 
+            {isRateLimited && (
+              <div className="signup-page__message">
+                Too many attempts. Please wait 1 minute.
+              </div>
+            )}
+
             <button
               type="submit"
               className="signup-page__btn"
-              disabled={!isFormValid || loading}
+              disabled={!isFormValid || loading || isRateLimited}
             >
-              {loading ? "Creating account..." : "Sign Up"}
+              {loading ? (
+                <>
+                  <span className="signup-page__spinner"></span>
+                  Creating account...
+                </>
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </form>
 

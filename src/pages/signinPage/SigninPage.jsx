@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
 import FormInput from "../../components/formInput/FormInput";
@@ -27,43 +27,51 @@ const SigninPage = () => {
 
   const { email, password } = formData;
 
-  useEffect(() => {
+  const emailRegex = useMemo(() => /\S+@\S+\.\S+/, []);
+  const passwordRegex = useMemo(
+    () => /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/,
+    []
+  );
+
+  const validateForm = useCallback(() => {
     const newErrors = {};
 
-    if (touched.email && !/\S+@\S+\.\S+/.test(email)) {
+    if (touched.email && !emailRegex.test(email)) {
       newErrors.email = "Invalid email format";
     }
 
-    if (
-      touched.password &&
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)
-    ) {
+    if (touched.password && !passwordRegex.test(password)) {
       newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
     }
 
     setErrors(newErrors);
 
-    const logicValid =
-      /\S+@\S+\.\S+/.test(email) &&
-      /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password);
-
+    const logicValid = emailRegex.test(email) && passwordRegex.test(password);
     setIsFormValid(logicValid);
-  }, [formData, touched, email, password]);
+  }, [email, password, touched, emailRegex, passwordRegex]);
 
-  const handleChange = (e) => {
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      validateForm();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [validateForm]);
+
+  const handleChange = useCallback((e) => {
     const value =
       e.target.name === "email" ? e.target.value.trim() : e.target.value;
-    setFormData({ ...formData, [e.target.name]: value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: value }));
     setServerMessage("");
-  };
+  }, []);
 
-  const handleBlur = (e) => {
-    setTouched({ ...touched, [e.target.name]: true });
-  };
+  const handleBlur = useCallback((e) => {
+    setTouched((prev) => ({ ...prev, [e.target.name]: true }));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || loading) return;
 
     setLoading(true);
     setServerMessage("");
@@ -133,7 +141,14 @@ const SigninPage = () => {
             className="signin-card__btn"
             disabled={!isFormValid || loading}
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? (
+              <>
+                <span className="signin-card__spinner"></span>
+                Signing in...
+              </>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 
