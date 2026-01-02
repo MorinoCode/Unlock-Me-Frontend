@@ -1,10 +1,8 @@
-/* Block: .interests-actions */
 .interests-actions {
   margin-top: 2.5rem;
   width: 100%;
 }
 
-/* Element: .interests-actions__btn */
 .interests-actions__btn {
   padding: 1.1rem;
   border-radius: 14px;
@@ -16,9 +14,15 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  outline: none;
 }
 
-/* Modifier: .interests-actions__btn--full-width */
 .interests-actions__btn--full-width {
   width: 100%;
 }
@@ -29,8 +33,63 @@
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
 }
 
+.interests-actions__btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.interests-actions__btn:focus-visible {
+  outline: 2px solid #a5b4fc;
+  outline-offset: 2px;
+}
+
 .interests-actions__btn:disabled {
-  opacity: 0.3;
+  opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;
+  filter: grayscale(1);
+}
+
+.interests-actions__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .interests-actions {
+    margin-top: 2rem;
+  }
+
+  .interests-actions__btn {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .interests-actions {
+    margin-top: 2rem;
+  }
+
+  .interests-actions__btn {
+    padding: 0.95rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  .interests-actions {
+    margin-top: 1.5rem;
+  }
+
+  .interests-actions__btn {
+    padding: 0.85rem;
+    font-size: 0.9rem;
+  }
 }
