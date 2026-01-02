@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import "./InterestsActions.css";
 
 const InterestsActions = ({ loading, disabled, onNext }) => {
@@ -8,11 +8,20 @@ const InterestsActions = ({ loading, disabled, onNext }) => {
         onClick={onNext}
         disabled={disabled}
         className="interests-actions__btn interests-actions__btn--full-width"
+        aria-busy={loading}
+        aria-label={loading ? "Saving your interests" : "Continue to next step"}
       >
-        {loading ? "Saving..." : "Continue"}
+        {loading ? (
+          <>
+            <span className="interests-actions__spinner" aria-hidden="true"></span>
+            Saving...
+          </>
+        ) : (
+          "Continue"
+        )}
       </button>
     </div>
   );
 };
 
-export default InterestsActions;
+export default memo(InterestsActions);
