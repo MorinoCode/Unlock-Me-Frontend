@@ -1,41 +1,39 @@
-/* Block: .explore-section */
 .explore-section {
   margin-bottom: 40px;
 }
 
-/* Element: .explore-section__header (wrapper) */
 .explore-section__header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 20px;
+  gap: 1rem;
 }
 
-/* Element: .explore-section__header-group */
 .explore-section__header-group {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
-/* Element: .explore-section__title */
 .explore-section__title {
   font-size: 1.5rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #f8fafc; /* Assuming default text color */
+  color: #f8fafc;
   margin: 0;
+  flex-wrap: wrap;
 }
 
-/* Element: .explore-section__count */
 .explore-section__count {
   font-size: 1rem;
   color: #94a3b8;
   font-weight: 500;
 }
 
-/* Element: .explore-section__subtitle */
 .explore-section__subtitle {
   color: #64748b;
   font-size: 0.9rem;
@@ -43,7 +41,6 @@
   margin-bottom: 0;
 }
 
-/* Element: .explore-section__see-more-btn */
 .explore-section__see-more-btn {
   background: transparent;
   border: none;
@@ -51,29 +48,44 @@
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s ease;
+  white-space: nowrap;
+  padding: 8px 12px;
+  border-radius: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .explore-section__see-more-btn:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
+  background: rgba(167, 139, 250, 0.1);
 }
 
-/* Element: .explore-section__scroll-container */
+.explore-section__see-more-btn:active {
+  transform: scale(0.98);
+}
+
+.explore-section__see-more-btn:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
 .explore-section__scroll-container {
   display: flex;
   overflow-x: auto;
   gap: 16px;
   padding-bottom: 20px;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .explore-section__scroll-container::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
 
-/* Element: .explore-section__locked-more-card */
 .explore-section__locked-more-card {
   min-width: 240px;
-  height: 380px; /* Assuming height matches UserCard */
+  height: 380px;
   background: rgba(30, 41, 59, 0.4);
   backdrop-filter: blur(12px);
   border: 2px dashed rgba(167, 139, 250, 0.3);
@@ -85,30 +97,120 @@
   flex-shrink: 0;
   padding: 24px;
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: all 0.3s ease;
   text-align: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .explore-section__locked-more-card:hover {
   transform: translateY(-8px);
   border-color: #a78bfa;
+  background: rgba(30, 41, 59, 0.6);
 }
 
-/* Element: .explore-section__lock-icon */
+.explore-section__locked-more-card:active {
+  transform: translateY(-4px);
+}
+
 .explore-section__lock-icon {
   font-size: 3rem;
   margin-bottom: 15px;
 }
 
-/* Element: .explore-section__locked-title */
 .explore-section__locked-title {
   color: #fff;
   font-size: 1.2rem;
   margin-bottom: 8px;
 }
 
-/* Element: .explore-section__locked-desc */
 .explore-section__locked-desc {
   color: #94a3b8;
   font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .explore-section {
+    margin-bottom: 32px;
+  }
+
+  .explore-section__title {
+    font-size: 1.3rem;
+  }
+
+  .explore-section__subtitle {
+    font-size: 0.85rem;
+  }
+
+  .explore-section__scroll-container {
+    gap: 12px;
+  }
+
+  .explore-section__locked-more-card {
+    min-width: 200px;
+    height: 320px;
+  }
+
+  .explore-section__lock-icon {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .explore-section__header {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .explore-section__title {
+    font-size: 1.2rem;
+  }
+
+  .explore-section__count {
+    font-size: 0.9rem;
+  }
+
+  .explore-section__see-more-btn {
+    /* align-self: flex-start; */
+    font-size: 0.9rem;
+  }
+
+  .explore-section__scroll-container {
+    gap: 10px;
+    padding-bottom: 15px;
+  }
+
+  .explore-section__locked-more-card {
+    min-width: 180px;
+    height: 300px;
+    padding: 20px;
+  }
+
+  .explore-section__lock-icon {
+    font-size: 2rem;
+  }
+
+  .explore-section__locked-title {
+    font-size: 1.1rem;
+  }
+
+  .explore-section__locked-desc {
+    font-size: 0.85rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  .explore-section {
+    margin-bottom: 24px;
+  }
+
+  .explore-section__header {
+    margin-bottom: 16px;
+  }
+
+  .explore-section__locked-more-card {
+    height: 280px;
+    min-width: 200px;
+  }
 }
