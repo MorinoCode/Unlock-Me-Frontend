@@ -24,8 +24,8 @@ const Footer = () => {
             © {new Date().getFullYear()} UnlockMe. All rights reserved.
           </p>
           <div className="main-footer__legal">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
+            <a href="/privacypolicy">Privacy Policy</a>
+            <a href="/termsofservice">Terms of Service</a>
           </div>
         </div>
       </div>

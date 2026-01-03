@@ -1,0 +1,131 @@
+.terms-page {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+
+.terms-page__card {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(30, 41, 59, 0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: #e2e8f0;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  margin-top: 3rem;
+}
+
+/* اسکرول بار اختصاصی */
+.terms-page__card::-webkit-scrollbar {
+  width: 5px;
+}
+.terms-page__card::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+.terms-page__card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.terms-page__back-btn {
+  background: transparent;
+  border: none;
+  color: #818cf8;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.terms-page__back-btn:hover {
+  color: #a5b4fc;
+  text-decoration: underline;
+}
+
+.terms-page__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.terms-page__title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.terms-page__date {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-top: 8px;
+  display: block;
+}
+
+.terms-page__content {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.terms-page__section-title {
+  font-size: 1.5rem;
+  color: #a78bfa;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.terms-page__text {
+  margin-bottom: 16px;
+  text-align: justify;
+  color: #cbd5e1;
+}
+
+.terms-page__text--caps {
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #e2e8f0;
+}
+
+.terms-page__strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.terms-page__list {
+  list-style-type: disc;
+  padding-left: 24px;
+  margin-bottom: 24px;
+}
+
+.terms-page__list-item {
+  margin-bottom: 8px;
+  color: #cbd5e1;
+}
+
+@media (max-width: 768px) {
+  .terms-page {
+    padding: 20px 10px;
+  }
+  
+  .terms-page__card {
+    padding: 24px;
+    max-height: 90vh;
+  }
+
+  .terms-page__title {
+    font-size: 1.8rem;
+  }
+}

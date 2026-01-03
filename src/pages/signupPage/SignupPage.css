@@ -18,6 +18,7 @@
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   animation: signup-page-fade-in 0.5s ease-out;
   will-change: opacity, transform;
+  margin-top: 3rem;
 }
 
 @keyframes signup-page-fade-in {
@@ -128,6 +129,63 @@
 
 .signup-page__link:active {
   color: #c7d2fe;
+}
+.signup-page__terms {
+  margin: 15px 0 20px 0;
+  display: flex;
+  align-items: center;
+}
+
+.signup-page__terms-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  user-select: none;
+}
+
+.signup-page__checkbox {
+  appearance: none; /* حذف استایل پیش‌فرض مرورگر */
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #6366f1; /* رنگ بنفش برند */
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* وقتی تیک خورد */
+.signup-page__checkbox:checked {
+  background-color: #6366f1;
+  border-color: #6366f1;
+}
+
+/* ساختن علامت تیک (Checkmark) با CSS */
+.signup-page__checkbox:checked::after {
+  content: '✔';
+  font-size: 12px;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.signup-page__terms-text a {
+  color: #818cf8;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.signup-page__terms-text a:hover {
+  color: #a5b4fc;
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

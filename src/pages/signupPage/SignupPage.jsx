@@ -40,6 +40,7 @@ const SignupPage = () => {
   const [loading, setLoading] = useState(false);
   const [attemptCount, setAttemptCount] = useState(0);
   const [isRateLimited, setIsRateLimited] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const { username, name, email, password, confirmPassword, gender, lookingFor } = formData;
 
@@ -105,10 +106,11 @@ const SignupPage = () => {
       confirmPassword === password &&
       password.length > 0 &&
       gender !== "" &&
-      lookingFor !== "";
+      lookingFor !== ""&&
+      agreedToTerms === true;
 
     setIsFormValid(isValid);
-  }, [username, name, email, password, confirmPassword, gender, lookingFor, touched, usernameRegex, emailRegex, passwordRegex]);
+  }, [username, name, email, password, confirmPassword, gender, lookingFor, touched, usernameRegex, emailRegex, passwordRegex,agreedToTerms]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -304,6 +306,22 @@ const SignupPage = () => {
                 "Sign Up"
               )}
             </button>
+            <div className="signup-page__terms">
+              <label className="signup-page__terms-label">
+                <input
+                  type="checkbox"
+                  className="signup-page__checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                />
+                <span className="signup-page__terms-text">
+                  I agree to the{" "}
+                  <a href="/termsofservice" target="_blank" rel="noreferrer">Terms of Service</a>
+                  {" "}and{" "}
+                  <a href="/privacypolicy" target="_blank" rel="noreferrer">Privacy Policy</a>
+                </span>
+              </label>
+            </div>
           </form>
 
           <div className="signup-page__footer">

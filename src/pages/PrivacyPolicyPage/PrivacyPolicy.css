@@ -1,0 +1,123 @@
+.privacy-page {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+
+.privacy-page__card {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(30, 41, 59, 0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: #e2e8f0;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  margin-top: 3rem;
+}
+
+/* اسکرول بار اختصاصی */
+.privacy-page__card::-webkit-scrollbar {
+  width: 5px;
+}
+.privacy-page__card::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+.privacy-page__card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.privacy-page__back-btn {
+  background: transparent;
+  border: none;
+  color: #818cf8;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.privacy-page__back-btn:hover {
+  color: #a5b4fc;
+  text-decoration: underline;
+}
+
+.privacy-page__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.privacy-page__title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.privacy-page__date {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-top: 8px;
+  display: block;
+}
+
+.privacy-page__content {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.privacy-page__section-title {
+  font-size: 1.5rem;
+  color: #a78bfa;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.privacy-page__text {
+  margin-bottom: 16px;
+  text-align: justify;
+  color: #cbd5e1;
+}
+
+.privacy-page__strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.privacy-page__list {
+  list-style-type: disc;
+  padding-left: 24px;
+  margin-bottom: 24px;
+}
+
+.privacy-page__list-item {
+  margin-bottom: 8px;
+  color: #cbd5e1;
+}
+
+@media (max-width: 768px) {
+  .privacy-page {
+    padding: 20px 10px;
+  }
+  
+  .privacy-page__card {
+    padding: 24px;
+    max-height: 90vh;
+  }
+
+  .privacy-page__title {
+    font-size: 1.8rem;
+  }
+}
