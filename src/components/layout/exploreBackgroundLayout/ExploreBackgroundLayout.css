@@ -14,6 +14,18 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  /* GPU Acceleration Trick */
+  transform: translateZ(0);
+}
+
+/* Element: .explore-bg-layout__animations */
+/* یک رپر برای انیمیشن‌ها ساختیم که راحت کنترلشون کنیم */
+.explore-bg-layout__animations {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 /* Element: .explore-bg-layout__star */
@@ -25,6 +37,7 @@
   border-radius: 50%;
   box-shadow: 0 0 10px white;
   animation: explore-bg-twinkle 3s infinite ease-in-out;
+  will-change: opacity, transform; /* بهینه‌سازی برای مرورگر */
 }
 
 @keyframes explore-bg-twinkle {
@@ -40,6 +53,7 @@
   filter: drop-shadow(0 0 10px rgba(255, 0, 100, 0.5));
   animation: explore-bg-float-up 15s infinite linear;
   user-select: none;
+  will-change: transform, opacity;
 }
 
 @keyframes explore-bg-float-up {
@@ -54,7 +68,7 @@
   position: absolute;
   width: 60vw;
   height: 60vw;
-  filter: blur(100px);
+  filter: blur(100px); /* بلور سنگین در دسکتاپ */
   opacity: 0.15;
   border-radius: 50%;
   z-index: -1;
@@ -80,9 +94,24 @@
   z-index: 10;
 }
 
-/* Mobile Responsive */
-@media (max-width: 409px) {
-  .explore-bg-layout__star { width: 1.5px; height: 1.5px; }
-  .explore-bg-layout__heart { font-size: 16px; }
-  .explore-bg-layout__glow { opacity: 0.1; }
+/* 🚀 MOBILE & TABLET OPTIMIZATION (Up to 1024px) */
+@media screen and (max-width: 1024px) {
+  
+  /* 1. حذف کامل انیمیشن‌ها برای موبایل و تبلت */
+  .explore-bg-layout__animations {
+    display: none;
+  }
+
+  /* 2. ساده کردن هاله‌های رنگی (کاهش بلور برای پرفورمنس) */
+  .explore-bg-layout__glow {
+    filter: blur(60px); /* بلور کمتر = فشار کمتر روی GPU موبایل */
+    opacity: 0.1;
+    width: 80vw;
+    height: 80vw;
+  }
+  
+  /* گرادینت پس‌زمینه ساده و ثابت می‌ماند */
+  .explore-bg-layout {
+     background: radial-gradient(circle at center, #130822 0%, #05010a 100%);
+  }
 }
