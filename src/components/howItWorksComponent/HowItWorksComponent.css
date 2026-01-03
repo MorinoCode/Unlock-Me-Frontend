@@ -14,6 +14,7 @@
   font-family: 'Inter', system-ui, sans-serif;
   overflow-x: hidden;
   padding-bottom: 80px;
+  
 }
 
 /* --- Hero Section --- */
@@ -21,6 +22,7 @@
   text-align: center;
   padding: 100px 20px 80px;
   background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.25) 0%, transparent 70%);
+  
 }
 
 .how-it-works-component__hero-content {
@@ -66,6 +68,7 @@
   align-items: center;
   gap: 80px;
   width: 100%;
+  margin-top: 3rem;
 }
 
 .how-it-works-component__item--reversed {
