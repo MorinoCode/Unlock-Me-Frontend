@@ -1,23 +1,19 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/useAuth.js";
 import FormInput from "../../components/formInput/FormInput";
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout.jsx";
-import "./SigninPage.css";
+import "./ForgotPasswordPage.css";
 
-const SigninPage = () => {
+const ForgotPassword = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-  const { checkAuth } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
   });
 
   const [touched, setTouched] = useState({
     email: false,
-    password: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -25,13 +21,9 @@ const SigninPage = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { email, password } = formData;
+  const { email } = formData;
 
   const emailRegex = useMemo(() => /\S+@\S+\.\S+/, []);
-  const passwordRegex = useMemo(
-    () => /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/,
-    []
-  );
 
   const validateForm = useCallback(() => {
     const newErrors = {};
@@ -39,16 +31,11 @@ const SigninPage = () => {
     if (touched.email && !emailRegex.test(email)) {
       newErrors.email = "Invalid email format";
     }
-
-    if (touched.password && !passwordRegex.test(password)) {
-      newErrors.password = "Min 6 chars, uppercase, lowercase, number & symbol";
-    }
-
     setErrors(newErrors);
 
-    const logicValid = emailRegex.test(email) && passwordRegex.test(password);
+    const logicValid = emailRegex.test(email);
     setIsFormValid(logicValid);
-  }, [email, password, touched, emailRegex, passwordRegex]);
+  }, [email, touched, emailRegex]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -77,7 +64,7 @@ const SigninPage = () => {
     setServerMessage("");
 
     try {
-      const response = await fetch(`${API_URL}/api/user/signin`, {
+      const response = await fetch(`${API_URL}/api/user/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -87,12 +74,14 @@ const SigninPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setServerMessage(data.message || "Invalid credentials");
+        setServerMessage(data.message || "Request failed");
         return;
       }
+      setServerMessage(data.message);
 
-      await checkAuth();
-      navigate("/explore");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 3000);
     } catch (err) {
       console.error(err);
       setServerMessage("Server error. Try again later.");
@@ -103,11 +92,17 @@ const SigninPage = () => {
 
   return (
     <BackgroundLayout>
-      <div className="signin-card">
-        <h2 className="signin-card__title">UnlockMe</h2>
-        <p className="signin-card__subtitle">Sign in and unlock connections!</p>
+      <div className="forgot-password-card">
+        <h2 className="forgot-password-card__title">UnlockMe</h2>
+        <p className="forgot-password-card__subtitle">
+          Please write your email address!
+        </p>
 
-        <form onSubmit={handleSubmit} className="signin-card__form" noValidate>
+        <form
+          onSubmit={handleSubmit}
+          className="forgot-password-card__form"
+          noValidate
+        >
           <FormInput
             name="email"
             type="email"
@@ -122,53 +117,28 @@ const SigninPage = () => {
             autoCorrect="off"
           />
 
-          <FormInput
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.password && errors.password}
-          />
-          <p className="signin-card__forgot-text">
-            Forgot Password?{" "}
-            <a href="/forgot-password" className="signin-card__forgot-link">
-              click here
-            </a>
-          </p>
-
           {serverMessage && (
-            <div className="signin-card__message">{serverMessage}</div>
+            <div className="forgot-password-card__message">{serverMessage}</div>
           )}
 
           <button
             type="submit"
-            className="signin-card__btn"
+            className="forgot-password-card__btn"
             disabled={!isFormValid || loading}
           >
             {loading ? (
               <>
-                <span className="signin-card__spinner"></span>
-                Signing in...
+                <span className="forgot-password-card__spinner"></span>
+                Resetting Password...
               </>
             ) : (
-              "Sign In"
+              "Reset Password"
             )}
           </button>
         </form>
-
-        <div className="signin-card__footer">
-          <p className="signin-card__footer-text">
-            Don't have an account?{" "}
-            <a href="/signup" className="signin-card__footer-link">
-              Sign Up
-            </a>
-          </p>
-        </div>
       </div>
     </BackgroundLayout>
   );
 };
 
-export default SigninPage;
+export default ForgotPassword;
