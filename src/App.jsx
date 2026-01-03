@@ -32,6 +32,8 @@ const FeedPage = lazy(() => import('./pages/feedPage/FeedPage'));
 const ReportProblemPage = lazy(() => import('./pages/reportProblemPage/ReportProblemPage'));
 const NotFoundPage = lazy(() => import('./pages/notFound/NotFoundPage'));
 const ForgotPassword = lazy(() => import('./pages/forgotPasswordPage/ForgotPasswordPage'));
+const TermsOfService = lazy(() => import('./pages/termsOfServicePage/TermsOfService'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicyPage/PrivacyPolicy.jsx'));
 
 /**
  * AppContent Component:
@@ -54,6 +56,8 @@ const AppContent = () => {
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/about-us" element={<AboutPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+            <Route path="/termsofservice" element={<TermsOfService />} />
           </Route>
         </Route>
 
