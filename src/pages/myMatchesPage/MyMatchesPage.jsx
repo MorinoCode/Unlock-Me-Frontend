@@ -46,8 +46,8 @@ const MyMatchesPage = () => {
   ) => {
     const limits = {
       free: { mutual: 10, sent: 5, incoming: 0 },
-      premium: { mutual: 50, sent: 30, incoming: 10 },
-      gold: { mutual: 999, sent: 999, incoming: 999 },
+      gold: { mutual: 50, sent: 30, incoming: 10 },
+      platinum: { mutual: 999, sent: 999, incoming: 999 },
     };
 
     const currentLimit = limits[userPlan][type] || 0;
