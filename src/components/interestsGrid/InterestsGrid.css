@@ -90,14 +90,8 @@
 @media (max-width: 480px) {
   .interests-grid {
     gap: 8px;
-    padding: 1px;
+    padding: 4px;
     max-height: 400px;
-  }
-  .background-layout__content{
-    padding: 0;
-  }
-  .interests-grid__item-category{
-    padding: 0.4rem;
   }
 
   .interests-grid__item {
