@@ -23,7 +23,6 @@ const UserDetailPage = () => {
         const res = await fetch(`${API_URL}/api/user/details/${userId}`, { credentials: "include" });
         const data = await res.json();
         setUser(data);
-        console.log(data);
         setIsLiked(data.alreadyLiked || false);
         setIsDisliked(data.alreadyDisliked || false);
       } catch (err) { console.error(err); } 

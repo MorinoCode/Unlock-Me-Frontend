@@ -2,7 +2,7 @@
   padding: 2rem 5% 8rem 5%;
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 3rem auto;
   position: relative;
   z-index: 5;
 }
@@ -10,7 +10,7 @@
 .matches-view__header {
   margin-bottom: 3rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 1rem;
 }
 
@@ -19,12 +19,11 @@
   background: rgba(99, 102, 241, 0.1);
   border: 1px solid rgba(99, 102, 241, 0.3);
   color: #a5b4fc;
-  padding: 12px 24px;
+  padding: 10px 10px;
   border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
 }
 
 .matches-view__back-button:hover {
