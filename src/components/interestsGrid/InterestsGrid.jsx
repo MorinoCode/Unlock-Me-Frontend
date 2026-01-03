@@ -13,13 +13,9 @@ const InterestItem = memo(({ option, isSelected, onToggle }) => {
     }
   }, [onToggle, option.label]);
 
-  const itemClass = isSelected 
-    ? "interests-grid__item-category interests-grid__item-category--selected" 
-    : "interests-grid__item-category";
-
   return (
     <div
-      className={itemClass}
+      className={`interests-grid__item-category ${isSelected ? "interests-grid__item-category--selected" : ""}`}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       role="button"

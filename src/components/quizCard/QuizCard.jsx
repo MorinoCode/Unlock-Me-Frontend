@@ -1,5 +1,23 @@
-import React from "react";
+import React, { useCallback, memo } from "react";
 import "./QuizCard.css";
+
+const QuizOption = memo(({ option, onAnswer, index }) => {
+  const handleClick = useCallback(() => {
+    onAnswer(option);
+  }, [onAnswer, option]);
+
+  return (
+    <button
+      className="quiz-card__option-btn"
+      onClick={handleClick}
+      aria-label={`Option ${index + 1}: ${option.text}`}
+    >
+      {option.text}
+    </button>
+  );
+});
+
+QuizOption.displayName = "QuizOption";
 
 const QuizCard = ({ question, onAnswer, currentIndex, totalQuestions }) => {
   return (
@@ -15,17 +33,16 @@ const QuizCard = ({ question, onAnswer, currentIndex, totalQuestions }) => {
 
       <div className="quiz-card__options">
         {question.options.map((option, idx) => (
-          <button
-            key={idx}
-            className="quiz-card__option-btn"
-            onClick={() => onAnswer(option)}
-          >
-            {option.text}
-          </button>
+          <QuizOption
+            key={option.id || `option-${idx}`}
+            option={option}
+            onAnswer={onAnswer}
+            index={idx}
+          />
         ))}
       </div>
     </div>
   );
 };
 
-export default QuizCard;
+export default memo(QuizCard);

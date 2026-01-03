@@ -1,7 +1,7 @@
 import React from "react";
 import "./ExploreBackgroundLayout.css";
 
-// ✅ مقادیر را بیرون از کامپوننت می‌سازیم تا React Compiler ارور ندهد
+// مقادیر ثابت بیرون کامپوننت (بهینه برای مموری)
 const STATIC_STARS = Array.from({ length: 50 }).map((_, i) => ({
   id: i,
   top: `${Math.random() * 100}%`,
@@ -21,38 +21,41 @@ const STATIC_HEARTS = Array.from({ length: 2 }).map((_, i) => ({
 const ExploreBackgroundLayout = ({ children }) => {
   return (
     <div className="explore-bg-layout">
+      {/* Background Container */}
       <div className="explore-bg-layout__background">
-        {/* ستاره‌های چشمک‌زن */}
-        {STATIC_STARS.map((star) => (
-          <div 
-            key={`star-${star.id}`} 
-            className="explore-bg-layout__star" 
-            style={{
-              top: star.top,
-              left: star.left,
-              animationDelay: star.delay,
-              transform: `scale(${star.scale})`
-            }}
-          />
-        ))}
+        
+        {/* ستاره‌ها و قلب‌ها (که در موبایل با CSS مخفی می‌شوند) */}
+        <div className="explore-bg-layout__animations">
+            {STATIC_STARS.map((star) => (
+              <div 
+                key={`star-${star.id}`} 
+                className="explore-bg-layout__star" 
+                style={{
+                  top: star.top,
+                  left: star.left,
+                  animationDelay: star.delay,
+                  transform: `scale(${star.scale})`
+                }}
+              />
+            ))}
 
-        {/* قلب‌های شناور */}
-        {STATIC_HEARTS.map((heart) => (
-          <div 
-            key={`heart-${heart.id}`} 
-            className="explore-bg-layout__heart" 
-            style={{
-              left: heart.left,
-              animationDelay: heart.delay,
-              animationDuration: heart.duration,
-              opacity: heart.opacity
-            }}
-          >
-            ❤️
-          </div>
-        ))}
+            {STATIC_HEARTS.map((heart) => (
+              <div 
+                key={`heart-${heart.id}`} 
+                className="explore-bg-layout__heart" 
+                style={{
+                  left: heart.left,
+                  animationDelay: heart.delay,
+                  animationDuration: heart.duration,
+                  opacity: heart.opacity
+                }}
+              >
+                ❤️
+              </div>
+            ))}
+        </div>
 
-        {/* هاله‌های رنگی */}
+        {/* هاله‌های رنگی (در موبایل ساده‌تر می‌شوند) */}
         <div className="explore-bg-layout__glow explore-bg-layout__glow--purple"></div>
         <div className="explore-bg-layout__glow explore-bg-layout__glow--pink"></div>
       </div>

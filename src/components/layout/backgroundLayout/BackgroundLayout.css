@@ -3,6 +3,7 @@
   position: relative;
   min-height: 100vh;
   width: 100%;
+  /* رنگ پایه تیره */
   background-color: #020617; 
   overflow: hidden; 
   display: flex;
@@ -28,6 +29,7 @@
   filter: blur(80px); 
   opacity: 0.5;
   animation: float 20s infinite alternate ease-in-out;
+  will-change: transform; /* برای پرفورمنس بهتر در دسکتاپ */
 }
 
 /* Modifier: .background-layout__blob--purple */
@@ -63,21 +65,14 @@
 }
 
 @keyframes float {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, 50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(10px, -30px) scale(1.05);
-  }
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, 50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(10px, -30px) scale(1.05); }
 }
 
 /* Element: .background-layout__grid-overlay */
+/* این گرید سبک است و می‌تواند بماند، اما باز هم برای اطمینان بهینه می‌کنیم */
 .background-layout__grid-overlay {
   position: absolute;
   top: 0;
@@ -85,7 +80,7 @@
   width: 100%;
   height: 100%;
   background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 40px 40px; /* فاصله نقطه‌ها */
+  background-size: 40px 40px;
   mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 90%);
   -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 90%);
   pointer-events: none;
@@ -102,23 +97,20 @@
   padding: 1.5rem;
 }
 
-/* 📱 Mobile Optimization */
-@media (max-width: 768px) {
+/* 🚀 MOBILE & TABLET OPTIMIZATION (Up to 1024px) */
+@media (max-width: 1024px) {
+  /* 1. حذف حباب‌های سنگین متحرک */
   .background-layout__blob {
-    filter: blur(60px); 
+    display: none;
   }
-  
-  .background-layout__blob--purple {
-    width: 80vw;
-    height: 80vw;
-    top: -20%;
-    left: -20%;
+
+  /* 2. اضافه کردن یک گرادینت ثابت و سبک به جای حباب‌ها */
+  .background-layout {
+    background: radial-gradient(circle at top left, #1e1b4b 0%, #020617 60%);
   }
-  
-  .background-layout__blob--green {
-    width: 70vw;
-    height: 70vw;
-    bottom: -20%;
-    right: -20%;
+
+  /* 3. حفظ گرید اما کمی کمرنگ‌تر */
+  .background-layout__grid-overlay {
+    opacity: 0.5;
   }
 }
