@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
       if (res.ok) {
         const data = await res.json();
         setCurrentUser(data);
-        console.log(data);
         return true;
       }
 
@@ -32,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
       return false;
     } catch (err) {
-      console.error(err);
+      console.error(err)
       setCurrentUser(null);
       return false;
     } finally {
