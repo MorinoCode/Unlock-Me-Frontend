@@ -33,7 +33,6 @@ const ViewAllMatchedUsersPage = () => {
       try {
         setLoading(true);
         const country = currentUser?.location.country;
-        console.log(currentUser);
         if (!country) return;
 
         const queryParams = new URLSearchParams({
@@ -42,7 +41,6 @@ const ViewAllMatchedUsersPage = () => {
           page: currentPage,
           limit: usersPerPage,
         });
-        console.log("sending req");
         const res = await fetch(
           `${API_URL}/api/explore/matches?${queryParams}`,
           {
@@ -53,7 +51,6 @@ const ViewAllMatchedUsersPage = () => {
         if (!res.ok) throw new Error("Failed to fetch matches");
 
         const data = await res.json();
-        console.log(data);
         setUserPlan(data.userPlan || "free");
         setUsers(data.users || []); // آرایه کاربران صفحه جاری
 
@@ -69,7 +66,7 @@ const ViewAllMatchedUsersPage = () => {
     };
 
     fetchMatches();
-  }, [category, currentPage, API_URL, currentUser]);
+  }, [category, currentPage, API_URL, currentUser?.location?.country]);
 
   // تنظیمات بنر تبلیغاتی
   const banners = getPromoBannerConfig(userPlan);

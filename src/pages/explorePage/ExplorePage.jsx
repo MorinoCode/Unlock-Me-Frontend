@@ -49,7 +49,7 @@ const ExplorePage = () => {
         setError(null);
 
         const matchesRes = await fetch(
-          `${API_URL}/api/explore/matches?country=${currentUser.location.country}`,
+          `${API_URL}/api/explore/matches`,
           {
             credentials: "include",
             signal: abortControllerRef.current.signal,
@@ -61,7 +61,6 @@ const ExplorePage = () => {
         }
 
         const data = await matchesRes.json();
-        console.log(data);
         setSections(data.sections || INITIAL_SECTIONS);
       } catch (err) {
         if (err.name !== "AbortError") {
