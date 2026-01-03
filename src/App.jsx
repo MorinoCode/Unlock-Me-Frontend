@@ -1,14 +1,13 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider.jsx';
-import { SocketProvider } from './context/SocketProvider.jsx'; // Added SocketProvider
+import { SocketProvider } from './context/SocketProvider.jsx'; 
 import { Toaster } from 'react-hot-toast';
 import HeartbeatLoader from './components/heartbeatLoader/HeartbeatLoader.jsx';
 
 import PublicRoute from './context/PublicRoute.jsx';
 import ProtectedRoute from './context/ProtectedRoute.jsx';
 import MainLayout from './context/MainLayout.jsx';
-// import useNotifications from './hooks/useNotification.jsx'; // Custom hook for toasts
 
 // Lazy-loaded pages
 const SignupPage = lazy(() => import('./pages/signupPage/SignupPage'));
@@ -32,6 +31,7 @@ const BlindDatePage = lazy(() => import('./pages/blindDatePage/BlindDatePage'));
 const FeedPage = lazy(() => import('./pages/feedPage/FeedPage'));
 const ReportProblemPage = lazy(() => import('./pages/reportProblemPage/ReportProblemPage'));
 const NotFoundPage = lazy(() => import('./pages/notFound/NotFoundPage'));
+const ForgotPassword = lazy(() => import('./pages/forgotPasswordPage/ForgotPasswordPage'));
 
 /**
  * AppContent Component:
@@ -53,6 +53,7 @@ const AppContent = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/about-us" element={<AboutPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Route>
         </Route>
 
