@@ -14,6 +14,7 @@
   border-radius: var(--swipe-radius);
   cursor: grab;
   perspective: 1000px;
+  border: none;
 }
 .swipe-card:active {
   cursor: grabbing;
@@ -27,8 +28,8 @@
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
   transform-style: preserve-3d;
   border-radius: var(--swipe-radius);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  background-color: var(--swipe-bg-dark);
+  border: 5px solid white;
+  background-color: white;
 }
 .swipe-card__inner--flipped {
   transform: rotateY(180deg);
@@ -349,4 +350,16 @@
 }
 .swipe-card__icon--green {
   color: #4ade80;
+}
+@media (max-width: 550px) {
+  .swipe-card {
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  max-width: 400px;
+  max-height: 700px;
+  border-radius: var(--swipe-radius);
+  cursor: grab;
+  perspective: 1000px;
+}
 }

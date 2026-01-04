@@ -6,14 +6,7 @@ import PromoBanner from "../../components/promoBanner/PromoBanner";
 import "./SwipePage.css";
 import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
 import { useNavigate } from "react-router-dom";
-import {
-  IoClose,
-  IoHeart,
-  IoStar,
-  IoChatbubbleEllipses,
-  IoPerson,
-} from "react-icons/io5";
-
+import { ThumbsDown, SmilePlus, User, ThumbsUp ,Heart ,MessageSquareMore } from "lucide-react";
 const SwipePage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -223,35 +216,35 @@ const SwipePage = () => {
             className="swipe-page__control-btn swipe-page__btn--nope"
             onClick={() => triggerSwipe("left")}
           >
-            <IoClose />
+            <ThumbsDown size={40} />
           </button>
 
           <button
             className="swipe-page__control-btn swipe-page__btn--super"
             onClick={() => triggerSwipe("up")}
           >
-            <IoStar />
+            <Heart size={50} />
           </button>
 
           <button
             className="swipe-page__control-btn swipe-page__btn--profile"
             onClick={handleProfileNavigation}
           >
-            <IoPerson />
+            <User size={50}/>
           </button>
 
           <button
             className="swipe-page__control-btn swipe-page__btn--chat"
             onClick={handleChatClick}
           >
-            <IoChatbubbleEllipses />
+            <MessageSquareMore size={45} />
           </button>
 
           <button
             className="swipe-page__control-btn swipe-page__btn--like"
             onClick={() => triggerSwipe("right")}
           >
-            <IoHeart />
+            <ThumbsUp size={40}/>
           </button>
         </div>
 
