@@ -3,7 +3,7 @@
   top: 0;
   width: 100%;
   height: 80px;
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   align-items: center;
   transition: 0.4s ease;
@@ -125,6 +125,10 @@
   text-decoration: none;
   color: white;
 }
+.navbar__profile:hover {
+  transform: scale(1.06);
+  background: rgba(30, 13, 13, 0.05);
+}
 .navbar__avatar-wrapper {
   position: relative;
   width: 34px;
@@ -183,6 +187,10 @@
   position: relative;
   padding: 8px;
 }
+.navbar__notification-wrapper:hover {
+  transform: scale(1.2);
+  color: #7b889c;
+}
 .navbar__notification-badge {
   position: absolute;
   top: 0;
@@ -211,7 +219,6 @@
   overflow: hidden;
 }
 .navbar__dropdown-header {
-  
   span {
     color: white;
     display: flex;
@@ -394,17 +401,17 @@
   font-weight: 700;
   font-size: 1rem;
 }
-@media (max-width : 1235px) {
-  .navbar__link{
-  gap: 0px;
-  padding: 10px 15px;
+@media (max-width: 1235px) {
+  .navbar__link {
+    gap: 0px;
+    padding: 10px 15px;
+  }
 }
-}
-@media (max-width : 1143px) {
-  .navbar__link{
-  gap: 0px;
-  padding: 10px 8px;
-}
+@media (max-width: 1143px) {
+  .navbar__link {
+    gap: 0px;
+    padding: 10px 8px;
+  }
 }
 @media (max-width: 1053px) {
   .navbar__menu--desktop,

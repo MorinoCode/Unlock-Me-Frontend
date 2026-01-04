@@ -1,9 +1,9 @@
 :root {
   --swipe-bg: #0f172a;
   --btn-nope: #ff0000; /* قرمز تیره برای ضربدر */
-  --btn-like: #ff002b; /* قرمز/صورتی برای قلب (طبق درخواستت) */
-  --btn-super: #08ea62; /* طلایی برای ستاره */
-  --btn-chat: #f7f7f7; /* بنفش برای چت */
+  --btn-like: hsl(350, 100%, 50%); /* قرمز/صورتی برای قلب (طبق درخواستت) */
+  --btn-super: #ff0202; /* طلایی برای ستاره */
+  --btn-chat: #6290d4; /* بنفش برای چت */
   --btn-profile: #f3f5f8; /* خاکستری/نقره‌ای برای پروفایل (رنگ خنثی) */
 }
 
@@ -43,18 +43,13 @@
 .swipe-page__control-btn {
   width: 56px;
   height: 56px;
-  border-radius: 50%;
-  font-size: 1.5rem;
+  border-radius: 25px;
+  font-size: 1.8rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  justify-content: center;  
   border: 2px solid transparent;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
   outline: none;
   padding: 0;
 }
@@ -62,7 +57,7 @@
   transform: scale(0.9);
 }
 .swipe-page__control-btn:hover {
-  transform: scale(1.15) translateY(-5px);
+  transform: scale(1) translateY(-5px);
 }
 .swipe-page__control-btn svg {
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
@@ -71,53 +66,54 @@
 /* --- Specific Colors --- */
 /* NOPE (Red) */
 .swipe-page__btn--nope {
-  color: var(--btn-nope);
-  border-color: rgba(239, 68, 68, 0.3);
+  color: white;
+  background:linear-gradient(135deg, #6366f1, #a855f7);
+  
 }
 .swipe-page__btn--nope:hover {
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(123, 73, 73, 0.15);
+  
 }
 
 /* SUPER (Gold) */
 .swipe-page__btn--super {
-  color: var(--btn-super);
-  border-color: rgba(234, 179, 8, 0.3);
+ color: white;
+  background:linear-gradient(135deg, #6366f1, #a855f7);
 }
 .swipe-page__btn--super:hover {
-  box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
-  background: rgba(234, 179, 8, 0.15);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  background: rgba(123, 73, 73, 0.15);
 }
 
 /* ✅ PROFILE (Neutral/Blue-Gray) */
 .swipe-page__btn--profile {
-  color: #f6f7f8;
-  border-color: rgba(251, 251, 251, 0.3);
-  font-size: 1.4rem;
+  color: white;
+  background:linear-gradient(135deg, #6366f1, #a855f7);
 }
 .swipe-page__btn--profile:hover {
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-  background: rgba(56, 189, 248, 0.15);
+   box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  background: rgba(123, 73, 73, 0.15);
 }
 
 /* CHAT (Purple) */
 .swipe-page__btn--chat {
-  color: var(--btn-chat);
-  border-color: rgba(252, 252, 252, 0.3);
+  color: white;
+  background:linear-gradient(135deg, #6366f1, #a855f7);
 }
 .swipe-page__btn--chat:hover {
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
-  background: rgba(168, 85, 247, 0.15);
+   box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  background: rgba(123, 73, 73, 0.15);
 }
 
 /* ✅ LIKE (Red/Pink Heart) */
 .swipe-page__btn--like {
-  color: var(--btn-like);
-  border-color: rgba(244, 63, 94, 0.3);
+  color: white;
+   background:linear-gradient(135deg, #6366f1, #a855f7);
 }
 .swipe-page__btn--like:hover {
-  box-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
-  background: rgba(244, 63, 94, 0.15);
+   box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  background: rgba(123, 73, 73, 0.15);
 }
 
 /* Media Queries */
@@ -129,7 +125,20 @@
   .swipe-page__control-btn {
     width: 64px;
     height: 64px;
-    font-size: 1.8rem;
+  }
+}
+@media (max-width: 1054px) {
+  .swipe-page__controls {
+    bottom: 100px;
+    /* gap: 25px; */
+  }
+  .swipe-page__control-btn {
+    width: 64px;
+    height: 64px;
+    /* font-size: 1.8rem; */
+  }
+  .swipe-page__container{
+    top: -45px;
   }
 }
 
@@ -137,7 +146,11 @@
 .swipe-page__keyboard-help {
   display: none;
 }
-@media (min-width: 768px) {
+@media (min-width: 1054px) {
+  .swipe-page__controls {
+    bottom: 60px;
+    gap: 25px;
+  }
   .swipe-page__keyboard-help {
     display: flex;
     position: fixed;
@@ -216,7 +229,7 @@
 }
 .swipe-page__modal--icebreaker h3 {
   color: #fbbf24;
-  margin-top: 0;
+  margin: 0 0 5px 0;
 }
 .swipe-page__modal-actions {
   display: flex;

@@ -4,12 +4,12 @@ import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/useAuth.js";
 import { useSocket } from "../../context/useSocket.js"; 
 import {
-  Compass, Heart, MessageSquare, Ghost, Info, Settings, LogOut, Menu, X, Key, Flame, StickyNote, Bell, CheckCircle2,
+  Compass, Heart, MessageSquare, Ghost, Info, Settings, LogOut, Menu, X, Key, Flame, StickyNote, Bell
 } from "lucide-react";
 import "./Navbar.css";
 import defaultAvatar from "../../assets/default-avatar.png";
 
-const Navbar = () => {
+const Navbar = ({ isVisible }) => {
   const { currentUser, setCurrentUser } = useAuth();
   const { socket } = useSocket();
   const location = useLocation();
@@ -17,16 +17,21 @@ const Navbar = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [avatar, setAvatar] = useState(defaultAvatar);
-
   const [notificationsCount, setNotificationsCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const dropdownRef = useRef(null);
 
-  // ۱. Fetch initial notifications from Database when online
+  // مانیتور اسکرول فقط برای استایل Navbar--scrolled (تار شدن پس‌زمینه)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // دریافت نوتیفیکیشن‌ها
   useEffect(() => {
     const fetchNotifications = async () => {
       if (!currentUser?._id) return;
@@ -35,32 +40,15 @@ const Navbar = () => {
         const data = await res.json();
         if (res.ok) {
           setNotifications(data.notifications || []);
-          // تعداد نوتیفیکیشن‌های خوانده نشده را فیلتر کنید
           const unread = data.notifications.filter(n => !n.isRead).length;
           setNotificationsCount(unread);
         }
-      } catch (err) {
-        console.error("Error loading saved notifications:", err);
-      }
+      } catch (err) { console.error("Error loading notifications:", err); }
     };
-
     fetchNotifications();
   }, [currentUser, API_URL]);
 
-  // Handle scroll detection
-  useEffect(() => {
-    let lastY = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 20);
-      setHidden(y > lastY && y > 100);
-      lastY = y;
-    };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Sync avatar
+  // سینک آواتار
   useEffect(() => {
     if (!currentUser?._id) return;
     fetch(`${API_URL}/api/user/user/${currentUser._id}`, { credentials: "include" })
@@ -68,7 +56,7 @@ const Navbar = () => {
       .then((d) => d.avatar && setAvatar(d.avatar));
   }, [currentUser, API_URL]);
 
-  // Click outside close
+  // بستن دراپ‌داون با کلیک بیرون
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setShowDropdown(false);
@@ -77,7 +65,7 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Real-time listener
+  // گوش دادن به سوکت
   useEffect(() => {
     if (!socket) return;
     const handleNewNotif = (data) => {
@@ -90,13 +78,8 @@ const Navbar = () => {
 
   const handleNotificationClick = async (notif) => {
     setShowDropdown(false);
-    
-    // اختیاری: آپدیت وضعیت خوانده شده در دیتابیس
     try {
-      await fetch(`${API_URL}/api/notifications/mark-read/${notif._id}`, {
-        method: 'PATCH',
-        credentials: "include"
-      });
+      await fetch(`${API_URL}/api/notifications/mark-read/${notif._id}`, { method: 'PATCH', credentials: "include" });
     } catch (err) { console.log(err); }
 
     switch (notif.type) {
@@ -106,13 +89,6 @@ const Navbar = () => {
       case "BLIND_MESSAGE": navigate(`/blind-date`); break;
       default: break;
     }
-  };
-
-  const goToProfile = (e, userId) => {
-    e.stopPropagation();
-    setShowDropdown(false);
-    setMobileOpen(false);
-    if(userId) navigate(`/user-profile/${userId}`);
   };
 
   const signout = async () => {
@@ -128,7 +104,7 @@ const Navbar = () => {
   const noNavPaths = ["/chat", "/initial"];
   if (noNavPaths.some((path) => location.pathname.startsWith(path))) return null;
 
-  const links = currentUser
+  const allLinks = currentUser
     ? [
         { to: "/swipe", label: "Swipe", icon: <Flame size={20} /> },
         { to: "/feed", label: "Posts", icon: <StickyNote size={20} /> },
@@ -142,11 +118,9 @@ const Navbar = () => {
         { to: "/about-us", label: "About", icon: <Info size={20} /> },
       ];
 
-  const toggleDropdown = (e) => {
-    e.stopPropagation();
-    setShowDropdown(!showDropdown);
-    if (!showDropdown) setNotificationsCount(0);
-  };
+  const sidebarLinks = currentUser 
+    ? allLinks.filter(l => !["/swipe", "/explore", "/blind-date", "/messages"].includes(l.to))
+    : allLinks;
 
   return (
     <>
@@ -156,7 +130,12 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <Motion.nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`} initial={{ y: 0 }} animate={{ y: hidden ? -100 : 0 }} transition={{ duration: 0.4, ease: "easeInOut" }}>
+      <Motion.nav 
+        className={`navbar ${scrolled ? "navbar--scrolled" : ""}`} 
+        initial={{ y: 0 }} 
+        animate={{ y: isVisible ? 0 : -100 }} 
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+      >
         <div className="navbar__container">
           <Link to="/" className="navbar__logo" onClick={() => setMobileOpen(false)}>
             <div className="navbar__logo-icon">U</div>
@@ -167,10 +146,17 @@ const Navbar = () => {
           </Link>
 
           <div className="navbar__menu navbar__menu--desktop">
-            {links.map((l) => (
+            {allLinks.map((l) => (
               <Link key={l.to} to={l.to} className={`navbar__link ${location.pathname === l.to ? "navbar__link--active" : ""}`}>
                 {l.icon}<span className="navbar__label">{l.label}</span>
-                {location.pathname === l.to && <Motion.div layoutId="activeNav" className="navbar__active-indicator" />}
+                {/* بخش اصلاح شده: حذف layoutId برای جلوگیری از لغزش */}
+                {location.pathname === l.to && (
+                  <Motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    className="navbar__active-indicator" 
+                  />
+                )}
               </Link>
             ))}
           </div>
@@ -178,7 +164,7 @@ const Navbar = () => {
           <div className="navbar__actions">
             {currentUser && (
               <div className="navbar__notif-container" ref={dropdownRef}>
-                <div className="navbar__notification-wrapper" onClick={toggleDropdown}>
+                <div className="navbar__notification-wrapper" onClick={() => {setShowDropdown(!showDropdown); setNotificationsCount(0)}}>
                   <Bell size={22} className="navbar__notification-icon" />
                   {notificationsCount > 0 && <span className="navbar__notification-badge">{notificationsCount}</span>}
                 </div>
@@ -190,11 +176,11 @@ const Navbar = () => {
                         {notifications.length > 0 ? (
                           notifications.map((n, idx) => (
                             <div key={idx} className="navbar__dropdown-item" onClick={() => handleNotificationClick(n)}>
-                               <div className="navbar__dropdown-avatar" onClick={(e) => goToProfile(e, n.targetId)}>
+                               <div className="navbar__dropdown-avatar">
                                   {n.senderAvatar ? <img src={n.senderAvatar} alt=""/> : "👤"}
                                </div>
                                <div className="navbar__dropdown-info">
-                                  <p><strong onClick={(e) => goToProfile(e, n.targetId)} style={{cursor: 'pointer'}}>{n.senderName}</strong> {n.message}</p>
+                                  <p><strong>{n.senderName}</strong> {n.message}</p>
                                </div>
                             </div>
                           ))
@@ -228,7 +214,7 @@ const Navbar = () => {
               <div className="navbar__sidebar-content">
                 <div className="navbar__sidebar-header"><span>Navigation</span><button className="navbar__close-btn" onClick={() => setMobileOpen(false)}><X size={24} /></button></div>
                 {currentUser && (
-                  <div className="navbar__sidebar-user-card" onClick={() => navigate("/myprofile")} >
+                  <div className="navbar__sidebar-user-card" onClick={() => {navigate("/myprofile"); setMobileOpen(false)}} >
                     <img src={avatar} alt="User" className="navbar__sidebar-avatar" />
                     <div className="navbar__sidebar-info">
                       <span className="navbar__sidebar-name">{currentUser.name}</span>
@@ -237,10 +223,17 @@ const Navbar = () => {
                   </div>
                 )}
                 <div className="navbar__sidebar-links">
-                  {links.map((l) => (
+                  {sidebarLinks.map((l) => (
                     <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)} className={`navbar__sidebar-link ${location.pathname === l.to ? "navbar__sidebar-link--active" : ""}`}>
                       {l.icon} <span>{l.label}</span>
-                      {location.pathname === l.to && <Motion.div layoutId="activeNavMobile" className="navbar__active-indicator-mobile" />}
+                      {/* بخش اصلاح شده: حذف layoutId برای سایدبار */}
+                      {location.pathname === l.to && (
+                        <Motion.div 
+                          initial={{ opacity: 0 }} 
+                          animate={{ opacity: 1 }} 
+                          className="navbar__active-indicator-mobile" 
+                        />
+                      )}
                     </Link>
                   ))}
                 </div>

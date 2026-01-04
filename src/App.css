@@ -2,8 +2,7 @@
 
 html {
   scrollbar-width: thin; 
-  scrollbar-color: #1e293b #020617; 
-}
+  scrollbar-color: #1e293b #020617; }
 
 ::-webkit-scrollbar {
   width: 6px; 
@@ -22,4 +21,8 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #6366f1; 
 }
-
+@media (max-width: 1053px) {
+  .main-content.with-bottom-nav {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  }
+}
