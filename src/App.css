@@ -2,8 +2,7 @@
 
 html {
   scrollbar-width: thin; 
-  scrollbar-color: #1e293b #020617; 
-}
+  scrollbar-color: #1e293b #020617; }
 
 ::-webkit-scrollbar {
   width: 6px; 
@@ -24,7 +23,6 @@ html {
 }
 @media (max-width: 1053px) {
   .main-content.with-bottom-nav {
-    /* فضا ایجاد می‌کنیم تا آخرین المان صفحه پشت نوار پایین نرود */
     padding-bottom: calc(100px + env(safe-area-inset-bottom));
   }
 }

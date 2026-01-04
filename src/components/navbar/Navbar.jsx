@@ -118,7 +118,6 @@ const Navbar = ({ isVisible }) => {
         { to: "/about-us", label: "About", icon: <Info size={20} /> },
       ];
 
-  // لینک‌های مخصوص سایدبار موبایل (حذف مواردی که در نوار پایین هستند)
   const sidebarLinks = currentUser 
     ? allLinks.filter(l => !["/swipe", "/explore", "/blind-date", "/messages"].includes(l.to))
     : allLinks;
@@ -146,12 +145,18 @@ const Navbar = ({ isVisible }) => {
             </div>
           </Link>
 
-          {/* منوی دسکتاپ تمام لینک‌ها را نشان می‌دهد */}
           <div className="navbar__menu navbar__menu--desktop">
             {allLinks.map((l) => (
               <Link key={l.to} to={l.to} className={`navbar__link ${location.pathname === l.to ? "navbar__link--active" : ""}`}>
                 {l.icon}<span className="navbar__label">{l.label}</span>
-                {location.pathname === l.to && <Motion.div layoutId="activeNav" className="navbar__active-indicator" />}
+                {/* بخش اصلاح شده: حذف layoutId برای جلوگیری از لغزش */}
+                {location.pathname === l.to && (
+                  <Motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    className="navbar__active-indicator" 
+                  />
+                )}
               </Link>
             ))}
           </div>
@@ -203,7 +208,6 @@ const Navbar = ({ isVisible }) => {
           </div>
         </div>
 
-        {/* سایدبار موبایل */}
         <AnimatePresence>
           {mobileOpen && (
             <Motion.div className="navbar__sidebar" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
@@ -222,7 +226,14 @@ const Navbar = ({ isVisible }) => {
                   {sidebarLinks.map((l) => (
                     <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)} className={`navbar__sidebar-link ${location.pathname === l.to ? "navbar__sidebar-link--active" : ""}`}>
                       {l.icon} <span>{l.label}</span>
-                      {location.pathname === l.to && <Motion.div layoutId="activeNavMobile" className="navbar__active-indicator-mobile" />}
+                      {/* بخش اصلاح شده: حذف layoutId برای سایدبار */}
+                      {location.pathname === l.to && (
+                        <Motion.div 
+                          initial={{ opacity: 0 }} 
+                          animate={{ opacity: 1 }} 
+                          className="navbar__active-indicator-mobile" 
+                        />
+                      )}
                     </Link>
                   ))}
                 </div>

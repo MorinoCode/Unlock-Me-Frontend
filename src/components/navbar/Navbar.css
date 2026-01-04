@@ -125,6 +125,10 @@
   text-decoration: none;
   color: white;
 }
+.navbar__profile:hover {
+  transform: scale(1.06);
+  background: rgba(30, 13, 13, 0.05);
+}
 .navbar__avatar-wrapper {
   position: relative;
   width: 34px;
@@ -182,6 +186,10 @@
   color: #94a3b8;
   position: relative;
   padding: 8px;
+}
+.navbar__notification-wrapper:hover {
+  transform: scale(1.2);
+  color: #7b889c;
 }
 .navbar__notification-badge {
   position: absolute;

@@ -8,10 +8,10 @@ const MobileBottomNav = ({ isVisible }) => {
   const location = useLocation();
 
   const navItems = [
-    { path: "/swipe", icon: <Flame size={24} />, label: "Swipe" },
-    { path: "/explore", icon: <Compass size={24} />, label: "Explore" },
-    { path: "/blind-date", icon: <Ghost size={24} />, label: "BlindDate" },
-    { path: "/messages", icon: <MessageSquare size={24} />, label: "Messages" },
+    { path: "/swipe", icon: <Flame size={26} /> },
+    { path: "/explore", icon: <Compass size={26} /> },
+    { path: "/blind-date", icon: <Ghost size={26} /> },
+    { path: "/messages", icon: <MessageSquare size={26} /> },
   ];
 
   return (
@@ -39,9 +39,6 @@ const MobileBottomNav = ({ isVisible }) => {
                       />
                     )}
                   </div>
-                  <span className={`mobile-bottom-nav__label ${isActive ? "active" : ""}`}>
-                    {item.label}
-                  </span>
                 </Link>
               );
             })}

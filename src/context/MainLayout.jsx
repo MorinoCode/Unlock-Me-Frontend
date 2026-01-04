@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar.jsx';
 import Footer from '../components/footer/Footer.jsx';
@@ -8,47 +8,57 @@ import { useAuth } from "../context/useAuth.js";
 const MainLayout = () => {
   const location = useLocation();
   const { currentUser } = useAuth();
+  
   const [navVisible, setNavVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // مدیریت اسکرول برای کل لایوت
+  // ۱. منطق تشخیص اسکرول برای مخفی/ظاهر شدن Navbar و BottomNav
   useEffect(() => {
-    const controlNavbar = () => {
-      const currentY = window.scrollY;
-      // اگر اسکرول به پایین بود و بیشتر از ۱۰۰ پیکسل حرکت کرد، نوارها مخفی شوند
-      if (currentY > lastScrollY && currentY > 100) {
-        setNavVisible(false);
-      } else if (currentY < lastScrollY) {
-        // با اسکرول به سمت بالا، نوارها ظاهر شوند
-        setNavVisible(true);
+    const controlNavbars = () => {
+      if (typeof window !== 'undefined') {
+        const currentY = window.scrollY;
+        
+        // اگر به سمت پایین اسکرول کرد و بیشتر از ۸۰ پیکسل رفت -> مخفی کن
+        if (currentY > lastScrollY && currentY > 80) {
+          setNavVisible(false);
+        } 
+        // اگر به سمت بالا اسکرول کرد -> ظاهر کن
+        else {
+          setNavVisible(true);
+        }
+        setLastScrollY(currentY);
       }
-      setLastScrollY(currentY);
     };
 
-    window.addEventListener('scroll', controlNavbar);
-    return () => window.removeEventListener('scroll', controlNavbar);
+    window.addEventListener('scroll', controlNavbars);
+    return () => window.removeEventListener('scroll', controlNavbars);
   }, [lastScrollY]);
 
-  // مسیرهایی که نوار موبایل نباید در آن‌ها نمایش داده شود
+  // منطق شما برای مخفی کردن فوتر در مسیرهای خاص (بدون تغییر)
+  const noFooterRoutes = ['/chat', "/swipe", "/blind-date" , "/explore"];
+  const hideFooter = noFooterRoutes.some(path => location.pathname.startsWith(path));
+
+  // مسیرهایی که نوار پایین نباید باشد
   const noBottomNavRoutes = ['/chat', '/initial'];
   const hideBottomNav = noBottomNavRoutes.some(path => location.pathname.startsWith(path));
 
   return (
-    <div className="layout-wrapper" style={{ minHeight: '100vh', position: 'relative' }}>
-      {/* پاس دادن وضعیت دید به Navbar اصلی */}
+    // اضافه کردن استایل پس‌زمینه تیره به کانتینر اصلی برای حذف فاصله سفید
+    <div className="layout-wrapper" style={{ minHeight: '100vh', backgroundColor: '#0a0f1e', position: 'relative' }}>
       <Navbar isVisible={navVisible} />
       
-      {/* کلاس with-bottom-nav برای مدیریت Padding پایین در موبایل استفاده می‌شود */}
+      {/* اضافه شدن کلاس with-bottom-nav برای مدیریت فضای پایین محتوا */}
       <main className={`main-content ${currentUser && !hideBottomNav ? 'with-bottom-nav' : ''}`}>
         <Outlet />
       </main>
 
-      {/* نمایش نوار پایین مخصوص موبایل در صورت لاگین بودن و نبودن در مسیرهای ممنوعه */}
+      {/* نوار پایین مخصوص موبایل */}
       {currentUser && !hideBottomNav && (
         <MobileBottomNav isVisible={navVisible} />
       )}
 
-      <Footer /> 
+      {/* نمایش فوتر بر اساس منطق hideFooter شما */}
+      {!hideFooter && <Footer />}
     </div>
   );
 };
