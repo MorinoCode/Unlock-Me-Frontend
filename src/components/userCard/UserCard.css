@@ -7,18 +7,18 @@
   height: 380px;      /* ارتفاع بلند مثل عکس نمونه */
   border-radius: 24px; /* گردی گوشه‌ها مثل عکس */
   overflow: hidden;
-  background: #1e293b; /* رنگ پس زمینه لودینگ */
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* background: #1e293b; رنگ پس زمینه لودینگ */
+  /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); */
+  /* transition: transform 0.3s ease, box-shadow 0.3s ease; */
   flex-shrink: 0;
-  margin-right: 15px;
+  /* margin-right: 15px; */
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 2px solid rgb(32, 31, 31);
 }
 
 .user-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  transform: translateY(-1px);
+  /* box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); */
 }
 
 /* 1. عکس تمام صفحه */

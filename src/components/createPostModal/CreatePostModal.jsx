@@ -142,9 +142,7 @@ const CreatePostModal = ({ closeModal, refreshFeed }) => {
                     onChange={(e) => setZoom(e.target.value)}
                     className="zoom-range"
                   />
-                  <button type="button" className="btn-change-photo" onClick={() => setImage(null)}>
-                    Change Photo
-                  </button>
+                  
                 </div>
               </div>
             )}
