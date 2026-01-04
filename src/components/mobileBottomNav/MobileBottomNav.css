@@ -1,0 +1,77 @@
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 100%;
+  height: calc(70px + env(safe-area-inset-bottom));
+  background: transparent; 
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px 25px 0 0; 
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-bottom-nav__container {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.mobile-bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  position: relative;
+  flex: 1;
+}
+
+.mobile-bottom-nav__icon-wrapper {
+  position: relative;
+  z-index: 2;
+  color: #94a3b8;
+  transition: all 0.3s ease;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* آیکون اکتیو کمی بالاتر می‌رود */
+.mobile-bottom-nav__icon-wrapper.active {
+  color: #ffffff;
+  transform: translateY(-5px);
+}
+
+.mobile-bottom-nav__bubble {
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border-radius: 50%;
+  z-index: -1;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* اصلاح فضای خالی انتهای محتوا */
+@media (max-width: 1053px) {
+  .main-content.with-bottom-nav {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-width: 1054px) {
+  .mobile-bottom-nav {
+    display: none;
+  }
+}
