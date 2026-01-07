@@ -8,6 +8,7 @@
   overflow: hidden;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
   height: 100%;
+  max-height: 500px;
   display: flex;
   flex-direction: column;
 }
@@ -39,7 +40,7 @@
   height: 48px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid rgba(99, 102, 241, 0.5);
+  border: 2px solid white;
   background: #1e293b;
 }
 
@@ -89,6 +90,7 @@
 /* نوار تعامل (لایک و مسیج) */
 .post-interaction-bar {
   padding: 16px 18px;
+  background-color: #000;
 }
 
 .post-btns {
@@ -311,7 +313,26 @@
   opacity: 0;
   visibility: hidden;
 }
+.post-stats-row {
+  display: flex;
+  gap: 15px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
 
+.post-stat-item {
+  color: #fff;
+}
+
+.see-more-btn {
+  /* This is already inline styled in the JS, but good to have a class */
+  margin-left: 5px;
+}
+
+.comment-spacer, .caption-spacer {
+  margin-left: 6px;
+}
 /* فقط در دستگاه‌هایی که موس دارند (Desktop) هاور کار کند */
 @media (hover: hover) {
   .post-single-comment:hover .comment-delete-small-btn {

@@ -2,19 +2,35 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AIInsightSection from "../../components/aiInsightSection/AIInsightSection";
 import HeartBeatLoader from "../../components/heartbeatLoader/HeartbeatLoader"
+import { useAuth } from "../../context/useAuth.js";
 import "./UserDetailPage.css";
 
 const UserDetailPage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  const [isLiked, setIsLiked] = useState(false);
-  const [isDisliked, setIsDisliked] = useState(false);
+  const [isLiked, setIsLiked] = useState(() => {
+    return currentUser?.likedUsers?.includes(userId) || false;
+  });
+  
+  const [isDisliked, setIsDisliked] = useState(() => {
+    return currentUser?.dislikedUsers?.includes(userId) || false;
+  });
+
   const [isProcessing, setIsProcessing] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+  useEffect(() => {
+    if (currentUser) {
+      setIsLiked(currentUser.likedUsers?.includes(userId) || false);
+      setIsDisliked(currentUser.dislikedUsers?.includes(userId) || false);
+    }
+  }, [currentUser, userId]);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -23,8 +39,6 @@ const UserDetailPage = () => {
         const res = await fetch(`${API_URL}/api/user/details/${userId}`, { credentials: "include" });
         const data = await res.json();
         setUser(data);
-        setIsLiked(data.alreadyLiked || false);
-        setIsDisliked(data.alreadyDisliked || false);
       } catch (err) { console.error(err); } 
       finally { setLoading(false); }
     };
@@ -41,13 +55,6 @@ const UserDetailPage = () => {
       : (isRemoving ? "/api/user/undislike" : "/api/user/dislike");
 
     try {
-      await fetch(`${API_URL}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUserId: userId }),
-        credentials: "include",
-      });
-
       if (type === "like") {
         setIsLiked(!isLiked);
         if (!isLiked) setIsDisliked(false); 
@@ -55,8 +62,18 @@ const UserDetailPage = () => {
         setIsDisliked(!isDisliked);
         if (!isDisliked) setIsLiked(false); 
       }
+
+      await fetch(`${API_URL}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUserId: userId }),
+        credentials: "include",
+      });
+
     } catch (err) {
       console.error(`${type} toggle failed:`, err);
+      if (type === "like") setIsLiked(isRemoving);
+      else setIsDisliked(isRemoving);
     } finally {
       setIsProcessing(false);
     }
@@ -153,7 +170,7 @@ const UserDetailPage = () => {
           {isDisliked ? "👎" : "👎🏻"}
         </button>
         <button className="user-actions__chat-btn" onClick={() => navigate(`/chat/${userId}`)}>
-          Start Conversation
+          Send Message
         </button>
         <button 
           className={`user-actions__btn user-actions__btn--like ${isLiked ? "user-actions__btn--like-active" : ""}`} 

@@ -8,7 +8,7 @@
   position: relative;
   z-index: 10;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 3rem auto;
 }
 
 /* Element: .matches-page__header */
@@ -290,13 +290,35 @@
 
 /* Media Queries */
 @media screen and (max-width: 768px) {
-  .matches-page__title { font-size: 2.2rem; }
+  .matches-page__title { font-size: 2rem; }
   .promo-card { flex-direction: column; text-align: center; gap: 20px; }
 }
 
-@media screen and (max-width: 409px) {
+@media screen and (max-width: 479px) {
+  .matches-page__title { font-size: 1.6rem; }
+  .matches-page__badge {
+    padding: 6px 12px;
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .matches-page__title { font-size: 1.2rem; }
   .matches-page__badge {
     padding: 6px 12px;
     font-size: 11px;
+  }
+  .matches-page__subtitle{
+    font-size: 0.7rem ;
+  }
+}
+@media screen and (max-width: 295px) {
+  .matches-page__title { font-size: 1rem; }
+  .matches-page__badge {
+    padding: 6px 12px;
+    font-size: 8px;
+  }
+  .matches-page__subtitle{
+    font-size: 0.5rem ;
   }
 }

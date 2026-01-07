@@ -24,7 +24,7 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
-  padding: 10px 20px;
+  padding: 6px 10px;
   border-radius: 12px;
   cursor: pointer;
   display: flex;
@@ -32,6 +32,7 @@
   gap: 10px;
   font-weight: 600;
   transition: 0.3s;
+  margin-right: 0.5rem;
 }
 
 .matches-page__back-btn:hover {
@@ -70,9 +71,10 @@
   margin-top: 5px;
 }
 
-/* Grid & Layout */
+/* --- GRID & LAYOUT (Default PC behavior) --- */
 .matches-page__grid {
   display: grid;
+  /* PC: Fills as many columns as fit with a minimum width of 240px */
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 25px;
   min-height: 400px;
@@ -85,8 +87,14 @@
 }
 
 @keyframes cardFadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Empty State */
@@ -99,10 +107,10 @@
   color: #64748b;
 }
 
-.matches-page__empty-icon { 
-  font-size: 4rem; 
-  display: block; 
-  margin-bottom: 20px; 
+.matches-page__empty-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 20px;
 }
 
 .matches-page__explore-btn {
@@ -130,7 +138,9 @@
   transition: 0.3s;
 }
 
-.matches-page__upsell-banner:hover { transform: scale(1.01); }
+.matches-page__upsell-banner:hover {
+  transform: scale(1.01);
+}
 
 .matches-page__upsell-btn {
   background: #f59e0b;
@@ -162,12 +172,64 @@
   margin-bottom: 15px;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-/* Responsive Adjustments */
-@media screen and (max-width: 768px) {
-  .matches-page__title { font-size: 2.2rem; }
-  .matches-page { padding-top: 80px; }
-  .matches-page__upsell-banner { flex-direction: column; text-align: center; gap: 20px; }
-  .matches-page__grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+/* --- RESPONSIVE BREAKPOINTS --- */
+
+/* Tablet: Between 600px and 1024px (Approx) */
+@media screen and (min-width: 600px) and (max-width: 1024px) {
+  .matches-page__grid {
+    /* Explicitly 4 columns for tablets */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+  }
+  
+  .matches-page__title {
+    font-size: 2rem;
+  }
+  .matches-page__back-btn{
+    padding: 4px 10px;
+  }
+}
+
+/* Mobile: Less than 600px */
+@media screen and (max-width: 599px) {
+  .matches-page {
+    padding-top: 80px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .matches-page__grid {
+    /* Explicitly 2 columns for mobile */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .matches-page__title {
+    font-size: 2rem;
+  }
+
+  .matches-page__upsell-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .matches-page__plan-badge {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+  .matches-page__subtiitle{
+    font-size: 8px;
+  }
+
+  .matches-page__back-btn {
+    padding: 5px 10px;
+    margin-top: 4px;
+  }
 }
