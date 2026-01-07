@@ -35,6 +35,14 @@
   font-size: 50px;
   margin-bottom: 20px;
 }
+.blind-interests-modal__score-value{
+  color: gold;
+  font-weight: bold;
+}
+.blind-interests-modal__score-label{
+  color: gold;
+  font-weight: bold;
+}
 
 .blind-interests-modal__title {
   font-size: 1.8rem;

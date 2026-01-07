@@ -1,75 +1,78 @@
 import React from 'react';
 import './BlindRevealZone.css';
 
-const BlindRevealZone = ({ session, currentUser, socketRef }) => {
+const BlindRevealZone = ({ session, currentUser, socketRef, matchPercentage }) => {
   if (!session || !currentUser) return null;
 
-  // پیدا کردن اینکه کاربر فعلی نفر اول است یا دوم
-  const isUser1 = session.participants[0]?._id === currentUser._id || session.participants[0] === currentUser._id;
+  // پیدا کردن وضعیت من
+  const p1Id = session.participants[0]._id || session.participants[0];
+  const isUser1 = p1Id.toString() === currentUser._id.toString();
   
-  // گرفتن وضعیت تصمیمات با مقدار پیش‌فرض pending برای جلوگیری از خطا
-  const myDecision = (isUser1 ? session.u1RevealDecision : session.u2RevealDecision) || 'pending';
-  const partnerDecision = (isUser1 ? session.u2RevealDecision : session.u1RevealDecision) || 'pending';
+  const myDecision = isUser1 ? session.u1RevealDecision : session.u2RevealDecision;
+  const isWaiting = myDecision !== 'pending'; // اگر تصمیم گرفتم، یعنی منتظرم
 
   const handleDecision = (decision) => {
     if (socketRef.current) {
       socketRef.current.emit('submit_reveal_decision', {
         sessionId: session._id,
-        decision: decision // 'yes' یا 'no'
+        decision: decision 
       });
     }
   };
 
   return (
-    <div className="blind-reveal-zone">
-      <div className="blind-reveal-zone__card">
-        <div className="blind-reveal-zone__header">
-          <div className="blind-reveal-zone__icon-wrapper">
-            <span className="blind-reveal-zone__icon">🔍</span>
+    <div className="unique-reveal-zone">
+      <div className="unique-reveal-zone__card">
+        
+        {/* هدر: نمایش درصد مچ */}
+        <div className="unique-reveal-zone__header">
+          <div className="unique-reveal-zone__score-circle">
+            <span className="unique-reveal-zone__score-num">{matchPercentage}%</span>
+            <span className="unique-reveal-zone__score-label">MATCH</span>
           </div>
-          <h2 className="blind-reveal-zone__title">The Moment of Truth</h2>
-          <p className="blind-reveal-zone__description">
-            You've completed all stages! Do you want to reveal your full profile and photos to each other?
+          
+          <h2 className="unique-reveal-zone__title">The Moment of Truth</h2>
+          <p className="unique-reveal-zone__desc">
+            Based on your answers, you have a <strong>{matchPercentage}% compatibility</strong> score!
           </p>
-          <p className="blind-reveal-zone__note">
-            Note: Both must say <strong>YES</strong> for a successful reveal.
+          <p className="unique-reveal-zone__question">
+            Do you want to reveal your full profile and photos?
+          </p>
+          <p className="unique-reveal-zone__note">
+            ⚠️ Both must say <strong>YES</strong> for a successful reveal.
           </p>
         </div>
 
-        <div className="blind-reveal-zone__content">
-          {myDecision === 'pending' ? (
-            <div className="blind-reveal-zone__options">
+        {/* محتوا: دکمه‌ها یا وضعیت انتظار */}
+        <div className="unique-reveal-zone__content">
+          {!isWaiting ? (
+            <div className="unique-reveal-zone__actions">
               <button 
-                className="blind-reveal-zone__btn blind-reveal-zone__btn--yes"
+                className="unique-reveal-zone__btn unique-reveal-zone__btn--yes"
                 onClick={() => handleDecision('yes')}
               >
-                Yes, I'm ready!
+                Yes, I'm ready! 🔓
               </button>
               <button 
-                className="blind-reveal-zone__btn blind-reveal-zone__btn--no"
+                className="unique-reveal-zone__btn unique-reveal-zone__btn--no"
                 onClick={() => handleDecision('no')}
               >
-                No, maybe later
+                No, maybe later ❌
               </button>
             </div>
           ) : (
-            <div className="blind-reveal-zone__status-box">
-              <div className="blind-reveal-zone__loader-ring"></div>
-              <p className="blind-reveal-zone__status-text">
+            <div className="unique-reveal-zone__waiting">
+              <div className="unique-reveal-zone__spinner"></div>
+              <p className="unique-reveal-zone__waiting-text">
                 You chose <strong>{myDecision?.toUpperCase()}</strong>
               </p>
-              <p className="blind-reveal-zone__status-sub">
-                Waiting for your partner to decide...
+              <p className="unique-reveal-zone__waiting-sub">
+                Waiting for partner's decision...
               </p>
             </div>
           )}
         </div>
 
-        {partnerDecision !== 'pending' && (
-          <div className="blind-reveal-zone__partner-alert">
-            Partner has made a choice!
-          </div>
-        )}
       </div>
     </div>
   );
