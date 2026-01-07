@@ -233,6 +233,10 @@
   color: var(--swipe-text-light);
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  align-items: center;
 }
 .swipe-card__action-btn--dna {
   top: 25px;
