@@ -29,7 +29,7 @@
   flex-direction: column;
   align-items: center;
   background: linear-gradient(to bottom, #1e1b4b, #020617);
-  margin-top: -50px;
+  margin-top: -40px;
 }
 
 .user-profile__avatar-container {
@@ -269,7 +269,7 @@
 }
 
 .user-actions__btn--like-active {
-  background: #ef4444 !important;
+  /* background: #ef4444 !important; */
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
 }
 

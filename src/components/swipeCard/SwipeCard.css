@@ -8,7 +8,7 @@
 .swipe-card {
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: 90%;
   max-width: 400px;
   max-height: 700px;
   border-radius: var(--swipe-radius);
@@ -365,5 +365,20 @@
   border-radius: var(--swipe-radius);
   cursor: grab;
   perspective: 1000px;
+}
+}
+
+@media (max-height: 600px ){
+.swipe-card {
+  position: absolute;
+  top: 70px;
+  width: 70%;
+  height: 70%;
+  max-width: 400px;
+  max-height: 700px;
+  border-radius: var(--swipe-radius);
+  cursor: grab;
+  perspective: 1000px;
+  border: none;
 }
 }

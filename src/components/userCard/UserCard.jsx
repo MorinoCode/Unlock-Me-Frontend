@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getVisibilityThreshold } from "../../utils/subscriptionRules"; 
+import { useAuth } from "../../context/useAuth.js";
 import "./UserCard.css";
 
 const UserCard = ({ user, isLocked: parentLocked, userPlan }) => {
   const navigate = useNavigate();
-  const [liked, setLiked] = useState(false);
-  const [isLiking, setIsLiking] = useState(false);
+  const { currentUser } = useAuth();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // محاسبه قفل بودن
+  const [liked, setLiked] = useState(() => {
+    return currentUser?.likedUsers?.includes(user._id) || false;
+  });
+  
+  const [isLiking, setIsLiking] = useState(false);
+
+  useEffect(() => {
+    setLiked(currentUser?.likedUsers?.includes(user._id) || false);
+  }, [currentUser, user._id]);
+
   const score = user.matchScore || 0;
   const threshold = getVisibilityThreshold(userPlan);
   const isLocked = parentLocked || score > threshold;
@@ -58,17 +67,15 @@ const UserCard = ({ user, isLocked: parentLocked, userPlan }) => {
     }
   };
 
-  // استایل مچ اسکور (برای استفاده در کنار دکمه)
   const getMatchColor = (s) => {
-    if (s >= 80) return "#10b981"; // Green
-    if (s >= 60) return "#f59e0b"; // Orange
-    return "#94a3b8"; // Gray
+    if (s >= 80) return "#10b981"; 
+    if (s >= 60) return "#f59e0b"; 
+    return "#94a3b8"; 
   };
 
   return (
     <div className={`user-card ${isLocked ? "user-card--locked" : ""}`} onClick={goToProfile}>
       
-      {/* --- لایک باتن (همیشه بالا سمت راست) --- */}
       {!isLocked && (
           <button 
             className={`user-card__like-btn ${liked ? "user-card__like-btn--active" : ""}`} 
@@ -80,7 +87,6 @@ const UserCard = ({ user, isLocked: parentLocked, userPlan }) => {
           </button>
       )}
 
-      {/* --- حالت قفل شده --- */}
       {isLocked ? (
         <div className="user-card__lock-overlay" onClick={handleUnlockClick}>
           <div 
@@ -96,9 +102,7 @@ const UserCard = ({ user, isLocked: parentLocked, userPlan }) => {
           </div>
         </div>
       ) : (
-        /* --- حالت باز (طراحی جدید Overlay) --- */
         <>
-          {/* 1. عکس پس‌زمینه (کل کارت) */}
           <div className="user-card__image-wrapper">
              <img 
               src={user.avatar || "/default-avatar.png"} 
@@ -107,16 +111,13 @@ const UserCard = ({ user, isLocked: parentLocked, userPlan }) => {
             />
           </div>
 
-          {/* 2. گرادینت محو شونده */}
           <div className="user-card__overlay-gradient"></div>
 
-          {/* 3. محتوا (پایین کارت) */}
           <div className="user-card__content">
             
             <div className="user-card__text-group">
                 <h3 className="user-card__name">
                     {user.name}, {calculateAge(user.birthday)}
-                    {/* اگر کاربر وریفای شده است تیک آبی بگذار (اختیاری) */}
                     {user.isVerified && <span className="user-card__verified">🔹</span>}
                 </h3>
                 <span className="user-card__location">
@@ -125,12 +126,10 @@ const UserCard = ({ user, isLocked: parentLocked, userPlan }) => {
             </div>
 
             <div className="user-card__actions">
-                {/* دکمه اصلی */}
                 <button className="user-card__action-btn">
                     View Profile
                 </button>
 
-                {/* درصد مچ کنار دکمه */}
                 <div className="user-card__match-pill" style={{ borderColor: getMatchColor(score) }}>
                     <span style={{ color: getMatchColor(score) }}>{score}%</span>
                 </div>

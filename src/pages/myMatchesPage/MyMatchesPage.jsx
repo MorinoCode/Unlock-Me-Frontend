@@ -5,6 +5,7 @@ import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLa
 import "./MyMatchesPage.css";
 import { useAuth } from "../../context/useAuth.js";
 import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
+import { CloudDownload } from "lucide-react";
 
 const MyMatchesPage = () => {
   const [data, setData] = useState({
@@ -25,6 +26,7 @@ const MyMatchesPage = () => {
           { credentials: "include" }
         );
         const dashboardData = await res.json();
+        console.log(data);
         setData(dashboardData);
       } catch (err) {
         console.error("Error fetching matches:", err);
@@ -133,12 +135,14 @@ const MyMatchesPage = () => {
         </header>
 
         <div className="matches-page__content">
+
           {renderSection(
-            "Mutual Matches",
-            data.mutualMatches,
-            "mutual",
-            "People you both liked each other"
+            "Sent Likes",
+            data.sentLikes,
+            "sent",
+            "People you've shown interest in"
           )}
+    
 
           {userPlan === "free" && (
             <div className="promo-card" onClick={() => navigate("/upgrade")}>
@@ -160,12 +164,26 @@ const MyMatchesPage = () => {
             true
           )}
 
-          {renderSection(
-            "Sent Likes",
-            data.sentLikes,
-            "sent",
-            "People you've shown interest in"
+           {userPlan === "free" && (
+            <div className="promo-card" onClick={() => navigate("/upgrade")}>
+              <div className="promo-card__content">
+                <h3 className="promo-card__title">Get More Likes</h3>
+                <p className="promo-card__desc">
+                  Users with Gold plan get 3x more Likes.
+                </p>
+              </div>
+              <button className="promo-card__btn">Go Gold</button>
+            </div>
           )}
+
+          {renderSection(
+            "Mutual Matches",
+            data.mutualMatches,
+            "mutual",
+            "People you both liked each other"
+          )}
+
+          
         </div>
       </div>
     </ExploreBackgroundLayout>
