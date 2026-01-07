@@ -3,22 +3,19 @@ import { Link } from "react-router-dom";
 import { motion as Motion } from "framer-motion";
 import {
   Globe,
-  Shield,
-  Zap,
   ArrowRight,
   Star,
   LayoutDashboard,
-  Heart,
-  Fingerprint,
-  Search,
 } from "lucide-react";
 import { useAuth } from "../../context/useAuth.js";
+import matchesPic from "../../assets/matchesPic.webp";
+import blindDatesPic from "../../assets/blindDatesPic.webp";
+import swipeMatchPic from "../../assets/swipe&matchPic.webp";
 import "./HomePage.css";
 
 const HomePage = () => {
   const { currentUser } = useAuth();
 
-  // انیمیشن‌های پایه
   const fadeIn = {
     hidden: { opacity: 0, y: 30 },
     visible: {
@@ -35,19 +32,16 @@ const HomePage = () => {
     },
   };
 
-  const pulseAnimation = {
+  const floatAnimation = {
     animate: {
-      scale: [1, 1.05, 1],
-      opacity: [0.5, 0.8, 0.5],
-      transition: { duration: 3, repeat: Infinity },
+      y: [-10, 10, -10],
+      transition: { duration: 4, repeat: Infinity, ease: "easeInOut" },
     },
   };
 
   return (
     <div className="home-page">
-      {/* --- HERO SECTION --- */}
       <header className="home-page__hero">
-        {/* المان متحرک پس‌زمینه (کره زمین انتزاعی) */}
         <Motion.div
           className="home-page__globe-bg"
           variants={globeAnimation}
@@ -109,38 +103,43 @@ const HomePage = () => {
         </Motion.div>
       </header>
 
-      {/* --- INTERACTIVE FEATURES SECTION --- */}
       <section className="home-page__features">
         <div className="home-page__section-header">
           <h2 className="home-page__section-title">Beyond Just Swiping</h2>
         </div>
 
         <div className="home-page__bento-grid">
-          {/* بخش DNA & Matching Percentage */}
+
+           <Motion.div
+            whileHover={{ y: -5 }}
+            className="home-page__card home-page__card--small"
+          >
+            <div className="home-page__viz-container">
+              <Motion.img
+                src={swipeMatchPic}
+                alt="Smart Swipe"
+                className="home-page__feature-img"
+                variants={floatAnimation}
+                animate="animate"
+              />
+            </div>
+            <h3 className="home-page__card-title">Smart Swipe</h3>
+            <p className="home-page__card-desc">
+              Efficient, fun, and location-targeted browsing.
+            </p>
+          </Motion.div>
           <Motion.div
-            whileHover={{ y: -10 }}
+            whileHover={{ y: -5 }}
             className="home-page__card home-page__card--large"
           >
-            <div className="home-page__match-viz">
-              <Motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="home-page__dna-circle"
-              >
-                <Fingerprint size={80} />
-              </Motion.div>
-              <div className="home-page__match-percentage">
-                <Motion.span
-                  animate={{ opacity: [0, 1] }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                  }}
-                >
-                  98% Match
-                </Motion.span>
-              </div>
+            <div className="home-page__viz-container">
+              <Motion.img
+                src={matchesPic}
+                alt="DNA Matching"
+                className="home-page__feature-img"
+                variants={floatAnimation}
+                animate="animate"
+              />
             </div>
             <h3 className="home-page__card-title">DNA Matching</h3>
             <p className="home-page__card-desc">
@@ -149,43 +148,28 @@ const HomePage = () => {
             </p>
           </Motion.div>
 
-          {/* بخش Blind Date */}
+          
+
           <Motion.div
-            whileHover={{ y: -10 }}
+            whileHover={{ y: -5 }}
             className="home-page__card home-page__card--small"
           >
-            <Motion.div
-              variants={pulseAnimation}
-              animate="animate"
-              className="home-page__blind-icon"
-            >
-              <Search size={40} />
-            </Motion.div>
+            <div className="home-page__viz-container">
+              <Motion.img
+                src={blindDatesPic}
+                alt="Blind Date"
+                className="home-page__feature-img"
+                variants={floatAnimation}
+                animate="animate"
+              />
+            </div>
             <h3 className="home-page__card-title">Blind Date</h3>
             <p className="home-page__card-desc">
               Connect based on personality, not just photos.
             </p>
           </Motion.div>
 
-          {/* بخش Swipe Animation */}
-          <Motion.div
-            whileHover={{ y: -10 }}
-            className="home-page__card home-page__card--small"
-          >
-            <div className="home-page__swipe-viz">
-              <Motion.div
-                animate={{ x: [-20, 20, -20] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="home-page__swipe-card"
-              >
-                <Heart fill="#ef4444" color="#ef4444" />
-              </Motion.div>
-            </div>
-            <h3 className="home-page__card-title">Smart Swipe</h3>
-            <p className="home-page__card-desc">
-              Efficient, fun, and location-targeted browsing.
-            </p>
-          </Motion.div>
+         
         </div>
       </section>
     </div>
