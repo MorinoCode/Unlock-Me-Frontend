@@ -13,7 +13,6 @@ const ProfilePage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // --- Voice States ---
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState("");
   const [recordingDuration, setRecordingDuration] = useState(0);
@@ -21,7 +20,6 @@ const ProfilePage = () => {
   const timerRef = useRef(null);
   const audioChunksRef = useRef([]);
 
-  // --- Image & Crop States ---
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -29,7 +27,6 @@ const ProfilePage = () => {
   const [showCropper, setShowCropper] = useState(false);
   const [cropTarget, setCropTarget] = useState("avatar"); 
 
-  // --- Interests States ---
   const [allInterestOptions, setAllInterestOptions] = useState([]);
   const [isAddingInterest, setIsAddingInterest] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -37,13 +34,13 @@ const ProfilePage = () => {
   const [newCatQuestions, setNewCatQuestions] = useState([]);
   const [newAnswers, setNewAnswers] = useState({});
 
-  // --- Main Form Data ---
   const [formData, setFormData] = useState({
     name: "", bio: "", phone: "", country: "", city: "", countryCode: "",
     avatar: "", gallery: [], gender: "Male", lookingFor: "Female",
     birthday: { day: "", month: "", year: "" },
     subscription: { plan: "free" }, categories: {},
-    voiceIntro: ""
+    voiceIntro: "",
+    location: { type: "Point", coordinates: [0, 0] }
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -52,8 +49,27 @@ const ProfilePage = () => {
 
   const [availableLocations, setAvailableLocations] = useState([]);
   const [cities, setCities] = useState([]);
+  const [initialCityLoaded, setInitialCityLoaded] = useState(false);
 
-  // --- Effects ---
+  const updateGeoLocation = useCallback(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setFormData(prev => ({
+            ...prev,
+            location: {
+              ...prev.location,
+              type: "Point",
+              coordinates: [position.coords.longitude, position.coords.latitude]
+            }
+          }));
+        },
+        (error) => console.error(error),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+  }, []);
+
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -70,11 +86,14 @@ const ProfilePage = () => {
   useEffect(() => {
     if (formData.countryCode && availableLocations.length > 0) {
       const selectedLocation = availableLocations.find(l => l.countryCode === formData.countryCode);
-      setCities(selectedLocation ? selectedLocation.cities : []);
-    } else {
-      setCities([]);
+      const cityList = selectedLocation ? selectedLocation.cities : [];
+      setCities(cityList);
+
+      if (!initialCityLoaded && formData.city && cityList.includes(formData.city)) {
+        setInitialCityLoaded(true);
+      }
     }
-  }, [formData.countryCode, availableLocations]);
+  }, [formData.countryCode, availableLocations, formData.city, initialCityLoaded]);
 
   useEffect(() => {
     const fetchFullProfile = async () => {
@@ -97,7 +116,8 @@ const ProfilePage = () => {
             birthday: data.birthday?.year ? data.birthday : { day: "", month: "", year: "" },
             subscription: data.subscription || { plan: "free" },
             categories: data.questionsbycategoriesResults?.categories || {},
-            voiceIntro: data.voiceIntro || ""
+            voiceIntro: data.voiceIntro || "",
+            location: data.location || { type: "Point", coordinates: [0, 0] }
           });
           if (data.voiceIntro) setAudioURL(data.voiceIntro);
         }
@@ -107,7 +127,6 @@ const ProfilePage = () => {
     fetchFullProfile();
   }, [currentUser, API_URL]);
 
-  // --- Voice Logic ---
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -180,7 +199,6 @@ const ProfilePage = () => {
     }
   };
 
-  // --- Image Crop Logic ---
   const onFileChange = (e, target) => {
     if (e.target.files && e.target.files.length > 0) {
       setCropTarget(target);
@@ -222,7 +240,6 @@ const ProfilePage = () => {
     } catch (e) { console.error(e); }
   };
 
-  // --- Interests Logic ---
   const fetchAllInterestOptions = async () => {
     setEditingCategory(null);
     try {
@@ -331,12 +348,20 @@ const ProfilePage = () => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          location: {
+            ...formData.location,
+            country: formData.country,
+            city: formData.city,
+            countryCode: formData.countryCode
+          }
+        }),
       });
       if (res.ok) {
         toast.dismiss(loadingToast);
         toast.success("Profile updated!");
-        checkAuth();
+        await checkAuth();
       }
     } catch (err) {
       toast.dismiss(loadingToast);
@@ -401,7 +426,6 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page">
-      {/* CROPPER MODAL */}
       {showCropper && (
         <div className="pp-cropper">
           <div className="pp-cropper__modal">
@@ -429,8 +453,6 @@ const ProfilePage = () => {
 
       <div className="pp-container">
         <div className="pp-layout">
-          
-          {/* SIDEBAR */}
           <aside className="pp-sidebar">
             <div className="pp-sidebar__avatar">
               <img src={formData.avatar || "/default-avatar.png"} alt="User" className="pp-sidebar__img" />
@@ -441,7 +463,6 @@ const ProfilePage = () => {
             </div>
             <h3 className="pp-sidebar__name">{formData.name}</h3>
             <span className={`pp-sidebar__badge pp-sidebar__badge--${formData.subscription.plan.toLowerCase()}`}>{formData.subscription.plan}</span>
-            
             <nav className="pp-nav">
               <button className={`pp-nav__item ${activeTab === "general" ? "active" : ""}`} onClick={() => setActiveTab("general")}><UserIcon size={18} /> General</button>
               <button className={`pp-nav__item ${activeTab === "voice" ? "active" : ""}`} onClick={() => setActiveTab("voice")}><Mic size={18} /> Voice</button>
@@ -451,10 +472,7 @@ const ProfilePage = () => {
             </nav>
           </aside>
 
-          {/* MAIN CONTENT */}
           <main className="pp-main">
-            
-            {/* 1. GENERAL TAB */}
             {activeTab === "general" && (
               <section className="pp-section">
                 <h2 className="pp-title">Personal Information</h2>
@@ -471,7 +489,15 @@ const ProfilePage = () => {
                     <label>Country*</label>
                     <select className="pp-select" value={formData.country} onChange={(e) => {
                       const selected = availableLocations.find((c) => c.country === e.target.value);
-                      setFormData({ ...formData, country: e.target.value, countryCode: selected?.countryCode || "", city: "" });
+                      const cityList = selected ? selected.cities : [];
+                      setCities(cityList);
+                      setFormData({ 
+                        ...formData, 
+                        country: e.target.value, 
+                        countryCode: selected?.countryCode || "", 
+                        city: cityList.length > 0 ? cityList[0] : "" // انتخاب اولین شهر خودکار
+                      });
+                      updateGeoLocation();
                     }}>
                       <option value="">Select Country</option>
                       {availableLocations.map((loc) => <option key={loc.countryCode} value={loc.country}>{loc.country}</option>)}
@@ -479,8 +505,11 @@ const ProfilePage = () => {
                   </div>
                   <div className="pp-form-group">
                     <label>City*</label>
-                    <select className="pp-select" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} disabled={!formData.countryCode}>
-                      <option value="">Select City</option>
+                    <select className="pp-select" value={formData.city} onChange={(e) => {
+                      setFormData({ ...formData, city: e.target.value });
+                      updateGeoLocation();
+                    }} disabled={!formData.countryCode || cities.length === 0}>
+                      <option value="">{cities.length === 0 && formData.countryCode ? "Loading..." : "Select City"}</option>
                       {cities.map((cityName, i) => <option key={i} value={cityName}>{cityName}</option>)}
                     </select>
                   </div>
@@ -503,12 +532,10 @@ const ProfilePage = () => {
               </section>
             )}
 
-            {/* 2. VOICE TAB */}
             {activeTab === "voice" && (
               <section className="pp-section">
                 <h2 className="pp-title">Voice Introduction</h2>
                 <p className="pp-desc">Show your personality in 10 seconds! Share a fun fact, your favorite quote, or just a warm hello.</p>
-                
                 <div className="pp-voice-box">
                   <div className={`pp-mic-circle ${isRecording ? 'recording' : ''}`}>
                     <div className="pp-timer">{recordingDuration}s / 10s</div>
@@ -531,7 +558,6 @@ const ProfilePage = () => {
               </section>
             )}
 
-            {/* 3. GALLERY TAB */}
             {activeTab === "gallery" && (
               <section className="pp-section">
                 <h2 className="pp-title">Photo Gallery</h2>
@@ -556,7 +582,6 @@ const ProfilePage = () => {
               </section>
             )}
 
-            {/* 4. INTERESTS TAB */}
             {activeTab === "categories" && (
               <section className="pp-section">
                 <h2 className="pp-title">My Interests</h2>
@@ -573,7 +598,6 @@ const ProfilePage = () => {
                         </div>
                         <button className="pp-int-edit" onClick={() => handleStartEdit(cat)}>{editingCategory === cat ? <X size={18} /> : "Edit"}</button>
                       </div>
-                      
                       {editingCategory === cat && (
                         <div className="pp-quiz-area">
                           {newCatQuestions[0]?.questions?.map((q) => (
@@ -595,7 +619,6 @@ const ProfilePage = () => {
                     </div>
                   ))}
                 </div>
-
                 <div className="pp-add-interest-area">
                   {!isAddingInterest ? (
                     <button className="pp-add-new-btn" onClick={fetchAllInterestOptions}><Plus size={20} /> Add New Interest</button>
@@ -625,7 +648,6 @@ const ProfilePage = () => {
               </section>
             )}
 
-            {/* 5. SECURITYTAB */}
             {activeTab === "security" && (
               <form className="pp-section" onSubmit={handleUpdatePassword}>
                 <h2 className="pp-title">Change Password</h2>
