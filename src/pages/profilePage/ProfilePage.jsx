@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/useAuth.js";
 import Cropper from "react-easy-crop";
 import toast from "react-hot-toast";
-import { Mic, Square, Trash2, ShieldCheck, User as UserIcon, Image as ImageIcon, LayoutGrid, Plus, X, Heart, Film, Utensils, Trophy } from "lucide-react";
+import { Mic, Square, Trash2, ShieldCheck, User as UserIcon, Image as ImageIcon, LayoutGrid, Plus, X, Heart, Film, Utensils, Trophy, AlertTriangle } from "lucide-react";
 import "./ProfilePage.css";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const { currentUser, checkAuth } = useAuth();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("general");
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -412,6 +413,69 @@ const ProfilePage = () => {
       }
     } catch (err) { toast.dismiss(loadingToast); toast.error("Server error."); console.log(err);}
   };
+  
+  
+
+  const confirmDeleteAccount = async () => {
+    setIsSaving(true);
+    const loadingToast = toast.loading("Deleting all data permanently...");
+    try {
+      const res = await fetch(`${API_URL}/api/user/profile/delete-account`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        toast.dismiss(loadingToast);
+        toast.success("Account wiped successfully.");
+        navigate("/");
+      } else {
+        const err = await res.json();
+        toast.dismiss(loadingToast);
+        toast.error(err.message || "Failed to delete account.");
+      }
+    } catch (err) {
+      toast.dismiss(loadingToast);
+      toast.error("Server error occurred.");
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    toast((t) => (
+      <span className="pp-delete-toast">
+        <b>Are you absolutely sure?</b> This will wipe all messages, voice, and photos forever.
+        <div className="pp-toast-btns">
+          <button 
+            className="pp-toast-confirm" 
+            onClick={() => {
+              toast.dismiss(t.id);
+              confirmDeleteAccount();
+            }}
+          >
+            Yes, Delete
+          </button>
+          <button 
+            className="pp-toast-cancel" 
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Cancel
+          </button>
+        </div>
+      </span>
+    ), {
+      duration: 6000,
+      icon: <AlertTriangle color="#ef4444" />,
+      style: {
+        background: '#161d31',
+        color: '#fff',
+        border: '1px solid rgba(255,255,255,0.1)'
+      }
+    });
+  };
 
   const getInterestIcon = (label) => {
     switch (label.toLowerCase()) {
@@ -495,7 +559,7 @@ const ProfilePage = () => {
                         ...formData, 
                         country: e.target.value, 
                         countryCode: selected?.countryCode || "", 
-                        city: cityList.length > 0 ? cityList[0] : "" // انتخاب اولین شهر خودکار
+                        city: cityList.length > 0 ? cityList[0] : "" 
                       });
                       updateGeoLocation();
                     }}>
@@ -649,26 +713,48 @@ const ProfilePage = () => {
             )}
 
             {activeTab === "security" && (
-              <form className="pp-section" onSubmit={handleUpdatePassword}>
-                <h2 className="pp-title">Change Password</h2>
-                <div className="pp-form-grid">
-                  <div className="pp-form-group pp-form-group--full">
-                    <label>Current Password</label>
-                    <input className="pp-input" type="password" value={passwordData.currentPassword} onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })} required />
+              <div className="pp-security-container">
+                <form className="pp-section" onSubmit={handleUpdatePassword}>
+                  <h2 className="pp-title">Change Password</h2>
+                  <div className="pp-form-grid">
+                    <div className="pp-form-group pp-form-group--full">
+                      <label>Current Password</label>
+                      <input className="pp-input" type="password" value={passwordData.currentPassword} onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })} required />
+                    </div>
+                    <div className="pp-form-group">
+                      <label>New Password</label>
+                      <input className="pp-input" type="password" value={passwordData.newPassword} onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })} required />
+                    </div>
+                    <div className="pp-form-group">
+                      <label>Confirm Password</label>
+                      <input className="pp-input" type="password" value={passwordData.confirmPassword} onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} required />
+                    </div>
                   </div>
-                  <div className="pp-form-group">
-                    <label>New Password</label>
-                    <input className="pp-input" type="password" value={passwordData.newPassword} onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })} required />
+                  <div className="pp-footer">
+                    <button type="submit" className="pp-btn pp-btn--primary">Update Password</button>
                   </div>
-                  <div className="pp-form-group">
-                    <label>Confirm Password</label>
-                    <input className="pp-input" type="password" value={passwordData.confirmPassword} onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} required />
+                </form>
+
+                <section className="pp-section pp-section--danger">
+                  <div className="pp-danger-header">
+                    <AlertTriangle className="pp-danger-icon" size={24} />
+                    <h2 className="pp-title">Danger Zone</h2>
                   </div>
-                </div>
-                <div className="pp-footer">
-                  <button type="submit" className="pp-btn pp-btn--primary">Update Password</button>
-                </div>
-              </form>
+                  <p className="pp-desc">
+                    Deleting your account is permanent. This will erase all your messages, chats, photos, voice intros, and profile information from our servers forever.
+                  </p>
+                  <div className="pp-footer">
+                    <button 
+                      type="button" 
+                      className="pp-btn pp-btn--danger" 
+                      onClick={handleDeleteAccount}
+                      disabled={isSaving}
+                    >
+                      Delete My Account
+                    </button>
+                  </div>
+                </section>
+              </div>
             )}
           </main>
         </div>
