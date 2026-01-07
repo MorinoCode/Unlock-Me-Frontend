@@ -18,6 +18,7 @@ const INITIAL_SECTIONS = {
 
 const ExplorePage = () => {
   const { currentUser } = useAuth();
+  console.log(currentUser);
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 

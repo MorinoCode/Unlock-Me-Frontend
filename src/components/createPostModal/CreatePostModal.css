@@ -97,7 +97,7 @@
 
 .upload-placeholder:hover {
   color: #6366f1;
-  background: rgba(99, 102, 241, 0.03);
+  background: rgba(7, 7, 7, 0.03);
 }
 
 .upload-placeholder span {
@@ -142,22 +142,8 @@
   accent-color: #6366f1;
 }
 
-.btn-change-photo {
-  background: rgba(255, 255, 255, 0.1);
-  color: #f1f5f9;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
 
-.btn-change-photo:hover {
-  background: #ef4444;
-  border-color: #ef4444;
-}
+
 
 /* Input Section */
 .post-modal-input-area {
@@ -233,6 +219,7 @@
     height: 80%;
     max-height: 100vh;
     border-radius: 0;
+    width: 90%;
   }
   
   .post-modal-backdrop {

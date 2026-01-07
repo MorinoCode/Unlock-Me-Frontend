@@ -5,6 +5,27 @@ import toast from 'react-hot-toast';
 import './PostCard.css';
 import HeartbeatLoader from '../heartbeatLoader/HeartbeatLoader';
 
+// Helper component for "See More" text
+const ExpandableText = ({ text, limit = 100, className = "" }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (!text) return null;
+  if (text.length <= limit) return <span className={className}>{text}</span>;
+
+  return (
+    <span className={className}>
+      {isExpanded ? text : `${text.substring(0, limit)}... `}
+      <button 
+        className="see-more-btn" 
+        onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+        style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, padding: 0, marginLeft: '4px' }}
+      >
+        {isExpanded ? "See less" : "See more"}
+      </button>
+    </span>
+  );
+};
+
 const PostCard = ({ post, currentUser, onLike, onDelete }) => {
   const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
@@ -16,14 +37,11 @@ const PostCard = ({ post, currentUser, onLike, onDelete }) => {
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // استفاده از _id مطابق Context شما
   const currentUserId = currentUser?._id;
-
-  // شناسایی صاحب پست
   const authorId = post.author?._id || post.author;
   const isOwner = currentUserId && authorId && currentUserId.toString() === authorId.toString();
 
-  // چک کردن وضعیت لایک
+  // Check if liked using the likes array in the post object
   const isLiked = post.likes?.some(id => id?.toString() === currentUserId?.toString());
 
   const goToProfile = (e, userId) => {
@@ -50,7 +68,7 @@ const PostCard = ({ post, currentUser, onLike, onDelete }) => {
       setShowComments(true);
     } catch (err) {
       toast.error("Failed to load comments");
-      console.err(err)
+      console.error(err);
     } finally {
       setLoadingComments(false);
     }
@@ -91,7 +109,13 @@ const PostCard = ({ post, currentUser, onLike, onDelete }) => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
+      
+      // Update comments list and increment count manually for immediate UI feedback
       setComments(prev => [...prev, data]);
+      
+      // Update local post comment count visually if needed (optional)
+      post.commentCount = (post.commentCount || 0) + 1; 
+
       setCommentText('');
       setReplyTo(null);
       toast.success("Comment added");
@@ -138,14 +162,24 @@ const PostCard = ({ post, currentUser, onLike, onDelete }) => {
               style={{ transition: 'all 0.3s ease' }}
             />
           </button>
+          
           <button className="post-action-button" onClick={toggleComments}>
             <MessageCircle size={26} color="white" />
           </button>
         </div>
-        <div className="post-stats">{post.likes?.length || 0} likes</div>
+        
+        <div className="post-stats-row">
+           <span className="post-stat-item">{post.likes?.length || 0} likes</span>
+           {/* Show comment count if available in post object */}
+           <span className="post-stat-item" onClick={toggleComments} style={{cursor: 'pointer'}}>
+             {post.commentCount || 0} comments
+           </span>
+        </div>
+
         <div className="post-caption">
           <strong onClick={(e) => goToProfile(e, authorId)}>{post.author?.name}</strong>
-          {post.description}
+          <span className="caption-spacer"> </span>
+          <ExpandableText text={post.description} limit={90} />
         </div>
       </div>
 
@@ -155,9 +189,8 @@ const PostCard = ({ post, currentUser, onLike, onDelete }) => {
             {loadingComments && <HeartbeatLoader/>}
             {comments.length > 0 ? (
               comments.map(c => {
-                // منطق شناسایی دسترسی برای حذف کامنت
                 const isCommentAuthor = c.author?._id === currentUserId || c.author === currentUserId;
-                const isPostOwner = isOwner; // از متغیر بالایی استفاده می‌کنیم
+                const isPostOwner = isOwner; 
 
                 return (
                   <div key={c._id} className="post-single-comment">
@@ -166,10 +199,10 @@ const PostCard = ({ post, currentUser, onLike, onDelete }) => {
                         <strong className="comment-user-link" onClick={(e) => goToProfile(e, c.author?._id)}>
                           {c.author?.name}:
                         </strong>
-                        <span>{c.content}</span>
+                        <span className="comment-spacer"> </span>
+                        <ExpandableText text={c.content} limit={60} />
                       </div>
                       
-                      {/* نمایش دکمه حذف برای صاحب کامنت یا صاحب پست */}
                       {(isCommentAuthor || isPostOwner) && (
                         <button 
                           className="comment-delete-small-btn"
