@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import "./BlindInterestsModal.css";
 
-const BlindInterestsModal = ({ session, currentUser, onContinue, stage }) => {
+const BlindInterestsModal = ({ session, onContinue, stage }) => {
   const [loading, setLoading] = useState(false);
 
   // محاسبه درصد مچ و سوالات مشترک
