@@ -81,6 +81,7 @@ const OnboardingStep2 = ({ formData, setFormData, onNext, onBack, loading }) => 
         const data = await res.json();
         if (Array.isArray(data)) setAvailableLocations(data);
       } catch (err) {
+        console.log(err);
         setErrorMessage("Failed to load locations.");
       } finally {
         setFetchingLoc(false);

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useImperativeHandle, useEffect, useMemo } from 'react';
 import { motion as Motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
+import {Dna } from "lucide-react"
 import './SwipeCard.css';
 
 const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFeedback, index }, ref) => {
@@ -139,7 +140,7 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
           <Motion.div style={{ opacity: nopeOpacity }} className={`swipe-card__stamp swipe-card__stamp--nope ${actionFeedback === 'left' ? 'swipe-card__stamp--force-visible' : ''}`}>NOPE</Motion.div>
           <Motion.div style={{ opacity: superOpacity }} className={`swipe-card__stamp swipe-card__stamp--super ${actionFeedback === 'up' ? 'swipe-card__stamp--force-visible' : ''}`}>SUPER</Motion.div>
 
-          <button className="swipe-card__action-btn swipe-card__action-btn--dna" onPointerUp={handleFlip}>🧬 DNA</button>
+          <button className="swipe-card__action-btn swipe-card__action-btn--dna" onPointerUp={handleFlip}> <span>DNA</span> <Dna size={20} /></button>
 
           {/* Info Area */}
           <div className="swipe-card__info">
