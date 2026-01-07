@@ -93,6 +93,12 @@ const ViewAllMatchesPage = () => {
     <ExploreBackgroundLayout>
       <div className="matches-page">
         <header className="matches-page__header">
+          <div className="matches-page__header-content">
+            <h1 className="matches-page__title">{title}</h1>
+            <p className="matches-page__count">
+              Showing {totalCount} connections
+            </p>
+          </div>
           <div className="matches-page__header-top">
             <button
               className="matches-page__back-btn"
@@ -107,12 +113,7 @@ const ViewAllMatchesPage = () => {
               </span>
             </div>
           </div>
-          <div className="matches-page__header-content">
-            <h1 className="matches-page__title">{title}</h1>
-            <p className="matches-page__count">
-              Showing {totalCount} connections
-            </p>
-          </div>
+          
         </header>
 
         <div className="matches-page__grid">
