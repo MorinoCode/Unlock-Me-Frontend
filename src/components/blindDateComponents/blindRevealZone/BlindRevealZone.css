@@ -1,72 +1,159 @@
-.blind-reveal-zone {
+/* Container اصلی */
+.unique-reveal-zone {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  padding: 40px 20px;
-  background: rgba(15, 23, 42, 0.8);
+  width: 100%;
+  padding: 20px;
+  animation: fadeInZone 0.6s ease-out;
+}
+
+/* کارت اصلی */
+.unique-reveal-zone__card {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: 30px;
-  border: 2px dashed rgba(139, 92, 246, 0.4);
-  animation: reveal-fade-in 0.5s ease;
+  padding: 40px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
 }
 
-.blind-reveal-zone__display {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-  margin: 40px 0;
-}
-
-.blind-reveal-zone__avatar-box {
+/* درصد مچ */
+.unique-reveal-zone__score-circle {
   width: 100px;
   height: 100px;
-  background: #1e293b;
   border-radius: 50%;
+  border: 4px solid #8b5cf6;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px solid #334155;
-  transition: all 0.5s ease;
+  margin: 0 auto 25px;
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
 }
 
-.blind-reveal-zone__avatar-box--ready {
-  border-color: #10b981;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-  background: rgba(16, 185, 129, 0.1);
+.unique-reveal-zone__score-num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
 }
 
-.blind-reveal-zone__mask {
-  font-size: 40px;
+.unique-reveal-zone__score-label {
+  font-size: 0.7rem;
+  color: #a78bfa;
+  letter-spacing: 1px;
 }
 
-.blind-reveal-zone__actions {
+/* متون */
+.unique-reveal-zone__title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff; /* سفید خالص */
+  margin-bottom: 15px;
+  background: linear-gradient(90deg, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.unique-reveal-zone__desc {
+  color: #cbd5e1;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.unique-reveal-zone__question {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.unique-reveal-zone__note {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* دکمه‌ها */
+.unique-reveal-zone__actions {
   display: flex;
-  flex-direction: column;
   gap: 15px;
-  width: 100%;
-  max-width: 250px;
+  justify-content: center;
 }
 
-.blind-reveal-zone__btn {
-  padding: 14px;
-  border-radius: 12px;
+.unique-reveal-zone__btn {
+  flex: 1;
+  padding: 16px;
+  border-radius: 16px;
   border: none;
   font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.blind-reveal-zone__btn--yes {
-  background: #8b5cf6;
+.unique-reveal-zone__btn--yes {
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
 }
 
-.blind-reveal-zone__btn--no {
-  background: #334155;
+.unique-reveal-zone__btn--no {
+  background: rgba(51, 65, 85, 0.8);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.unique-reveal-zone__btn:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.1);
+}
+
+/* حالت انتظار */
+.unique-reveal-zone__waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
+
+.unique-reveal-zone__spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(139, 92, 246, 0.2);
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: zoneSpin 1s infinite linear;
+}
+
+.unique-reveal-zone__waiting-text {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.unique-reveal-zone__waiting-sub {
   color: #94a3b8;
+  font-size: 0.9rem;
+  font-style: italic;
 }
 
-@keyframes reveal-fade-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes zoneSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInZone {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 }
