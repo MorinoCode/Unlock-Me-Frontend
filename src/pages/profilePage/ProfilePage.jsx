@@ -625,7 +625,7 @@ const ProfilePage = () => {
               </section>
             )}
 
-            {/* 5. SECURITY TAB */}
+            {/* 5. SECURITYTAB */}
             {activeTab === "security" && (
               <form className="pp-section" onSubmit={handleUpdatePassword}>
                 <h2 className="pp-title">Change Password</h2>
