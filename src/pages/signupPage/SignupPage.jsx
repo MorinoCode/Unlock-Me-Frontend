@@ -31,6 +31,7 @@ const SignupPage = () => {
     confirmPassword: "",
     gender: "",
     lookingFor: "",
+    
   });
 
   const [touched, setTouched] = useState({});
@@ -43,6 +44,8 @@ const SignupPage = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const { username, name, email, password, confirmPassword, gender, lookingFor } = formData;
+
+  
 
   const genderOptions = useMemo(() => [
     { value: "Female", label: "Female" },
