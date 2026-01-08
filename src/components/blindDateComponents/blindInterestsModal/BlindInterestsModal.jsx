@@ -49,7 +49,7 @@ const BlindInterestsModal = ({ session, onContinue, stage }) => {
             <span className="blind-interests-modal__score-label">MATCH</span>
         </div>
 
-        <h2 className="blind-interests-modal__title">Round {stage} Complete!</h2>
+        <h2 className="blind-interests-modal__title">Stage {stage} Complete!</h2>
         
         {matchingTopics.length > 0 ? (
             <>
@@ -83,7 +83,7 @@ const BlindInterestsModal = ({ session, onContinue, stage }) => {
           onClick={handleClick}
           disabled={loading}
         >
-          {loading ? "Waiting for partner..." : `Start Round ${stage + 1}`}
+          {loading ? "Waiting for partner..." : `Unlock Stage ${stage + 1}`}
         </button>
       </div>
     </div>
