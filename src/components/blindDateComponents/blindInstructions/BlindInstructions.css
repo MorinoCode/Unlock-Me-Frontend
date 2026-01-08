@@ -23,6 +23,7 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: center;
+  margin-top: 4rem;
 }
 
 .blind-instructions__title {
@@ -136,8 +137,14 @@
 
 /* Mobile Responsiveness */
 @media (max-width: 480px) {
+  .blind-instructions{
+    padding: 10px 20px;
+  }
   .blind-instructions__card {
+    
     padding: 24px;
+    margin-top: 0;
+   
   }
 
   .blind-instructions__title {

@@ -229,7 +229,7 @@ const BlindDatePage = () => {
             (session.status === "active" &&
               session.currentStage === 3 &&
               session.messages.filter((m) => m.sender === currentUser._id)
-                .length >= 10)) && (
+                .length >= 5)) && (
             <div className="blind-date-page__transition-card">
               {(() => {
                 const p1Id = session.participants[0]._id || session.participants[0];
@@ -242,7 +242,7 @@ const BlindDatePage = () => {
                   return (
                     <div className="blind-date-page__waiting-status">
                       <div className="blind-date-page__spinner-small"></div>
-                      <p>Waiting for partner to finish...</p>
+                      <p className="blind-date-page__spinner-small_message">Waiting for partner to finish...</p>
                     </div>
                   );
                 } else {

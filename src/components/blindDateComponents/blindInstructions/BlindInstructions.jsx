@@ -35,7 +35,7 @@ const BlindInstructions = ({ onConfirm }) => {
             <div className="blind-instructions__step-icon">3️⃣</div>
             <div className="blind-instructions__step-content">
               <h3>Final Connection</h3>
-              <p>10 messages to chat freely. Then, decide if you want to REVEAL your profile or stay anonymous.</p>
+              <p>5 messages to chat freely. Then, decide if you want to REVEAL your profile or stay anonymous.</p>
             </div>
           </div>
         </div>
