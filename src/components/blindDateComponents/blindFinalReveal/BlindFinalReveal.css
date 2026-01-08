@@ -1,113 +1,237 @@
+/* کانتینر اصلی کل صفحه */
 .blind-final-reveal {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: #0f172a;
-  z-index: 2000;
-  overflow: hidden;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto; /* برای اسکرول در موبایل‌های کوچک */
 }
 
-.blind-final-reveal__content {
+/* باکس مرکزی محتوا */
+.blind-final-reveal__container {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px); /* افکت شیشه‌ای */
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 30px;
+  padding: 40px;
+  max-width: 800px;
+  width: 100%;
   text-align: center;
-  width: 90%;
-  max-width: 450px;
-  animation: reveal-up 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  animation: slideUpReveal 0.8s ease-out;
+}
+
+/* هدر */
+.blind-final-reveal__icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 10px;
+  animation: floatIcon 3s ease-in-out infinite;
 }
 
 .blind-final-reveal__title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  background: linear-gradient(90deg, #8b5cf6, #d946ef);
+  font-size: 3rem;
+  font-weight: 900;
+  margin: 0;
+  background: linear-gradient(to right, #a78bfa, #f472b6, #fbbf24);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 10px;
+  letter-spacing: -1px;
 }
 
 .blind-final-reveal__subtitle {
-  color: #94a3b8;
+  color: #cbd5e1;
+  font-size: 1.2rem;
+  margin-top: 10px;
   margin-bottom: 40px;
 }
 
-.blind-final-reveal__photo-wrapper {
-  position: relative;
-  width: 220px;
-  height: 220px;
-  margin: 0 auto 30px;
+/* بخش پروفایل‌ها (Flex Container) */
+.blind-final-reveal__profiles {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 50px;
 }
 
-.blind-final-reveal__photo {
+/* کارت‌های تکی پروفایل */
+.reveal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reveal-card__image-box {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  padding: 5px;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.reveal-card__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   border-radius: 50%;
-  border: 4px solid #8b5cf6;
-  filter: blur(50px) brightness(0.5);
-  transition: filter 2.5s ease-in-out, transform 0.5s ease;
+  object-fit: cover;
+  border: 3px solid #0f172a;
 }
 
-.blind-final-reveal__photo--clear {
-  filter: blur(0) brightness(1);
-  transform: scale(1.05);
+/* ✅✅✅ انیمیشن کلیدی: تار به شفاف در ۳ ثانیه ✅✅✅ */
+.reveal-card__img--animate {
+  /* شروع با تاری زیاد و کمی بزرگتر */
+  filter: blur(30px) grayscale(50%);
+  transform: scale(1.1);
+  /* اجرای انیمیشن unblur */
+  animation: unblur 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-.blind-final-reveal__glow {
-  position: absolute;
-  inset: -10px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
-  z-index: -1;
-  animation: glow-pulse 2s infinite;
+@keyframes unblur {
+  to {
+    filter: blur(0) grayscale(0%);
+    transform: scale(1);
+  }
 }
 
-.blind-final-reveal__info {
-  margin-bottom: 40px;
-}
-
-.blind-final-reveal__name {
-  font-size: 1.8rem;
-  color: #ffffff;
-  margin-bottom: 8px;
-}
-
-.blind-final-reveal__dna-tag {
-  display: inline-block;
-  padding: 6px 16px;
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  border-radius: 20px;
+.reveal-card__name {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-top: 15px;
   font-weight: 700;
-  font-size: 0.9rem;
 }
 
-.blind-final-reveal__btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 14px;
+/* اتصال دهنده وسط (قلب) */
+.blind-final-reveal__connector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.connector-line {
+  width: 40px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.connector-heart {
+  font-size: 2rem;
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* دکمه‌ها */
+.blind-final-reveal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.reveal-btn {
+  padding: 18px;
+  border-radius: 16px;
   border: none;
+  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 12px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.blind-final-reveal__btn--profile {
-  background: white;
-  color: #0f172a;
-}
-
-.blind-final-reveal__btn--chat {
-  background: rgba(255, 255, 255, 0.1);
+.reveal-btn--chat {
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.reveal-btn--chat:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);
+}
+
+.reveal-btn--profile {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-@keyframes reveal-up {
-  from { opacity: 0; transform: translateY(50px); }
-  to { opacity: 1; transform: translateY(0); }
+.reveal-btn--profile:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.2); }
+/* انیمیشن‌های عمومی */
+@keyframes slideUpReveal {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* =========================================
+   ✅ MEDIA QUERIES FOR RESPONSIVENESS ✅
+========================================= */
+
+/* تبلت و موبایل بزرگ */
+@media (max-width: 768px) {
+  .blind-final-reveal__container {
+    padding: 30px 20px;
+  }
+
+  .blind-final-reveal__title {
+    font-size: 2.5rem;
+  }
+
+  /* تغییر جهت پروفایل‌ها به عمودی */
+  .blind-final-reveal__profiles {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* چرخاندن اتصال دهنده */
+  .blind-final-reveal__connector {
+    flex-direction: column;
+  }
+  .connector-line {
+    width: 2px;
+    height: 30px;
+  }
+
+  .reveal-card__image-box {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* موبایل کوچک */
+@media (max-width: 480px) {
+  .blind-final-reveal__title {
+    font-size: 2rem;
+  }
+  
+  .reveal-btn {
+    padding: 14px;
+    font-size: 1rem;
+  }
 }

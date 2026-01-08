@@ -27,7 +27,7 @@ const BlindChatSection = ({ session, currentUser, socketRef }) => {
   };
 
   const myMessagesCount = session.messages.filter(m => m.sender === currentUser._id).length;
-  const isLimitReached = session.currentStage === 3 && myMessagesCount >= 10;
+  const isLimitReached = session.currentStage === 3 && myMessagesCount >= 5;
 
   return (
     <div className="blind-chat-section">
@@ -69,7 +69,7 @@ const BlindChatSection = ({ session, currentUser, socketRef }) => {
       
       {session.currentStage === 3 && (
         <span className="blind-chat-section__limit-info">
-          {10 - myMessagesCount} messages left
+          {5 - myMessagesCount} messages left
         </span>
       )}
     </div>

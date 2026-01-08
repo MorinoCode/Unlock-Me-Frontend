@@ -5,7 +5,7 @@
   min-height: 100vh;
   background-color: #0f172a;
   padding: 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* Intro State */
@@ -22,6 +22,9 @@
 
 .blind-date-page__icon-box {
   margin-bottom: 24px;
+}
+.blind-date-page__spinner-small_message {
+  color: white;
 }
 
 .blind-date-page__icon {
@@ -153,6 +156,11 @@
 }
 
 @keyframes blind-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }

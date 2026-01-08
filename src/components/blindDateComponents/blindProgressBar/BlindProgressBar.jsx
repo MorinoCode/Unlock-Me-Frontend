@@ -3,7 +3,7 @@ import './BlindProgressBar.css';
 
 const BlindProgressBar = ({ currentStage, currentIndex }) => {
   const isStage3 = currentStage === 3;
-  const maxSteps = isStage3 ? 10 : 5;
+  const maxSteps = isStage3 ? 5 : 5;
   const label = isStage3 ? "Messages" : "Question";
 
   // محاسبه ایندکس نمایش (برای سوالات ۵ تایی و برای پیام ۱۰ تایی)
