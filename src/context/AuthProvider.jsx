@@ -1,5 +1,4 @@
-// src/context/AuthProvider.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { socket } from "../socket";
 import { AuthContext } from "./AuthContextInstance";
@@ -10,10 +9,8 @@ export const AuthProvider = ({ children }) => {
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const location = useLocation();
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
-      
-
       const res = await fetch(`${API_URL}/api/user/getUserInformation`, {
         credentials: "include",
       });
@@ -31,18 +28,18 @@ export const AuthProvider = ({ children }) => {
 
       return false;
     } catch (err) {
-      console.error(err)
+      console.error(err);
       setCurrentUser(null);
       return false;
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
 
   // 🔁 هر بار route عوض شد auth را sync کن
   useEffect(() => {
     checkAuth();
-  }, [location.pathname]);
+  }, [location.pathname, checkAuth]);
 
   // 🔌 socket management
   useEffect(() => {

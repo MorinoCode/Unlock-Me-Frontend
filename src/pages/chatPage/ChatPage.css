@@ -615,6 +615,74 @@
   color: #e2e8f0;
   line-height: 1.4;
 }
+/* --- Request Bar Styles --- */
+.chat-page__request-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-page__request-text {
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  margin: 0;
+  text-align: center;
+}
+
+.chat-page__request-buttons {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.chat-page__btn-accept,
+.chat-page__btn-reject {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 25px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  font-size: 1rem;
+}
+
+.chat-page__btn-accept {
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.chat-page__btn-reject {
+  background: #ef4444;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.chat-page__btn-accept:hover,
+.chat-page__btn-reject:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* --- Pending Sent Bar --- */
+.chat-page__pending-bar {
+  background: rgba(234, 179, 8, 0.15); /* Yellow Tint */
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #fde047;
+  padding: 15px;
+  text-align: center;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(10px); }
