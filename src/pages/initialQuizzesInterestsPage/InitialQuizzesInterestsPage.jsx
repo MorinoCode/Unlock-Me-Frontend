@@ -26,7 +26,7 @@ const InitialQuizzesInterestsPage = () => {
   const name = useMemo(() => {
     const userName = currentUser?.username;
     return userName ? userName.charAt(0).toUpperCase() + userName.slice(1) : "User";
-  }, [currentUser?.name]);
+  }, [currentUser?.username]);
 
   useEffect(() => {
     abortControllerRef.current = new AbortController();

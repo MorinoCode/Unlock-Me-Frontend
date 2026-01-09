@@ -1,6 +1,6 @@
 import React, { useState, useRef, useImperativeHandle, useEffect, useMemo } from 'react';
 import { motion as Motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
-import {Dna } from "lucide-react"
+import { Dna } from "lucide-react"
 import './SwipeCard.css';
 
 const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFeedback, index }, ref) => {
@@ -54,11 +54,13 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
     }
   }));
 
+  // ✅ FIX: Capture ref value in effect for cleanup
   useEffect(() => {
+    const audioNode = audioRef.current;
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+      if (audioNode) {
+        audioNode.pause();
+        audioNode.currentTime = 0;
       }
       setIsPlaying(false);
     };
@@ -149,13 +151,12 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
                <h2 className="swipe-card__name">
                  {user.name} <span className="swipe-card__age">{user.age}</span>
                </h2>
-               {/* ✅ ردیف لوکیشن و ویس روبروی هم */}
+               
                <div className="swipe-card__meta-row">
                    <div className="swipe-card__location">
                      📍 {user.location?.city || "Unknown"}, {user.location?.country || "Unknown"}
                    </div>
 
-                   {/* دکمه ویس سمت راست قرار گرفت */}
                    <button className={`swipe-card__voice-btn ${isPlaying ? 'swipe-card__voice-btn--playing' : ''}`} onPointerUp={handleAudioToggle} disabled={!user.voiceIntro}>
 
                       {isPlaying ? '⏸' : (user.voiceIntro ? '🎤 Voice' : '🎤 No Voice')}
@@ -180,7 +181,7 @@ const SwipeCard = React.forwardRef(({ user, onSwipe, onCardLeftScreen, actionFee
                 <span className="swipe-card__match-label">Match</span>
              </div>
              <div className="swipe-card__synergy-desc">
-               "Strong Synergy with {user.name}."
+                "Strong Synergy with {user.name}."
             </div>
           </div>
 

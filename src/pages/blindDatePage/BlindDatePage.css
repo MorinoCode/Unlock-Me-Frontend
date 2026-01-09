@@ -26,7 +26,10 @@
 .blind-date-page__spinner-small_message {
   color: white;
 }
-
+.blind-date-page__status-msg{
+  color: #f472b6;
+  margin-bottom: 1rem;
+}
 .blind-date-page__icon {
   font-size: 72px;
   display: inline-block;
