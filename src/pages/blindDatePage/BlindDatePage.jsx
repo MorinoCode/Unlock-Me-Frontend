@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { io } from "socket.io-client";
 import BlindQueue from "../../components/blindDateComponents/blindQueue/BlindQueue";
 import BlindProgressBar from "../../components/blindDateComponents/blindProgressBar/BlindProgressBar";
@@ -9,7 +9,7 @@ import BlindRevealZone from "../../components/blindDateComponents/blindRevealZon
 import BlindFinalReveal from "../../components/blindDateComponents/blindFinalReveal/BlindFinalReveal";
 import BlindInstructions from "../../components/blindDateComponents/blindInstructions/BlindInstructions";
 import BlindRejected from "../../components/blindDateComponents/blindRejected/BlindRejected.jsx";
-import SubscriptionModal from "../../components/modals/subscriptionModal/SubscriptionModal.jsx"; 
+import SubscriptionModal from "../../components/modals/subscriptionModal/SubscriptionModal";
 import "./BlindDatePage.css";
 import { useAuth } from "../../context/useAuth.js";
 
@@ -22,30 +22,30 @@ const BlindDatePage = () => {
   
   // --- New States for Limits ---
   const [statusLoading, setStatusLoading] = useState(true);
-  const [accessStatus, setAccessStatus] = useState(null); // { isAllowed, reason, nextAvailableTime }
+  const [accessStatus, setAccessStatus] = useState(null);
   const [showSubModal, setShowSubModal] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(""); // For Countdown
+  const [timeLeft, setTimeLeft] = useState(""); 
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // --- 1. Check Status on Mount ---
-  const fetchStatus = async () => {
+  // --- 1. Fix: Wrap fetchStatus in useCallback ---
+  const fetchStatus = useCallback(async () => {
     try {
         const res = await fetch(`${API_URL}/api/blind-date/status`, {
             credentials: 'include'
         });
         const data = await res.json();
         setAccessStatus(data);
-        setStatusLoading(false);
     } catch (err) {
         console.error("Status fetch error", err);
+    } finally {
         setStatusLoading(false);
     }
-  };
+  }, [API_URL]);
 
   useEffect(() => {
     fetchStatus();
-  }, []);
+  }, [fetchStatus]);
 
   // --- 2. Timer Logic (Countdown) ---
   useEffect(() => {
@@ -56,9 +56,8 @@ const BlindDatePage = () => {
             const diff = end - now;
 
             if (diff <= 0) {
-                // Cooldown finished! Refresh status
                 clearInterval(interval);
-                fetchStatus();
+                fetchStatus(); // Refresh status when timer ends
                 setTimeLeft("");
             } else {
                 const h = Math.floor(diff / (1000 * 60 * 60));
@@ -69,12 +68,15 @@ const BlindDatePage = () => {
         }, 1000);
         return () => clearInterval(interval);
     }
-  }, [accessStatus]);
+  }, [accessStatus, fetchStatus]);
 
 
   // --- Socket Connection ---
   useEffect(() => {
-    socketRef.current = io(import.meta.env.VITE_API_BASE_URL, {
+    // Avoid connecting if no API URL
+    if (!API_URL) return;
+
+    socketRef.current = io(API_URL, {
       withCredentials: true,
     });
 
@@ -89,7 +91,7 @@ const BlindDatePage = () => {
       setSession(newSession);
       setIsSearching(false);
       
-      // ✅ 3. Record Usage when match is found
+      // Record Usage
       try {
           await fetch(`${API_URL}/api/blind-date/record-usage`, { method: 'POST', credentials: 'include' });
       } catch (e) { console.error("Failed to record usage", e); }
@@ -106,7 +108,7 @@ const BlindDatePage = () => {
     return () => {
       if (socketRef.current) socketRef.current.disconnect();
     };
-  }, [currentUser]);
+  }, [currentUser, API_URL]);
 
   const calculateAge = (birthday) => {
     if (!birthday || !birthday.year) return 0;
@@ -117,7 +119,6 @@ const BlindDatePage = () => {
   const handleStartMatching = () => {
     if (!socketReady || !currentUser) return;
 
-    // ✅ 4. Final Limit Check before starting
     if (!accessStatus?.isAllowed) {
         setShowSubModal(true);
         return;
@@ -183,7 +184,6 @@ const BlindDatePage = () => {
     );
   }
 
-  // --- UI Helpers for Button Text ---
   const getButtonText = () => {
       if (!socketReady) return "Connecting...";
       if (accessStatus?.isAllowed) return "Enter Blind Date";
@@ -197,7 +197,6 @@ const BlindDatePage = () => {
   return (
     <div className="blind-date-page">
       {!session ? (
-        // --- 1. Intro Screen with Logic ---
         <div className="blind-date-page__intro">
           <div className="blind-date-page__icon-box">
             <span className="blind-date-page__icon">🎭</span>
@@ -208,7 +207,6 @@ const BlindDatePage = () => {
             first, faces later.
           </p>
           
-          {/* Status Message */}
           {!accessStatus?.isAllowed && accessStatus?.reason === 'limit_reached' && (
               <p className="blind-date-page__status-msg">
                   You've used your free games for today! 
@@ -229,7 +227,6 @@ const BlindDatePage = () => {
       ) : (
         <div className="blind-date-page__session-container">
           
-          {/* ... (All In-Game Logic remains exactly the same) ... */}
           {session.status === "instructions" && (
             <BlindInstructions onConfirm={handleInstructionConfirm} />
           )}
@@ -365,7 +362,6 @@ const BlindDatePage = () => {
         </div>
       )}
 
-      {/* ✅ Modal Trigger */}
       {showSubModal && (
         <SubscriptionModal 
             onClose={() => setShowSubModal(false)}

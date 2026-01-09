@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useAuth } from "../../context/useAuth.js";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
 import SwipeCard from "../../components/swipeCard/SwipeCard";
@@ -8,7 +8,6 @@ import "./SwipePage.css";
 import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
 import { useNavigate } from "react-router-dom";
 import { ThumbsDown, User, ThumbsUp, Heart, MessageSquareMore } from "lucide-react";
-// ✅ 1. Import getDailyDmLimit
 import { getSwipeLimit, getSuperLikeLimit, getDailyDmLimit } from "../../utils/subscriptionRules.js";
 
 const SwipePage = () => {
@@ -19,15 +18,15 @@ const SwipePage = () => {
   const [feedback, setFeedback] = useState(null);
   const [icebreakerUser, setIcebreakerUser] = useState(null);
   
-  // Modal State
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [limitMessage, setLimitMessage] = useState("");
 
-  // Ref to block card removal
   const blockRemovalRef = useRef(false);
 
   const [topIndex, setTopIndex] = useState(-1);
   const topIndexRef = useRef(-1);
+  
+  // childRefs depends on users.length, so we memoize it.
   const childRefs = useMemo(
     () =>
       Array(users.length)
@@ -44,30 +43,9 @@ const SwipePage = () => {
     topIndexRef.current = topIndex;
   }, [topIndex]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (showUpsell || matchModal || icebreakerUser || showLimitModal) return;
-      const idx = topIndexRef.current;
-      switch (e.key) {
-        case "ArrowLeft": triggerSwipe("left"); break;
-        case "ArrowRight": triggerSwipe("right"); break;
-        case "ArrowUp": triggerSwipe("up"); break;
-        case " ":
-          e.preventDefault();
-          if (idx >= 0 && idx < users.length) childRefs[idx]?.current?.flip();
-          break;
-        case "Enter":
-          e.preventDefault();
-          handleProfileNavigation();
-          break;
-        default: break;
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showUpsell, matchModal, icebreakerUser, users, showLimitModal]);
+  // --- Functions wrapped in useCallback ---
 
-  const fetchCards = async () => {
+  const fetchCards = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`${API_URL}/api/swipe/cards`, {
@@ -84,7 +62,159 @@ const SwipePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  const checkLimits = useCallback((direction) => {
+    const userPlan = currentUser?.subscription?.plan || "free";
+    const usage = currentUser?.usage || {};
+
+    if (direction === "right" || direction === "left") {
+        const limit = getSwipeLimit(userPlan);
+        const count = usage.swipesCount || 0;
+        if (limit !== Infinity && count >= limit) {
+            setLimitMessage("You've reached your daily swipe limit!");
+            return false;
+        }
+    }
+    
+    if (direction === "up") {
+        const limit = getSuperLikeLimit(userPlan);
+        const count = usage.superLikesCount || 0;
+        if (limit !== Infinity && count >= limit) {
+            setLimitMessage("You've reached your daily Super Like limit!");
+            return false;
+        }
+    }
+    return true;
+  }, [currentUser]);
+
+  const handleSwipe = useCallback(async (direction, user, index) => {
+    // 1. Client Check
+    if (!checkLimits(direction)) {
+        blockRemovalRef.current = true; 
+        if (childRefs[index]?.current?.restoreCard) {
+            await childRefs[index].current.restoreCard();
+        }
+        setShowLimitModal(true);
+        setTimeout(() => { blockRemovalRef.current = false; }, 1000);
+        return;
+    }
+
+    setFeedback(direction);
+    setTimeout(() => setFeedback(null), 300);
+
+    const userPlan = currentUser?.subscription?.plan || "free";
+    const isPositive = direction === "right" || direction === "up";
+    
+    if (isPositive && user.isPremiumCandidate && userPlan === "free") {
+      blockRemovalRef.current = true;
+      if (childRefs[index]?.current?.restoreCard) {
+        await childRefs[index].current.restoreCard();
+      }
+      setShowUpsell(true);
+      setTimeout(() => { blockRemovalRef.current = false; }, 1000);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/swipe/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUserId: user._id, action: direction }),
+        credentials: "include",
+      });
+      
+      // 2. Server Error
+      if (res.status === 403) {
+         blockRemovalRef.current = true;
+         const errData = await res.json();
+         if (childRefs[index]?.current?.restoreCard) {
+             await childRefs[index].current.restoreCard();
+         }
+         setLimitMessage(errData.message || "Limit reached.");
+         setShowLimitModal(true);
+         setTimeout(() => { blockRemovalRef.current = false; }, 1000);
+         return;
+      }
+
+      const data = await res.json();
+      if (data.isMatch) setMatchModal(data.matchDetails);
+
+      if (data.updatedUsage) {
+          setCurrentUser(prev => ({
+              ...prev,
+              usage: { ...prev.usage, ...data.updatedUsage }
+          }));
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  }, [API_URL, checkLimits, childRefs, currentUser, setCurrentUser]);
+
+  const triggerSwipe = useCallback(async (dir) => {
+    const idx = topIndexRef.current;
+    if (idx >= 0 && idx < users.length) {
+      if (!checkLimits(dir)) {
+          blockRemovalRef.current = true;
+          setShowLimitModal(true);
+          setTimeout(() => { blockRemovalRef.current = false; }, 500);
+          return;
+      }
+      if (childRefs[idx]?.current?.swipe)
+        await childRefs[idx].current.swipe(dir);
+    }
+  }, [checkLimits, childRefs, users.length]);
+
+  const handleProfileNavigation = useCallback(() => {
+    const idx = topIndexRef.current;
+    if (idx >= 0 && idx < users.length) {
+      const currentUser = users[idx];
+      sessionStorage.setItem("swipe_restore_users", JSON.stringify(users));
+      navigate(`/user-profile/${currentUser._id}`);
+    }
+  }, [users, navigate]);
+
+  const handleCardLeftScreen = useCallback((index) => {
+    if (blockRemovalRef.current || showLimitModal || showUpsell) {
+        return; 
+    }
+
+    setUsers((prev) => {
+        const next = prev.filter((_, i) => i !== index);
+        const newTop = next.length - 1;
+        setTopIndex(newTop);
+        topIndexRef.current = newTop;
+        return next;
+    });
+  }, [showLimitModal, showUpsell]);
+
+
+  const handleChatClick = useCallback(() => {
+    const idx = topIndexRef.current;
+    if (idx >= 0 && idx < users.length) {
+      
+      const userPlan = currentUser?.subscription?.plan || "free";
+      const dmLimit = getDailyDmLimit(userPlan);
+      const dmUsage = currentUser?.usage?.directMessagesCount || 0;
+
+      if (dmLimit === 0) {
+          setLimitMessage("Free users cannot send direct messages. Upgrade to chat!");
+          setShowLimitModal(true);
+          return;
+      }
+
+      if (dmLimit !== Infinity && dmUsage >= dmLimit) {
+          setLimitMessage("You've reached your daily Direct Message limit!");
+          setShowLimitModal(true);
+          return;
+      }
+
+      setIcebreakerUser(users[idx]);
+    }
+  }, [currentUser, users]);
+
+  // --- Effects ---
 
   useEffect(() => {
     const savedUsers = sessionStorage.getItem("swipe_restore_users");
@@ -107,168 +237,30 @@ const SwipePage = () => {
     } else {
       fetchCards();
     }
-  }, []);
+  }, [fetchCards]);
 
-  // --- Check Swipe/Super Limits ---
-  const checkLimits = (direction) => {
-    const userPlan = currentUser?.subscription?.plan || "free";
-    const usage = currentUser?.usage || {};
-
-    if (direction === "right" || direction === "left") {
-        const limit = getSwipeLimit(userPlan);
-        const count = usage.swipesCount || 0;
-        if (limit !== Infinity && count >= limit) {
-            setLimitMessage("You've reached your daily swipe limit!");
-            return false;
-        }
-    }
-    
-    if (direction === "up") {
-        const limit = getSuperLikeLimit(userPlan);
-        const count = usage.superLikesCount || 0;
-        if (limit !== Infinity && count >= limit) {
-            setLimitMessage("You've reached your daily Super Like limit!");
-            return false;
-        }
-    }
-    return true;
-  };
-
-  const handleSwipe = async (direction, user, index) => {
-    // 1. Client-side Check
-    if (!checkLimits(direction)) {
-        blockRemovalRef.current = true; 
-        if (childRefs[index]?.current?.restoreCard) {
-            await childRefs[index].current.restoreCard();
-        }
-        setShowLimitModal(true);
-        setTimeout(() => { blockRemovalRef.current = false; }, 1000);
-        return;
-    }
-
-    setFeedback(direction);
-    setTimeout(() => setFeedback(null), 300);
-
-    const userPlan = currentUser?.subscription?.plan || "free";
-    const isPositive = direction === "right" || direction === "up";
-    
-    // Upsell Check
-    if (isPositive && user.isPremiumCandidate && userPlan === "free") {
-      blockRemovalRef.current = true; 
-      if (childRefs[index]?.current?.restoreCard) {
-        await childRefs[index].current.restoreCard();
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (showUpsell || matchModal || icebreakerUser || showLimitModal) return;
+      const idx = topIndexRef.current;
+      switch (e.key) {
+        case "ArrowLeft": triggerSwipe("left"); break;
+        case "ArrowRight": triggerSwipe("right"); break;
+        case "ArrowUp": triggerSwipe("up"); break;
+        case " ":
+          e.preventDefault();
+          if (idx >= 0 && idx < users.length) childRefs[idx]?.current?.flip();
+          break;
+        case "Enter":
+          e.preventDefault();
+          handleProfileNavigation();
+          break;
+        default: break;
       }
-      setShowUpsell(true);
-      setTimeout(() => { blockRemovalRef.current = false; }, 1000);
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API_URL}/api/swipe/action`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUserId: user._id, action: direction }),
-        credentials: "include",
-      });
-      
-      // 2. Server-side Error
-      if (res.status === 403) {
-         blockRemovalRef.current = true; 
-         
-         const errData = await res.json();
-         if (childRefs[index]?.current?.restoreCard) {
-             await childRefs[index].current.restoreCard();
-         }
-         setLimitMessage(errData.message || "Limit reached.");
-         setShowLimitModal(true);
-         
-         setTimeout(() => { blockRemovalRef.current = false; }, 1000);
-         return;
-      }
-
-      const data = await res.json();
-      if (data.isMatch) setMatchModal(data.matchDetails);
-
-      if (data.updatedUsage) {
-          setCurrentUser(prev => ({
-              ...prev,
-              usage: {
-                  ...prev.usage,
-                  ...data.updatedUsage
-              }
-          }));
-      }
-
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleCardLeftScreen = (index) => {
-    if (blockRemovalRef.current || showLimitModal || showUpsell) {
-        return; 
-    }
-
-    setUsers((prev) => {
-        const next = prev.filter((_, i) => i !== index);
-        const newTop = next.length - 1;
-        setTopIndex(newTop);
-        topIndexRef.current = newTop;
-        return next;
-    });
-  };
-
-  const triggerSwipe = async (dir) => {
-    const idx = topIndexRef.current;
-    if (idx >= 0 && idx < users.length) {
-      if (!checkLimits(dir)) {
-          blockRemovalRef.current = true;
-          setShowLimitModal(true);
-          setTimeout(() => { blockRemovalRef.current = false; }, 500);
-          return;
-      }
-      if (childRefs[idx]?.current?.swipe)
-        await childRefs[idx].current.swipe(dir);
-    }
-  };
-
-  const handleProfileNavigation = () => {
-    const idx = topIndexRef.current;
-    if (idx >= 0 && idx < users.length) {
-      const currentUser = users[idx];
-      sessionStorage.setItem("swipe_restore_users", JSON.stringify(users));
-      navigate(`/user-profile/${currentUser._id}`);
-    }
-  };
-
-  // ✅ 2. Updated Chat Click Handler (Locked for Limits)
-  const handleChatClick = () => {
-    const idx = topIndexRef.current;
-    if (idx >= 0 && idx < users.length) {
-      
-      // -- Check DM Limits Here --
-      const userPlan = currentUser?.subscription?.plan || "free";
-      const dmLimit = getDailyDmLimit(userPlan);
-      const dmUsage = currentUser?.usage?.directMessagesCount || 0;
-
-      // الف) اگر کلا اجازه ندارد (Free)
-      if (dmLimit === 0) {
-          setLimitMessage("Free users cannot send direct messages. Upgrade to chat!");
-          setShowLimitModal(true);
-          return;
-      }
-
-      // ب) اگر لیمیت روزانه پر شده (Gold)
-      if (dmLimit !== Infinity && dmUsage >= dmLimit) {
-          setLimitMessage("You've reached your daily Direct Message limit!");
-          setShowLimitModal(true);
-          return;
-      }
-
-      // اگر مجاز بود، ادامه بده
-      setIcebreakerUser(users[idx]);
-    }
-  };
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showUpsell, matchModal, icebreakerUser, users, showLimitModal, triggerSwipe, handleProfileNavigation, childRefs]);
 
   const proceedToChat = () => {
     if (icebreakerUser) {
@@ -314,7 +306,6 @@ const SwipePage = () => {
           <button className="swipe-page__control-btn swipe-page__btn--profile" onClick={handleProfileNavigation}>
             <User size={50}/>
           </button>
-          {/* دکمه چت به تابع جدید وصل شد */}
           <button className="swipe-page__control-btn swipe-page__btn--chat" onClick={handleChatClick}>
             <MessageSquareMore size={45} />
           </button>
@@ -322,7 +313,7 @@ const SwipePage = () => {
             <ThumbsUp size={40}/>
           </button>
         </div>
-
+        {/* ... Keyboard Help ... */}
         <div className="swipe-page__keyboard-help">
           <div className="swipe-page__key-item"><span className="swipe-page__key-box">←</span> Nope</div>
           <div className="swipe-page__key-item"><span className="swipe-page__key-box">↑</span> Super</div>
@@ -374,7 +365,6 @@ const SwipePage = () => {
                 message={limitMessage}
             />
         )}
-
       </div>
     </ExploreBackgroundLayout>
   );
