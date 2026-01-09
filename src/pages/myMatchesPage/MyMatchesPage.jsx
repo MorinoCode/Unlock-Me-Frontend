@@ -44,7 +44,7 @@ const MyMatchesPage = () => {
     
     // تعداد کارت‌های قفل شده (برای نمایش متن "+5 More")
     // این را می‌توانیم از روی تعداد isLocked ها بشماریم
-    const lockedCount = list.filter(u => u.isLocked).length;
+    // const lockedCount = list.filter(u => u.isLocked).length;
 
     return (
       <section className="matches-section">
