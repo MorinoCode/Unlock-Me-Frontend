@@ -60,6 +60,12 @@ const TermsOfService = lazy(() =>
 const PrivacyPolicy = lazy(() =>
   import("./pages/PrivacyPolicyPage/PrivacyPolicy.jsx")
 );
+const UpgradePage = lazy(() =>
+  import("./pages/upgradePage/UpgradePage.jsx")
+);
+const PaymentSuccessPage = lazy(() =>
+  import("./pages/paymentSuccessPage/PaymentSuccessPage.jsx")
+);
 
 /**
  * AppContent Component:
@@ -114,7 +120,9 @@ const AppContent = () => {
             />
             <Route path="/messages" element={<MessagesPage />} />
             <Route path="/chat/:receiverId" element={<ChatPage />} />
-
+            <Route path="/upgrade" element={<UpgradePage />} />
+            <Route path="/payment/success" element={<PaymentSuccessPage />} />
+          
             <Route path="/myprofile" element={<ProfilePage />} />
             <Route path="/swipe" element={<SwipePage />} />
             <Route path="/blind-date" element={<BlindDatePage />} />
