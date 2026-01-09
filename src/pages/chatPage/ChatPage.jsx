@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { useAuth } from "../../context/useAuth";
@@ -35,7 +35,7 @@ const ChatPage = () => {
     } else {
         setIsInputLocked(false);
     }
-  }, [currentUser]); // currentUser contains subscription info
+  }, [currentUser]);
 
   // Connect Socket
   useEffect(() => {
@@ -65,6 +65,11 @@ const ChatPage = () => {
     if (currentUser && receiverId) fetchData();
   }, [receiverId, currentUser, API_URL]);
 
+  // ✅ FIX: Define scrollToBottom BEFORE using it in useEffect
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
   // Listen for Messages
   useEffect(() => {
     if (!socket) return;
@@ -73,11 +78,7 @@ const ChatPage = () => {
         scrollToBottom();
     });
     return () => socket.off("newMessage");
-  }, [socket]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, [socket, scrollToBottom]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();

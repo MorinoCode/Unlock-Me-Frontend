@@ -33,7 +33,9 @@ const ExploreSection = ({
   userPlan,
   navigate,
 }) => {
-  const displayedUsers = users || [];
+  
+  // ✅ FIX: Memoize displayedUsers to prevent re-renders in downstream useMemo
+  const displayedUsers = useMemo(() => users || [], [users]);
 
   const handleUpgrade = useCallback(() => {
     navigate("/upgrade");
@@ -44,7 +46,6 @@ const ExploreSection = ({
   }, [link, navigate]);
 
   const { visibleUsers, remainingCount, isSectionLocked, emptyType } = useMemo(() => {
-    // 1. Check if the WHOLE section should be locked (Soulmates)
     if (type === "soulmates") {
       const { isLocked, limit } = getSoulmatePermissions(userPlan);
 
@@ -73,7 +74,6 @@ const ExploreSection = ({
     };
   }, [type, displayedUsers, userPlan]);
 
-  // Render Full Section Lock (e.g., Soulmates)
   if (type === "soulmates" && isSectionLocked) {
     return (
       <section className="explore-section" aria-labelledby={`${type}-title`}>
@@ -113,7 +113,6 @@ const ExploreSection = ({
               <UserCard
                 key={user._id}
                 user={user}
-                // No manual isLocked passing needed here!
               />
             ))}
 
