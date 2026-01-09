@@ -1,0 +1,240 @@
+.upgrade-page {
+  min-height: 100vh;
+  width: 100%;
+  background: #0f172a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+  
+}
+
+/* نور پس‌زمینه */
+.upgrade-page__bg-glow {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.upgrade-page__content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  width: 100%;
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.upgrade-page__header {
+  margin-bottom: 50px;
+}
+
+.upgrade-page__title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.upgrade-page__subtitle {
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+/* کانتینر کارت‌ها */
+.upgrade-page__cards {
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* هم‌اندازه کردن ارتفاع کارت‌ها */
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* --- استایل کلی کارت --- */
+.plan-card {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 30px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.plan-card:hover {
+  transform: translateY(-10px);
+}
+
+/* --- GOLD THEME --- */
+.plan-card--gold {
+  border-top: 4px solid #f59e0b;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.plan-card--gold:hover {
+  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.15);
+}
+
+.plan-card--gold .plan-card__name {
+  color: #fcd34d;
+}
+
+.plan-card__btn--gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+}
+
+/* --- PLATINUM THEME --- */
+.plan-card--platinum {
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+  transform: scale(1.05); /* کمی بزرگتر برای جلب توجه */
+  box-shadow: 0 15px 40px rgba(139, 92, 246, 0.2);
+}
+
+.plan-card--platinum:hover {
+  transform: scale(1.05) translateY(-10px);
+  box-shadow: 0 25px 50px rgba(139, 92, 246, 0.3);
+}
+
+.plan-card--platinum .plan-card__name {
+  background: linear-gradient(to right, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.plan-card__btn--platinum {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: white;
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+}
+
+/* Badge محبوبیت */
+.plan-card__badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ec4899;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 10px rgba(236, 72, 153, 0.4);
+}
+
+/* محتوای داخلی کارت */
+.plan-card__header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plan-card__name {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.plan-card__price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.plan-card__price .currency {
+  font-size: 1.5rem;
+  margin-right: 2px;
+}
+
+.plan-card__price .period {
+  font-size: 1rem;
+  color: #94a3b8;
+  margin-left: 5px;
+}
+
+.plan-card__features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+  flex: 1; /* پر کردن فضای خالی */
+  text-align: left;
+}
+
+.plan-card__features li {
+  color: #e2e8f0;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+}
+
+.plan-card__features li span {
+  font-size: 1.1rem;
+}
+
+/* دکمه‌ها */
+.plan-card__btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.plan-card__btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+/* پاورقی */
+.upgrade-page__footer {
+  margin-top: 40px;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+  .upgrade-page__cards {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .plan-card--platinum {
+    transform: scale(1);
+    order: -1; /* پلاتینیوم اول نمایش داده شود */
+    margin-bottom: 20px;
+  }
+
+  .plan-card--platinum:hover {
+    transform: translateY(-5px);
+  }
+}
