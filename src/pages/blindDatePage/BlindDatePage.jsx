@@ -8,9 +8,10 @@ import BlindInterestsModal from "../../components/blindDateComponents/blindInter
 import BlindRevealZone from "../../components/blindDateComponents/blindRevealZone/BlindRevealZone";
 import BlindFinalReveal from "../../components/blindDateComponents/blindFinalReveal/BlindFinalReveal";
 import BlindInstructions from "../../components/blindDateComponents/blindInstructions/BlindInstructions";
+import BlindRejected from "../../components/blindDateComponents/blindRejected/BlindRejected.jsx";
+import SubscriptionModal from "../../components/modals/subscriptionModal/SubscriptionModal.jsx"; 
 import "./BlindDatePage.css";
 import { useAuth } from "../../context/useAuth.js";
-import BlindRejected from "../../components/blindDateComponents/blindRejected/BlindRejected.jsx";
 
 const BlindDatePage = () => {
   const { currentUser } = useAuth();
@@ -18,8 +19,60 @@ const BlindDatePage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [socketReady, setSocketReady] = useState(false);
   const socketRef = useRef(null);
+  
+  // --- New States for Limits ---
+  const [statusLoading, setStatusLoading] = useState(true);
+  const [accessStatus, setAccessStatus] = useState(null); // { isAllowed, reason, nextAvailableTime }
+  const [showSubModal, setShowSubModal] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(""); // For Countdown
 
-  // --- Socket Connection & Listeners ---
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+  // --- 1. Check Status on Mount ---
+  const fetchStatus = async () => {
+    try {
+        const res = await fetch(`${API_URL}/api/blind-date/status`, {
+            credentials: 'include'
+        });
+        const data = await res.json();
+        setAccessStatus(data);
+        setStatusLoading(false);
+    } catch (err) {
+        console.error("Status fetch error", err);
+        setStatusLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStatus();
+  }, []);
+
+  // --- 2. Timer Logic (Countdown) ---
+  useEffect(() => {
+    if (accessStatus?.reason === 'cooldown' && accessStatus?.nextAvailableTime) {
+        const interval = setInterval(() => {
+            const now = new Date();
+            const end = new Date(accessStatus.nextAvailableTime);
+            const diff = end - now;
+
+            if (diff <= 0) {
+                // Cooldown finished! Refresh status
+                clearInterval(interval);
+                fetchStatus();
+                setTimeLeft("");
+            } else {
+                const h = Math.floor(diff / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                setTimeLeft(`${h}h ${m}m ${s}s`);
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }
+  }, [accessStatus]);
+
+
+  // --- Socket Connection ---
   useEffect(() => {
     socketRef.current = io(import.meta.env.VITE_API_BASE_URL, {
       withCredentials: true,
@@ -32,9 +85,14 @@ const BlindDatePage = () => {
       }
     });
 
-    socketRef.current.on("match_found", (newSession) => {
+    socketRef.current.on("match_found", async (newSession) => {
       setSession(newSession);
       setIsSearching(false);
+      
+      // ✅ 3. Record Usage when match is found
+      try {
+          await fetch(`${API_URL}/api/blind-date/record-usage`, { method: 'POST', credentials: 'include' });
+      } catch (e) { console.error("Failed to record usage", e); }
     });
 
     socketRef.current.on("session_update", (updatedSession) => {
@@ -50,8 +108,6 @@ const BlindDatePage = () => {
     };
   }, [currentUser]);
 
-  // --- Helper Functions ---
-
   const calculateAge = (birthday) => {
     if (!birthday || !birthday.year) return 0;
     const currentYear = new Date().getFullYear();
@@ -60,6 +116,12 @@ const BlindDatePage = () => {
 
   const handleStartMatching = () => {
     if (!socketReady || !currentUser) return;
+
+    // ✅ 4. Final Limit Check before starting
+    if (!accessStatus?.isAllowed) {
+        setShowSubModal(true);
+        return;
+    }
 
     const userAge = calculateAge(currentUser.birthday);
 
@@ -88,14 +150,10 @@ const BlindDatePage = () => {
     }
   };
 
-  // Logic to determine why the session was cancelled (Partner rejection vs. technical issue)
   const getCancelReason = () => {
     if (!session) return null;
-    
     const p1Id = session.participants[0]._id || session.participants[0];
     const isUser1 = p1Id.toString() === currentUser._id.toString();
-
-    // const myDecision = isUser1 ? session.u1RevealDecision : session.u2RevealDecision;
     const partnerDecision = isUser1 ? session.u2RevealDecision : session.u1RevealDecision;
 
     if (partnerDecision === 'no') {
@@ -104,25 +162,16 @@ const BlindDatePage = () => {
     return "disconnected";
   };
 
-  // --- Calculations ---
-
-  // Calculate Total Match Percentage based on all answered questions
   const totalMatchPercentage = useMemo(() => {
     if (!session || !session.questions || session.questions.length === 0) return 0;
-    
-    // Filter questions where BOTH participants have answered
     const answeredQs = session.questions.filter(q => q.u1Answer !== null && q.u2Answer !== null);
-    
     if (answeredQs.length === 0) return 0;
-
     const matches = answeredQs.filter(q => q.u1Answer === q.u2Answer).length;
     return Math.round((matches / answeredQs.length) * 100);
   }, [session]);
 
 
-  // --- Render ---
-
-  if (!currentUser)
+  if (!currentUser || statusLoading)
     return <div className="blind-date-page__loading">Loading...</div>;
 
   if (isSearching) {
@@ -134,10 +183,21 @@ const BlindDatePage = () => {
     );
   }
 
+  // --- UI Helpers for Button Text ---
+  const getButtonText = () => {
+      if (!socketReady) return "Connecting...";
+      if (accessStatus?.isAllowed) return "Enter Blind Date";
+      if (accessStatus?.reason === 'limit_reached') return "Daily Limit Reached";
+      if (accessStatus?.reason === 'cooldown') return `Next Date in: ${timeLeft}`;
+      return "Enter Blind Date";
+  };
+
+  const isButtonDisabled = !socketReady || (!accessStatus?.isAllowed && accessStatus?.reason === 'cooldown');
+
   return (
     <div className="blind-date-page">
       {!session ? (
-        // 1. Intro Screen
+        // --- 1. Intro Screen with Logic ---
         <div className="blind-date-page__intro">
           <div className="blind-date-page__icon-box">
             <span className="blind-date-page__icon">🎭</span>
@@ -147,29 +207,36 @@ const BlindDatePage = () => {
             Discover connection through conversation. Personalities revealed
             first, faces later.
           </p>
+          
+          {/* Status Message */}
+          {!accessStatus?.isAllowed && accessStatus?.reason === 'limit_reached' && (
+              <p className="blind-date-page__status-msg">
+                  You've used your free games for today! 
+                  <span onClick={() => setShowSubModal(true)}> Upgrade for unlimited.</span>
+              </p>
+          )}
+
           <button
             className={`blind-date-page__btn ${
-              !socketReady ? "blind-date-page__btn--disabled" : ""
+              isButtonDisabled ? "blind-date-page__btn--disabled" : ""
             }`}
             onClick={handleStartMatching}
-            disabled={!socketReady}
+            disabled={isButtonDisabled}
           >
-            {socketReady ? "Enter Blind Date" : "Connecting..."}
+            {getButtonText()}
           </button>
         </div>
       ) : (
         <div className="blind-date-page__session-container">
           
-          {/* 2. Instructions (Before Game Starts) */}
+          {/* ... (All In-Game Logic remains exactly the same) ... */}
           {session.status === "instructions" && (
             <BlindInstructions onConfirm={handleInstructionConfirm} />
           )}
 
-          {/* 3. Progress Bar (Hidden in Reveal Phase) */}
           {["active", "waiting_for_stage_2", "waiting_for_stage_3"].includes(session.status) && (
             <BlindProgressBar
               currentStage={session.currentStage}
-              // Smart index: Message count for Stage 3, Question index for others
               currentIndex={
                 session.currentStage === 3 
                   ? session.messages.filter(m => m.sender === currentUser._id).length 
@@ -178,7 +245,6 @@ const BlindDatePage = () => {
             />
           )}
 
-          {/* 4. Game Area (Stages 1 & 2 - Questions Only) */}
           {session.status === "active" &&
             (session.currentStage === 1 || session.currentStage === 2) && (
               <div className="blind-date-page__game-layout">
@@ -187,15 +253,13 @@ const BlindDatePage = () => {
                   currentUser={currentUser}
                   socketRef={socketRef}
                 />
-                {/* Note: Chat section removed for Stage 2 based on requirements */}
               </div>
             )}
 
-          {/* 5. Stage Results Modals */}
           {session.status === "waiting_for_stage_2" && (
             <BlindInterestsModal 
                 session={session} 
-                currentUser={currentUser}
+                currentUser={currentUser} 
                 onContinue={handleProceed} 
                 stage={1}
             />
@@ -204,13 +268,12 @@ const BlindDatePage = () => {
           {session.status === "waiting_for_stage_3" && (
             <BlindInterestsModal 
                 session={session} 
-                currentUser={currentUser}
+                currentUser={currentUser} 
                 onContinue={handleProceed} 
                 stage={2}
             />
           )}
 
-          {/* 6. Stage 3 (Deep Dive Chat) */}
           {session.currentStage === 3 && session.status === "active" && (
             <div className="blind-date-page__final-chat-container">
               <h2 className="blind-date-page__stage-title">
@@ -224,7 +287,6 @@ const BlindDatePage = () => {
             </div>
           )}
 
-          {/* 7. Transition to Reveal (After 10 Messages) */}
           {(session.status === "waiting_for_stage_3" ||
             (session.status === "active" &&
               session.currentStage === 3 &&
@@ -264,9 +326,6 @@ const BlindDatePage = () => {
             </div>
           )}
 
-          {/* 8. Reveal Decision Zone */}
-         {/* 8. Reveal Decision Zone */}
-          {/* ✅ FIX: اضافه کردن شرط که اگر کنسل یا تمام شده بود، این باکس دیگر نشان داده نشود */}
           {(session.currentStage === 4 || session.status === "waiting_for_reveal") && 
            session.status !== "cancelled" && 
            session.status !== "completed" && (
@@ -278,12 +337,10 @@ const BlindDatePage = () => {
             />
           )}
 
-          {/* 9. Final Match Success */}
           {session.status === "completed" && (
             <BlindFinalReveal session={session} currentUser={currentUser} />
           )}
 
-          {/* 10. Cancelled / Rejected State */}
           {session.status === "cancelled" && (
             <>
               {getCancelReason() === "partner_rejected" ? (
@@ -306,6 +363,14 @@ const BlindDatePage = () => {
             </>
           )}
         </div>
+      )}
+
+      {/* ✅ Modal Trigger */}
+      {showSubModal && (
+        <SubscriptionModal 
+            onClose={() => setShowSubModal(false)}
+            message="You've reached your daily Blind Date limit! Upgrade for unlimited games."
+        />
       )}
     </div>
   );

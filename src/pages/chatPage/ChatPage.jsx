@@ -4,7 +4,7 @@ import { useAuth } from "../../context/useAuth.js";
 import { socket } from "../../socket.js";
 import toast from "react-hot-toast";
 import "./ChatPage.css";
-import { RiSendPlane2Fill } from "react-icons/ri";
+import { RiSendPlane2Fill, RiCheckLine, RiCloseLine } from "react-icons/ri"; // آیکون‌های جدید
 
 const ChatPage = () => {
   const { receiverId } = useParams();
@@ -20,6 +20,10 @@ const ChatPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
   const [activeActionId, setActiveActionId] = useState(null);
+
+  // ✅ استیت‌های جدید برای مدیریت وضعیت ریکوئست
+  const [chatStatus, setChatStatus] = useState("active"); // 'active', 'pending_received', 'pending_sent'
+  const [conversationId, setConversationId] = useState(null);
 
   // --- Spark / AI Wingman State ---
   const [sparkSuggestions, setSparkSuggestions] = useState([]);
@@ -54,6 +58,43 @@ const ChatPage = () => {
     });
   };
 
+  // ✅ تابع جدید برای تشخیص وضعیت چت (Active vs Request)
+  const checkChatStatus = async () => {
+    try {
+      // 1. اول چک می‌کنیم آیا جزو ریکوئست‌های دریافتی است؟
+      const reqRes = await fetch(`${API_URL}/api/chat/conversations?type=requests`, { credentials: "include" });
+      const reqData = await reqRes.json();
+      const incomingReq = reqData.find(c => c.participants.some(p => p._id === receiverId));
+
+      if (incomingReq) {
+        setChatStatus("pending_received");
+        setConversationId(incomingReq._id);
+        return;
+      }
+
+      // 2. اگر نبود، چک می‌کنیم جزو چت‌های اکتیو (یا ریکوئست‌های ارسالی خودمان) است؟
+      const activeRes = await fetch(`${API_URL}/api/chat/conversations?type=active`, { credentials: "include" });
+      const activeData = await activeRes.json();
+      const activeChat = activeData.find(c => c.participants.some(p => p._id === receiverId));
+
+      if (activeChat) {
+        setConversationId(activeChat._id);
+        if (activeChat.status === 'pending') {
+            // یعنی من فرستادم ولی هنوز اکسپت نشده
+            setChatStatus("pending_sent");
+        } else {
+            setChatStatus("active");
+        }
+      } else {
+        // کلاً چتی وجود ندارد (اولین پیام) -> فرض می‌کنیم اکتیو است تا بتواند تایپ کند (بک‌اند محدودیت را چک می‌کند)
+        setChatStatus("active"); 
+      }
+
+    } catch (err) {
+      console.error("Status Check Error", err);
+    }
+  };
+
   useEffect(() => {
     setIsSyncing(true);
     const loadChat = async () => {
@@ -67,8 +108,13 @@ const ChatPage = () => {
             cache: "no-store",
           }),
         ]);
+        
         if (uRes.ok) setReceiverUser(await uRes.json());
         if (mRes.ok) setMessages(await mRes.json());
+        
+        // ✅ فراخوانی چک وضعیت
+        await checkChatStatus();
+
         fetch(`${API_URL}/api/chat/read/${receiverId}`, {
           method: "PUT",
           credentials: "include",
@@ -83,8 +129,10 @@ const ChatPage = () => {
   useEffect(() => {
     if (!myId) return;
     socket.emit("join_room", myId);
+    
     socket.on("receive_message", (m) => {
       setMessages((prev) => [...prev, m]);
+      // اگر پیامی آمد یعنی چت فعال است (یا ریکوئست جدید)
       if (String(m.sender) === String(receiverId)) {
         fetch(`${API_URL}/api/chat/read/${receiverId}`, {
           method: "PUT",
@@ -92,6 +140,15 @@ const ChatPage = () => {
         });
       }
     });
+
+    // ✅ لیسنر برای وقتی که درخواستم قبول شد
+    socket.on("request_accepted", ({ conversationId: acceptedId }) => {
+        if (acceptedId === conversationId || !conversationId) { // اگر ID نداشتیم هم ریلود کن
+            setChatStatus("active");
+            toast.success("Request Accepted! You can now chat.");
+        }
+    });
+
     socket.on("messages_seen", ({ seenBy }) => {
       if (String(seenBy) === String(receiverId)) {
         setMessages((prev) => prev.map((msg) => ({ ...msg, isRead: true })));
@@ -117,8 +174,9 @@ const ChatPage = () => {
       socket.off("display_typing");
       socket.off("hide_typing");
       socket.off("reaction_updated");
+      socket.off("request_accepted"); // ✅ پاکسازی
     };
-  }, [myId, receiverId, API_URL]);
+  }, [myId, receiverId, API_URL, conversationId]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -136,8 +194,53 @@ const ChatPage = () => {
     }
   };
 
+  // ✅ هندلر قبول کردن درخواست
+  const handleAccept = async () => {
+    try {
+        const res = await fetch(`${API_URL}/api/chat/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ conversationId })
+        });
+        if (res.ok) {
+            setChatStatus('active');
+            toast.success("Connection established! 🥂");
+        } else {
+            toast.error("Error accepting request");
+        }
+    } catch (err) {
+        console.error(err);
+    }
+  };
+
+  // ✅ هندلر رد کردن درخواست
+  const handleReject = async () => {
+    try {
+        const res = await fetch(`${API_URL}/api/chat/reject`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ conversationId })
+        });
+        if (res.ok) {
+            toast('Request rejected', { icon: '👋' });
+            navigate('/messages'); // برگشت به اینباکس
+        }
+    } catch (err) {
+        console.error(err);
+    }
+  };
+
   const handleSend = async (fileData = null, type = "text") => {
     if (!newMessage.trim() && !fileData) return;
+    
+    // ✅ اگر پندینگ باشم و بخواهم پیام دوم بفرستم (که فرانت باید جلویش را بگیرد ولی محض احتیاط)
+    if (chatStatus === 'pending_sent') {
+        toast.error("Wait for them to accept first!");
+        return;
+    }
+
     const payload = {
       receiverId,
       text: fileData ? "" : newMessage,
@@ -160,13 +263,30 @@ const ChatPage = () => {
       credentials: "include",
       body: JSON.stringify(payload),
     });
+    
     if (res.ok) {
       const saved = await res.json();
       setMessages((prev) => [...prev, saved]);
       setNewMessage("");
       setReplyingTo(null);
-      setShowSpark(false); // Close suggestions on send
+      setShowSpark(false);
       socket.emit("stop_typing", { receiverId });
+
+      // ✅ اگر اولین پیام بود، وضعیت را به pending_sent تغییر بده (اگر مچ نباشند)
+      // اینجا فرض می‌کنیم اگر قبلاً active نبوده، الان ریکوئست شده
+      if (messages.length === 0 && chatStatus === 'active') {
+         // یک چک سریع یا رفرش وضعیت بد نیست، ولی فعلا کاربر را بلاک نمی‌کنیم
+         // چون ممکن است مچ باشند. بک‌اند اگر ارور نداد یعنی اوکی است.
+         // اما اگر ریکوئست باشد، باید UI آپدیت شود.
+         checkChatStatus();
+      }
+    } else {
+        // ✅ هندل کردن ارور 403 بک‌اند (Request Pending)
+        const errData = await res.json();
+        if (res.status === 403) {
+            toast.error(errData.message || "Action not allowed");
+            if (errData.error === "Request Pending") setChatStatus('pending_sent');
+        }
     }
   };
 
@@ -265,7 +385,10 @@ const ChatPage = () => {
           <div className="chat-page__header-text-wrapper">
             <h3 className="chat-page__header-username">{receiverUser?.name}</h3>
             <p className="chat-page__header-status">
-              {isReceiverTyping ? "typing..." : "online"}
+              {/* ✅ نمایش وضعیت در هدر */}
+              {chatStatus === 'pending_received' ? 'Sent you a request' : 
+               chatStatus === 'pending_sent' ? 'Request Sent' : 
+               isReceiverTyping ? "typing..." : "online"}
             </p>
           </div>
         </div>
@@ -362,45 +485,48 @@ const ChatPage = () => {
                       )}
                     </div>
                   </div>
-
-                  <div
-                    className={`chat-page__actions ${
-                      activeActionId === m._id
-                        ? "chat-page__actions--mobile-active"
-                        : ""
-                    }`}
-                  >
-                    <span
-                      className="chat-page__action-item"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addReaction(m._id, "❤️");
-                        setActiveActionId(null);
-                      }}
+                  
+                  {/* ✅ اکشن‌ها فقط اگر چت اکتیو باشد نمایش داده شوند تا کاربر نتواند روی ریکوئست ری‌اکشن برود */}
+                  {chatStatus === 'active' && (
+                    <div
+                        className={`chat-page__actions ${
+                        activeActionId === m._id
+                            ? "chat-page__actions--mobile-active"
+                            : ""
+                        }`}
                     >
-                      ❤️
-                    </span>
-                    <span
-                      className="chat-page__action-item"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addReaction(m._id, "👍");
-                        setActiveActionId(null);
-                      }}
-                    >
-                      👍
-                    </span>
-                    <span
-                      className="chat-page__action-item"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setReplyingTo(m);
-                        setActiveActionId(null);
-                      }}
-                    >
-                      Reply
-                    </span>
-                  </div>
+                        <span
+                        className="chat-page__action-item"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            addReaction(m._id, "❤️");
+                            setActiveActionId(null);
+                        }}
+                        >
+                        ❤️
+                        </span>
+                        <span
+                        className="chat-page__action-item"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            addReaction(m._id, "👍");
+                            setActiveActionId(null);
+                        }}
+                        >
+                        👍
+                        </span>
+                        <span
+                        className="chat-page__action-item"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setReplyingTo(m);
+                            setActiveActionId(null);
+                        }}
+                        >
+                        Reply
+                        </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </React.Fragment>
@@ -422,120 +548,150 @@ const ChatPage = () => {
         </div>
       )}
 
+      {/* ✅✅ FOOTER: شرطی کردن نمایش بر اساس وضعیت چت */}
       <footer className="chat-page__footer">
-        {/* --- SPARK SUGGESTIONS --- */}
-        {showSpark && (
-          <div className="chat-page__spark-panel">
-            <div className="chat-page__spark-header">
-              <span className="chat-page__spark-title">
-                ✨ Wingman Suggestions
-              </span>
-              <button
-                className="chat-page__spark-close"
-                onClick={() => setShowSpark(false)}
-              >
-                ×
-              </button>
+        
+        {/* حالت ۱: ریکوئست دریافت شده (نمایش دکمه Accept/Reject) */}
+        {chatStatus === 'pending_received' && (
+            <div className="chat-page__request-bar">
+                <p className="chat-page__request-text">
+                    {receiverUser?.name} wants to connect with you.
+                </p>
+                <div className="chat-page__request-buttons">
+                    <button className="chat-page__btn-reject" onClick={handleReject}>
+                        <RiCloseLine /> Reject
+                    </button>
+                    <button className="chat-page__btn-accept" onClick={handleAccept}>
+                        <RiCheckLine /> Accept
+                    </button>
+                </div>
             </div>
-            <div className="chat-page__spark-list">
-              {sparkSuggestions.map((item, idx) => (
-                <button
-                  key={idx}
-                  className="chat-page__spark-chip"
-                  onClick={() => {
-                    setNewMessage(item.text);
-                    setShowSpark(false);
-                  }}
+        )}
+
+        {/* حالت ۲: ریکوئست ارسال شده (پیام انتظار) */}
+        {chatStatus === 'pending_sent' && (
+            <div className="chat-page__pending-bar">
+                <p>🔒 Request sent. You can chat once they accept.</p>
+            </div>
+        )}
+
+        {/* حالت ۳: چت فعال (فرم ارسال پیام) */}
+        {chatStatus === 'active' && (
+            <>
+                {/* --- SPARK SUGGESTIONS --- */}
+                {showSpark && (
+                <div className="chat-page__spark-panel">
+                    <div className="chat-page__spark-header">
+                    <span className="chat-page__spark-title">
+                        ✨ Wingman Suggestions
+                    </span>
+                    <button
+                        className="chat-page__spark-close"
+                        onClick={() => setShowSpark(false)}
+                    >
+                        ×
+                    </button>
+                    </div>
+                    <div className="chat-page__spark-list">
+                    {sparkSuggestions.map((item, idx) => (
+                        <button
+                        key={idx}
+                        className="chat-page__spark-chip"
+                        onClick={() => {
+                            setNewMessage(item.text);
+                            setShowSpark(false);
+                        }}
+                        >
+                        <span className="chat-page__spark-type">{item.type}</span>
+                        <span className="chat-page__spark-text">{item.text}</span>
+                        </button>
+                    ))}
+                    </div>
+                </div>
+                )}
+
+                {replyingTo && (
+                <div className="chat-page__reply-preview">
+                    <div className="chat-page__reply-content">
+                    <span className="chat-page__reply-label">
+                        Replying to{" "}
+                        {String(replyingTo.sender) === String(myId)
+                        ? "yourself"
+                        : receiverUser?.name}
+                    </span>
+                    <p className="chat-page__reply-preview-text">
+                        {replyingTo.text || "Media"}
+                    </p>
+                    </div>
+                    <button
+                    className="chat-page__cancel-reply"
+                    onClick={() => setReplyingTo(null)}
+                    >
+                    ×
+                    </button>
+                </div>
+                )}
+
+                <form
+                className="chat-page__form"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSend();
+                }}
                 >
-                  <span className="chat-page__spark-type">{item.type}</span>
-                  <span className="chat-page__spark-text">{item.text}</span>
+                <button
+                    type="button"
+                    className={`chat-page__spark-btn ${
+                    isSparkLoading ? "chat-page__spark-btn--loading" : ""
+                    }`}
+                    onClick={handleSpark}
+                    title="Ask AI Wingman"
+                >
+                    {isSparkLoading ? "..." : "✨"}
                 </button>
-              ))}
-            </div>
-          </div>
+
+                <label htmlFor="file-up" className="chat-page__attach-label">
+                    📎
+                </label>
+                <input
+                    type="file"
+                    id="file-up"
+                    className="chat-page__file-input"
+                    hidden
+                    onChange={(e) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(e.target.files[0]);
+                    reader.onloadend = () =>
+                        handleSend(
+                        reader.result,
+                        e.target.files[0].type.startsWith("image") ? "image" : "file"
+                        );
+                    }}
+                />
+                <input
+                    className="chat-page__input"
+                    value={newMessage}
+                    onChange={(e) => {
+                    setNewMessage(e.target.value);
+                    socket.emit("typing", { receiverId, senderId: myId });
+                    }}
+                    placeholder="Type a message..."
+                />
+                <button
+                    type="button"
+                    onClick={toggleRecording}
+                    className={`chat-page__mic-btn ${
+                    isRecording ? "chat-page__mic-btn--active" : ""
+                    }`}
+                >
+                    {isRecording ? "🎤" : "🎤"}
+                </button>
+                <button type="submit" className="chat-page__send-btn">
+                    <RiSendPlane2Fill />
+                </button>
+                </form>
+            </>
         )}
-
-        {replyingTo && (
-          <div className="chat-page__reply-preview">
-            <div className="chat-page__reply-content">
-              <span className="chat-page__reply-label">
-                Replying to{" "}
-                {String(replyingTo.sender) === String(myId)
-                  ? "yourself"
-                  : receiverUser?.name}
-              </span>
-              <p className="chat-page__reply-preview-text">
-                {replyingTo.text || "Media"}
-              </p>
-            </div>
-            <button
-              className="chat-page__cancel-reply"
-              onClick={() => setReplyingTo(null)}
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        <form
-          className="chat-page__form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-        >
-          {/* --- SPARK BUTTON --- */}
-          <button
-            type="button"
-            className={`chat-page__spark-btn ${
-              isSparkLoading ? "chat-page__spark-btn--loading" : ""
-            }`}
-            onClick={handleSpark}
-            title="Ask AI Wingman"
-          >
-            {isSparkLoading ? "..." : "✨"}
-          </button>
-
-          <label htmlFor="file-up" className="chat-page__attach-label">
-            📎
-          </label>
-          <input
-            type="file"
-            id="file-up"
-            className="chat-page__file-input"
-            hidden
-            onChange={(e) => {
-              const reader = new FileReader();
-              reader.readAsDataURL(e.target.files[0]);
-              reader.onloadend = () =>
-                handleSend(
-                  reader.result,
-                  e.target.files[0].type.startsWith("image") ? "image" : "file"
-                );
-            }}
-          />
-          <input
-            className="chat-page__input"
-            value={newMessage}
-            onChange={(e) => {
-              setNewMessage(e.target.value);
-              socket.emit("typing", { receiverId, senderId: myId });
-            }}
-            placeholder="Type a message..."
-          />
-          <button
-            type="button"
-            onClick={toggleRecording}
-            className={`chat-page__mic-btn ${
-              isRecording ? "chat-page__mic-btn--active" : ""
-            }`}
-          >
-            {isRecording ? "🎤" : "🎤"}
-          </button>
-          <button type="submit" className="chat-page__send-btn">
-            <RiSendPlane2Fill />
-          </button>
-        </form>
       </footer>
     </div>
   );

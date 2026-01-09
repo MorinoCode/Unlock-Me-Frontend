@@ -1,36 +1,140 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/useAuth'; // مسیر را چک کنید
+import { RiVipCrownFill, RiCheckLine, RiFlashlightFill } from "react-icons/ri";
+import toast from "react-hot-toast";
+import { useAuth } from '../../context/useAuth';
 import './UpgradePage.css';
+
+// Import rules for dynamic features
+import { 
+  PLANS, 
+  getDailyDmLimit, 
+  getSwipeLimit, 
+  getSuperLikeLimit, 
+  getBlindDateConfig, 
+  getVisibilityThreshold,
+  getMatchListLimit
+} from "../../utils/subscriptionRules.js";
 
 const UpgradePage = () => {
   const navigate = useNavigate();
-  const { currentUser, token } = useAuth(); // دریافت توکن برای احراز هویت
-  const [loading, setLoading] = useState(false); // جلوگیری از کلیک تکراری
+  const { currentUser } = useAuth();
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null); // Track which button is loading
 
-  const handlePurchase = async (plan) => {
-    // چون توکن در کوکی است، ممکن است currentUser را داشته باشیم اما token در متغیر جاوااسکریپت نباشد
-    // پس شرط !token را برمیداریم و فقط چک میکنیم کاربر لاگین باشد
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+  // --- Dynamic Features Logic (Shared with Modal) ---
+  const getDynamicFeatures = (planName) => {
+    const normalizedPlan = planName.toLowerCase().includes('platinum') ? PLANS.PLATINUM : PLANS.GOLD;
+
+    const swipeLimit = getSwipeLimit(normalizedPlan);
+    const dmLimit = getDailyDmLimit(normalizedPlan);
+    const superLikeLimit = getSuperLikeLimit(normalizedPlan);
+    const blindConfig = getBlindDateConfig(normalizedPlan);
+    const visibility = getVisibilityThreshold(normalizedPlan);
+    const seeLikes = getMatchListLimit(normalizedPlan, 'incoming');
+
+    const features = [];
+
+    // LIKES
+    features.push(
+      swipeLimit === Infinity 
+        ? "Unlimited Likes" 
+        : `${swipeLimit} Likes per day`
+    );
+
+    // DIRECT MESSAGES
+    features.push(
+      dmLimit === Infinity 
+        ? "Unlimited Direct Messages" 
+        : `${dmLimit} Direct Messages per day`
+    );
+
+    // SEE WHO LIKED YOU
+    if (seeLikes === Infinity || seeLikes > 0) {
+      features.push("See Who Liked You");
+    }
+
+    // SUPER LIKES
+    features.push(
+      superLikeLimit === Infinity 
+        ? "Unlimited Super Likes" 
+        : `${superLikeLimit} Super Likes per day`
+    );
+
+    // BLIND DATES
+    if (blindConfig.limit === Infinity) {
+      features.push("Unlimited Blind Dates (No Cooldown)");
+    } else {
+      features.push(`${blindConfig.limit} Blind Dates (${blindConfig.cooldownHours}h cooldown)`);
+    }
+
+    // VISIBILITY
+    if (visibility === 100) {
+      features.push("Priority Visibility (See 100% of Matches)");
+    } else if (visibility > 80) {
+      features.push(`Extended Visibility (See up to ${visibility}% Matches)`);
+    }
+
+    // EXTRAS
+    if (normalizedPlan === PLANS.PLATINUM) {
+      features.push("Exclusive Badge on Profile");
+      features.push("See Read Receipts");
+      features.push("Advanced Filters (Height, Education)");
+    } else {
+      features.push("1 Free Monthly Boost");
+      features.push("Turn off Ads");
+    }
+
+    return features;
+  };
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/payment/plans`);
+        if (!res.ok) throw new Error("Failed to fetch plans");
+        
+        const data = await res.json();
+        const sortedPlans = data.sort((a, b) => a.amount - b.amount);
+        setPlans(sortedPlans);
+      } catch (err) {
+        console.error("Error fetching plans:", err);
+        toast.error("Could not load subscription plans.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPlans();
+  }, [API_URL]);
+
+  const formatPrice = (amount, currency) => {
+    const locale = currency.toLowerCase() === 'sek' ? 'sv-SE' : 'en-US';
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const handlePurchase = async (priceId, productName) => {
     if (!currentUser) {
-      alert("Please login first!");
+      toast.error("Please login first!");
+      navigate('/login');
       return;
     }
     
-    setLoading(true);
+    setProcessingId(priceId);
 
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-      
-      const response = await fetch(`${baseUrl}/api/payment/create-session`, {
+      const response = await fetch(`${API_URL}/api/payment/create-session`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // ❌ خط Authorization را حذف کردیم (چون کوکی داریم)
-        },
-        // ✅ این خط حیاتی است: به مرورگر می‌گوید کوکی‌ها را بفرست
-        credentials: 'include', 
-        
-        body: JSON.stringify({ plan }),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ priceId, planName: productName }),
       });
 
       const data = await response.json();
@@ -39,15 +143,22 @@ const UpgradePage = () => {
         window.location.href = data.url;
       } else {
         console.error("Payment Error:", data);
-        alert(`Error: ${data.message || data.error || "Something went wrong"}`);
+        toast.error(`Error: ${data.message || "Something went wrong"}`);
       }
 
     } catch (error) {
       console.error("Network Error:", error);
-      alert("Network error.");
+      toast.error("Network error. Please try again.");
     } finally {
-      setLoading(false);
+      setProcessingId(null);
     }
+  };
+
+  const getPlanType = (productName) => {
+    const name = productName?.toLowerCase() || "";
+    if (name.includes("platinum")) return "platinum";
+    if (name.includes("gold")) return "gold";
+    return "unknown";
   };
 
   return (
@@ -56,67 +167,66 @@ const UpgradePage = () => {
       
       <div className="upgrade-page__content">
         <header className="upgrade-page__header">
+          <div className="upgrade-page__icon-box">
+             <RiVipCrownFill />
+          </div>
           <h1 className="upgrade-page__title">Unlock Your Potential 🚀</h1>
           <p className="upgrade-page__subtitle">
             Get more matches, see who likes you, and find your connection faster.
           </p>
         </header>
 
-        <div className="upgrade-page__cards">
-          
-          {/* --- GOLD CARD --- */}
-          <div className="plan-card plan-card--gold">
-            <div className="plan-card__header">
-              <h2 className="plan-card__name">Gold</h2>
-              <div className="plan-card__price">
-                <span className="currency">$</span>9.99<span className="period">/mo</span>
-              </div>
-            </div>
-            
-            <ul className="plan-card__features">
-              <li><span>✅</span> Unlimited Likes</li>
-              <li><span>✅</span> See Who Likes You</li>
-              <li><span>✅</span> 5 Super Likes / Day</li>
-              <li><span>✅</span> No Ads</li>
-            </ul>
+        {loading ? (
+           <div className="upgrade-page__loading">
+             <div className="upgrade-page__spinner"></div>
+             <p>Loading plans...</p>
+           </div>
+        ) : (
+          <div className="upgrade-page__cards-grid">
+            {plans.map((plan) => {
+              const type = getPlanType(plan.productName);
+              const isPlatinum = type === "platinum";
+              
+              if (type === "unknown") return null;
 
-            <button 
-              className="plan-card__btn plan-card__btn--gold"
-              onClick={() => handlePurchase('gold')}
-              disabled={loading}
-            >
-              {loading ? "Processing..." : "Get Gold ✨"}
-            </button>
+              const features = getDynamicFeatures(plan.productName);
+
+              return (
+                <div key={plan.id} className={`plan-card plan-card--${type}`}>
+                  {isPlatinum && <div className="plan-card__badge">MOST POPULAR</div>}
+                  
+                  <div className="plan-card__header">
+                    <h2 className="plan-card__name">{plan.productName}</h2>
+                    <div className="plan-card__price">
+                      {formatPrice(plan.amount, plan.currency)}
+                      <span className="plan-card__interval">/{plan.interval === 'month' ? 'mån' : 'år'}</span>
+                    </div>
+                  </div>
+                  
+                  <ul className="plan-card__features">
+                    {features.map((feat, i) => (
+                      <li key={i}>
+                        {isPlatinum ? 
+                          <RiFlashlightFill className="plan-card__icon plan-card__icon--plat" /> : 
+                          <RiCheckLine className="plan-card__icon" />
+                        } 
+                        {feat}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button 
+                    className={`plan-card__btn plan-card__btn--${type}`}
+                    onClick={() => handlePurchase(plan.id, plan.productName)}
+                    disabled={processingId === plan.id}
+                  >
+                    {processingId === plan.id ? "Processing..." : `Get ${type.charAt(0).toUpperCase() + type.slice(1)}`}
+                  </button>
+                </div>
+              );
+            })}
           </div>
-
-          {/* --- PLATINUM CARD --- */}
-          <div className="plan-card plan-card--platinum">
-            <div className="plan-card__badge">MOST POPULAR</div>
-            <div className="plan-card__header">
-              <h2 className="plan-card__name">Platinum</h2>
-              <div className="plan-card__price">
-                <span className="currency">$</span>19.99<span className="period">/mo</span>
-              </div>
-            </div>
-            
-            <ul className="plan-card__features">
-              <li><span>💎</span> <strong>Everything in Gold</strong></li>
-              <li><span>🚀</span> <strong>Priority Likes</strong> (Be seen first)</li>
-              <li><span>✈️</span> <strong>Travel Mode</strong> (Change location)</li>
-              <li><span>💌</span> <strong>Message Before Match</strong></li>
-              <li><span>🎭</span> <strong>Unlimited Blind Dates</strong></li>
-            </ul>
-
-            <button 
-              className="plan-card__btn plan-card__btn--platinum"
-              onClick={() => handlePurchase('platinum')}
-              disabled={loading}
-            >
-              {loading ? "Processing..." : "Get Platinum 🚀"}
-            </button>
-          </div>
-
-        </div>
+        )}
 
         <p className="upgrade-page__footer">
           Recurring billing, cancel anytime. By continuing, you agree to our Terms.

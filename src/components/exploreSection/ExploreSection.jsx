@@ -7,26 +7,18 @@ import "./ExploreSection.css";
 
 const getEmptyStateType = (sectionType) => {
   switch (sectionType) {
-    case "city":
-      return "cityMatches";
-    case "fresh":
-      return "freshFaces";
-    case "interests":
-      return "interestMatches";
-    default:
-      return "default";
+    case "city": return "cityMatches";
+    case "fresh": return "freshFaces";
+    case "interests": return "interestMatches";
+    default: return "default";
   }
 };
 
 const LockedMoreCard = memo(({ count, onUpgrade }) => (
   <div className="explore-section__locked-more-card" onClick={onUpgrade}>
-    <div className="explore-section__lock-icon" aria-hidden="true">
-      💎
-    </div>
+    <div className="explore-section__lock-icon" aria-hidden="true">💎</div>
     <h3 className="explore-section__locked-title">+{count} More</h3>
-    <p className="explore-section__locked-desc">
-      Upgrade to Premium to see everyone!
-    </p>
+    <p className="explore-section__locked-desc">Upgrade to Premium to see everyone!</p>
   </div>
 ));
 
@@ -51,45 +43,43 @@ const ExploreSection = ({
     if (link) navigate(link);
   }, [link, navigate]);
 
-  const { visibleUsers, remainingCount, isLocked, emptyType } = useMemo(() => {
+  const { visibleUsers, remainingCount, isSectionLocked, emptyType } = useMemo(() => {
+    // 1. Check if the WHOLE section should be locked (Soulmates)
     if (type === "soulmates") {
       const { isLocked, limit } = getSoulmatePermissions(userPlan);
 
       if (isLocked) {
-        return { visibleUsers: [], remainingCount: 0, isLocked: true };
+        return { visibleUsers: [], remainingCount: 0, isSectionLocked: true };
       }
 
-      const visible =
-        limit === Infinity
-          ? displayedUsers
-          : displayedUsers.slice(0, limit);
+      const visible = limit === Infinity 
+        ? displayedUsers 
+        : displayedUsers.slice(0, limit);
 
-      const remaining =
-        limit === Infinity ? 0 : Math.max(0, displayedUsers.length - limit);
+      const remaining = limit === Infinity ? 0 : Math.max(0, displayedUsers.length - limit);
 
       return {
         visibleUsers: visible,
         remainingCount: remaining,
-        isLocked: false,
+        isSectionLocked: false,
       };
     }
 
     return {
       visibleUsers: displayedUsers,
       remainingCount: 0,
-      isLocked: false,
+      isSectionLocked: false,
       emptyType: getEmptyStateType(type),
     };
   }, [type, displayedUsers, userPlan]);
 
-  if (type === "soulmates" && isLocked) {
+  // Render Full Section Lock (e.g., Soulmates)
+  if (type === "soulmates" && isSectionLocked) {
     return (
       <section className="explore-section" aria-labelledby={`${type}-title`}>
         <div className="explore-section__header">
           <div className="explore-section__header-group">
-            <h2 id={`${type}-title`} className="explore-section__title">
-              {title}
-            </h2>
+            <h2 id={`${type}-title`} className="explore-section__title">{title}</h2>
             <p className="explore-section__subtitle">{subtitle}</p>
           </div>
         </div>
@@ -102,10 +92,7 @@ const ExploreSection = ({
     <section className="explore-section" aria-labelledby={`${type}-title`}>
       <div className="explore-section__header">
         <div className="explore-section__header-group">
-          <h2 id={`${type}-title`} className="explore-section__title">
-            {title}{" "}
-            
-          </h2>
+          <h2 id={`${type}-title`} className="explore-section__title">{title}</h2>
           <p className="explore-section__subtitle">{subtitle}</p>
         </div>
         {link && (
@@ -126,8 +113,7 @@ const ExploreSection = ({
               <UserCard
                 key={user._id}
                 user={user}
-                isLocked={false}
-                userPlan={userPlan}
+                // No manual isLocked passing needed here!
               />
             ))}
 
