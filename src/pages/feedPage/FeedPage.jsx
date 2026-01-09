@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PostCard from "../../components/postCard/PostCard";
 import CreatePostModal from "../../components/createPostModal/CreatePostModal";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
-import { Plus, Globe, FolderHeart, Loader2 } from "lucide-react";
+import { Plus, Globe, FolderHeart } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "../../context/useAuth.js";
 import "./FeedPage.css";
@@ -17,7 +17,7 @@ const FeedPage = () => {
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
       const endpoint =
@@ -34,11 +34,11 @@ const FeedPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, activeTab]);
 
   useEffect(() => {
     fetchPosts();
-  }, [activeTab]);
+  }, [fetchPosts]);
 
   const handleLike = async (postId) => {
     try {

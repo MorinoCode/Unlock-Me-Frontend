@@ -36,7 +36,7 @@ const UserCard = ({ user }) => {
     return limit !== Infinity && usage >= limit;
   };
 
-  const handleCardClick = (e) => {
+  const handleCardClick = () => {
     if (isLocked) {
         setModalMessage(`This user is a ${score}% match! Upgrade to unlock high matches.`);
         setShowModal(true); 

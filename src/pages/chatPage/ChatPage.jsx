@@ -13,29 +13,27 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [socket, setSocket] = useState(null);
   const [receiver, setReceiver] = useState(null);
   const messagesEndRef = useRef(null);
+  
+  // ✅ FIX: Use useRef instead of useState for socket
+  const socketRef = useRef(null);
 
   // Limit States
   const [showSubModal, setShowSubModal] = useState(false);
-  const [isInputLocked, setIsInputLocked] = useState(false);
   const [limitMessage, setLimitMessage] = useState("");
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // 1. Check Chat Permission
-  useEffect(() => {
-    const userPlan = currentUser?.subscription?.plan || "free";
-    const dmLimit = getDailyDmLimit(userPlan);
-    
-    if (dmLimit === 0) {
-        setIsInputLocked(true);
-        setLimitMessage("Free users cannot send direct messages. Upgrade to chat!");
-    } else {
-        setIsInputLocked(false);
-    }
-  }, [currentUser]);
+  // ✅ FIX: Derive isInputLocked and limitMessage from currentUser
+  const userPlan = currentUser?.subscription?.plan || "free";
+  const dmLimit = getDailyDmLimit(userPlan);
+  const isInputLocked = dmLimit === 0;
+  
+  // ✅ FIX: Derive limitMessage as well (no useEffect needed)
+  // const defaultLimitMessage = dmLimit === 0 
+  //   ? "Free users cannot send direct messages. Upgrade to chat!" 
+  //   : "";
 
   // Connect Socket
   useEffect(() => {
@@ -43,8 +41,14 @@ const ChatPage = () => {
     const newSocket = io(API_URL, {
         query: { userId: currentUser?._id }
     });
-    setSocket(newSocket);
-    return () => newSocket.close();
+    // ✅ FIX: Store in ref instead of state
+    socketRef.current = newSocket;
+    
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
+    };
   }, [API_URL, currentUser]);
 
   // Fetch Data
@@ -65,20 +69,27 @@ const ChatPage = () => {
     if (currentUser && receiverId) fetchData();
   }, [receiverId, currentUser, API_URL]);
 
-  // ✅ FIX: Define scrollToBottom BEFORE using it in useEffect
+  // Define scrollToBottom
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   // Listen for Messages
   useEffect(() => {
-    if (!socket) return;
-    socket.on("newMessage", (msg) => {
+    if (!socketRef.current) return;
+    
+    // ✅ FIX: Use socketRef.current instead of socket
+    socketRef.current.on("newMessage", (msg) => {
         setMessages((prev) => [...prev, msg]);
         scrollToBottom();
     });
-    return () => socket.off("newMessage");
-  }, [socket, scrollToBottom]);
+    
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off("newMessage");
+      }
+    };
+  }, [scrollToBottom]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
