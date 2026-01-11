@@ -103,10 +103,7 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Element: .inbox-page__main */
-.inbox-page__main {
-  /* Main container styles */
-}
+
 
 /* Element: .inbox-page__list */
 .inbox-page__list {
@@ -297,6 +294,49 @@
   transform: translateY(-3px);
   box-shadow: 0 10px 20px rgba(167, 139, 250, 0.2);
 }
+
+/* استایل‌های تب بار */
+.inbox-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.inbox-tab {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.inbox-tab:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.inbox-tab--active {
+  background: var(--primary-gradient, linear-gradient(135deg, #ff4b4b 0%, #ff9068 100%));
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 75, 75, 0.3);
+}
+
+.inbox-page__count-badge {
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    padding-left: 0.5rem;
+}
+
+/* بقیه استایل‌های قبلی شما سر جایشان می‌مانند... */
 
 /* Mobile Responsive */
 @media (max-width: 768px) {

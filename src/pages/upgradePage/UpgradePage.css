@@ -1,0 +1,256 @@
+.upgrade-page {
+  min-height: 100vh;
+  background: rgba(10, 15, 30, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background Effect */
+.upgrade-page__bg-glow {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.upgrade-page__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  text-align: center;
+}
+
+/* Header */
+.upgrade-page__header {
+  margin-bottom: 50px;
+}
+
+.upgrade-page__icon-box {
+  font-size: 4rem;
+  color: #fbbf24;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 4px 6px rgba(251, 191, 36, 0.4));
+  display: flex;
+  justify-content: center;
+}
+
+.upgrade-page__title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 10px;
+  letter-spacing: -0.5px;
+}
+
+.upgrade-page__subtitle {
+  font-size: 1.1rem;
+  color: #6b7280;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Grid Layout */
+.upgrade-page__cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr; /* Platinum slightly wider */
+  gap: 30px;
+  align-items: stretch;
+  margin-bottom: 40px;
+}
+
+/* --- CARD COMPONENT --- */
+.plan-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 40px;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid transparent;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Gold Plan */
+.plan-card--gold {
+  border-color: #fbbf24;
+  background: linear-gradient(to bottom, #fffbeb, #fff);
+  box-shadow: 0 10px 30px rgba(251, 191, 36, 0.1);
+}
+
+/* Platinum Plan */
+.plan-card--platinum {
+  border-color: #8b5cf6;
+  background: linear-gradient(to bottom right, #fff, #f5f3ff);
+  box-shadow: 0 20px 50px rgba(139, 92, 246, 0.2);
+  transform: scale(1.02);
+  z-index: 2;
+}
+
+.plan-card__badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #8b5cf6;
+  color: white;
+  padding: 6px 18px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+}
+
+/* Card Header */
+.plan-card__header {
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding-bottom: 25px;
+}
+
+.plan-card__name {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #374151;
+  font-weight: 700;
+}
+
+.plan-card__price {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #111827;
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.plan-card__interval {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+/* Features List */
+.plan-card__features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px;
+  flex-grow: 1;
+}
+
+.plan-card__features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 1rem;
+  color: #4b5563;
+  text-align: left;
+}
+
+.plan-card__icon {
+  color: #10b981; /* Green Check */
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.plan-card__icon--plat {
+  color: #8b5cf6; /* Platinum Purple */
+}
+
+/* Buttons */
+.plan-card__btn {
+  width: 100%;
+  padding: 18px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-top: auto;
+}
+
+.plan-card__btn--gold {
+  background: #fcd34d;
+  color: #78350f;
+  box-shadow: 0 4px 6px rgba(251, 191, 36, 0.3);
+}
+.plan-card__btn--gold:hover {
+  background: #fbbf24;
+  transform: translateY(-2px);
+}
+
+.plan-card__btn--platinum {
+  background: #8b5cf6;
+  color: white;
+  box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+}
+.plan-card__btn--platinum:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+}
+
+.plan-card__btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Footer */
+.upgrade-page__footer {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-top: 30px;
+}
+
+/* Loading */
+.upgrade-page__loading {
+  text-align: center;
+  padding: 50px;
+}
+.upgrade-page__spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f4f6;
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .upgrade-page__cards-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .plan-card--platinum {
+    transform: scale(1);
+    order: -1; /* Show Platinum first */
+  }
+
+  .upgrade-page__title {
+    font-size: 2rem;
+  }
+}
