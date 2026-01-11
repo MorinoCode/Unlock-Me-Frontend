@@ -1,44 +1,57 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Filter, X } from "lucide-react"; // آیکون‌های جدید
 import { useNavigate } from "react-router-dom";
 import GoDateCard from "../../components/goDateComponents/goDateCard/GoDateCard";
 import CreateDateModal from "../../components/goDateComponents/createDateModal/CreateDateModal";
 import SubscriptionModal from "../../components/modals/subscriptionModal/SubscriptionModal";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
-// import { getGoDateConfig } from "../../utils/subscriptionRules";
 import { useAuth } from "../../context/useAuth.js";
 import toast from "react-hot-toast";
 import "./GoDatePage.css";
 
 const GoDatePage = () => {
-  const [activeTab, setActiveTab] = useState("browse"); // 'browse' or 'mine'
+  const [activeTab, setActiveTab] = useState("browse");
   const [dates, setDates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   
-  // Subscription Limit States
+  // --- Filters State ✅ ---
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [filterCity, setFilterCity] = useState("");
+  
   const [showSubModal, setShowSubModal] = useState(false);
   const [limitMsg, setLimitMsg] = useState("");
 
   const { currentUser } = useAuth();
-  console.log(currentUser);
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // --- 1. Fetch Dates ---
+  // --- 1. Fetch Dates (With Filters) ---
   const fetchDates = useCallback(async () => {
     setLoading(true);
     try {
-        const endpoint = activeTab === 'browse' ? '/api/go-date/all' : '/api/go-date/mine';
+        let endpoint = activeTab === 'browse' ? '/api/go-date/all' : '/api/go-date/mine';
+        
+        // ارسال فیلترها به بک‌اند برای تب Browse
+        if (activeTab === 'browse') {
+             const params = new URLSearchParams();
+             if (filterCity) params.append('city', filterCity);
+             if (filterCategory && filterCategory !== 'all') params.append('category', filterCategory);
+             endpoint += `?${params.toString()}`;
+        }
+
         const res = await fetch(`${API_URL}${endpoint}`, { credentials: 'include' });
         const data = await res.json();
+        
         if (Array.isArray(data)) setDates(data);
+        else setDates([]);
+
     } catch (err) {
         console.error(err);
     } finally {
         setLoading(false);
     }
-  }, [activeTab, API_URL]);
+  }, [activeTab, API_URL, filterCity, filterCategory]);
 
   useEffect(() => {
     fetchDates();
@@ -65,7 +78,7 @@ const GoDatePage = () => {
         if (res.ok) {
             toast.success("Date Created Successfully!");
             setShowCreate(false);
-            setActiveTab('mine'); // Switch to see my new date
+            setActiveTab('mine'); 
             fetchDates();
         } else {
             toast.error("Failed to create date");
@@ -86,15 +99,13 @@ const GoDatePage = () => {
         });
         if (res.ok) {
             toast.success("Request Sent!");
-            // Update local state to show 'Pending'
             setDates(prev => prev.map(d => d._id === dateId ? {...d, hasApplied: true} : d));
         } else {
             const data = await res.json();
             toast.error(data.error || "Error applying");
         }
     } catch (err) {
-        toast.error("Connection error")
-        console.log(err);;
+        toast.error("Connection error");
     }
   };
 
@@ -111,9 +122,8 @@ const GoDatePage = () => {
         if (res.ok) {
             const data = await res.json();
             toast.success("Match Created! Redirecting to chat...");
-            // Redirect to the new chat
             if (data.chatRuleId) {
-                navigate(`/chat/${applicantId}`); // Or verify if chat ID or User ID is needed for route
+                navigate(`/chat/${applicantId}`);
             }
         } else {
             toast.error("Failed to accept");
@@ -123,8 +133,26 @@ const GoDatePage = () => {
     }
   };
 
-  // Check plan for FAB label (optional)
-//   const config = getGoDateConfig(currentUser?.subscription?.plan);
+  // --- 5. Delete Handler ✅ ---
+  const handleDelete = async (dateId) => {
+      if(!window.confirm("Are you sure you want to cancel this date?")) return;
+      
+      try {
+        const res = await fetch(`${API_URL}/api/go-date/${dateId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+
+        if (res.ok) {
+            toast.success("Date deleted");
+            setDates(prev => prev.filter(d => d._id !== dateId));
+        } else {
+            toast.error("Failed to delete");
+        }
+      } catch (err) {
+          console.error(err);
+      }
+  };
 
   return (
     <ExploreBackgroundLayout>
@@ -132,13 +160,13 @@ const GoDatePage = () => {
         
         {/* Header */}
         <div className="go-date-header">
-            <h1 className="go-date-title">Go Date 📅</h1>
+            <div className="go-date-title"><h1 className="go-date-title-heading">Go Date</h1> <span className="go-date-title-icon"> 📅</span></div>
             <div className="go-date-tabs">
                 <button 
                     className={`go-date-tab ${activeTab === 'browse' ? 'go-date-tab--active' : ''}`}
                     onClick={() => setActiveTab('browse')}
                 >
-                    Browse Dates
+                    Browse
                 </button>
                 <button 
                     className={`go-date-tab ${activeTab === 'mine' ? 'go-date-tab--active' : ''}`}
@@ -149,6 +177,38 @@ const GoDatePage = () => {
             </div>
         </div>
 
+        {/* --- Filters Area (Only on Browse) ✅ --- */}
+        {activeTab === 'browse' && (
+            <div className="go-date-filters">
+                <div className="go-date-filter-item">
+                    <Filter size={16} />
+                    <select 
+                        value={filterCategory} 
+                        onChange={(e) => setFilterCategory(e.target.value)}
+                        className="go-date-filter-select"
+                    >
+                        <option value="all">All Categories</option>
+                        <option value="coffee">☕ Coffee</option>
+                        <option value="food">🍽️ Food</option>
+                        <option value="drink">🍷 Drink</option>
+                        <option value="movie">🎬 Movie</option>
+                        <option value="activity">🏃 Activity</option>
+                    </select>
+                </div>
+                
+                <div className="go-date-filter-item">
+                    <input 
+                        type="text" 
+                        placeholder="City..." 
+                        value={filterCity}
+                        onChange={(e) => setFilterCity(e.target.value)}
+                        className="go-date-filter-input"
+                    />
+                    {filterCity && <button onClick={() => setFilterCity("")}><X size={14}/></button>}
+                </div>
+            </div>
+        )}
+
         {/* Content Grid */}
         <div className="go-date-grid">
             {loading ? (
@@ -156,7 +216,7 @@ const GoDatePage = () => {
             ) : dates.length === 0 ? (
                 <div style={{gridColumn:'1/-1', textAlign:'center', marginTop:'50px', color:'#64748b'}}>
                     {activeTab === 'browse' ? (
-                        <p>No open dates found in your area. Be the first to create one!</p>
+                        <p>No open dates found. Try changing filters or create one!</p>
                     ) : (
                         <p>You haven't planned any dates yet.</p>
                     )}
@@ -169,22 +229,21 @@ const GoDatePage = () => {
                         isOwner={activeTab === 'mine'} 
                         onApply={handleApply}
                         onAccept={handleAccept}
+                        onDelete={handleDelete} // پاس دادن تابع حذف
                     />
                 ))
             )}
         </div>
 
-        {/* Floating Create Button */}
         <button className="go-date-fab" onClick={() => setShowCreate(true)}>
             <Plus />
         </button>
 
-        {/* Modals */}
         {showCreate && (
             <CreateDateModal 
                 onClose={() => setShowCreate(false)}
                 onCreate={handleCreateDate}
-                loading={loading && showCreate} // simple loading logic
+                loading={loading && showCreate} 
             />
         )}
 
