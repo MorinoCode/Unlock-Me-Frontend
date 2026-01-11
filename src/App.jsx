@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
+import React, { Suspense, lazy, useEffect } from "react";
+import { BrowserRouter, Route, Routes, Outlet, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider.jsx";
 import { SocketProvider } from "./context/SocketProvider.jsx";
 import { Toaster } from "react-hot-toast";
@@ -70,6 +70,14 @@ const GoDatePage = lazy(() =>
   import("./pages/goDatePage/GoDatePage.jsx")
 );
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 /**
  * AppContent Component:
  * We move the routing logic here so it sits INSIDE the Providers.
@@ -81,6 +89,7 @@ const AppContent = () => {
 
   return (
     <Suspense fallback={<HeartbeatLoader />}>
+      <ScrollToTop />
       <Routes>
         {/* Public Pages */}
         <Route element={<PublicRoute />}>

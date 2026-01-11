@@ -67,11 +67,12 @@ const SearchableSelect = memo(({ options, value, onChange, placeholder, disabled
 const OnboardingStep2 = ({ formData, setFormData, onNext, onBack, loading }) => {
   const [availableLocations, setAvailableLocations] = useState([]);
   const [fetchingLoc, setFetchingLoc] = useState(true);
+  const [locationStatus, setLocationStatus] = useState(""); // برای نمایش وضعیت GPS به کاربر
   const [errorMessage, setErrorMessage] = useState("");
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // ۱. واکشی لیست لوکیشن‌ها از دیتابیس
+  // 1. Fetch Locations
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -90,31 +91,59 @@ const OnboardingStep2 = ({ formData, setFormData, onNext, onBack, loading }) => 
     fetchLocations();
   }, [API_URL]);
 
-  // ۲. تلاش برای دریافت خودکار مختصات به محض ورود به استپ ۲
+  // 2. Get GPS Coordinates (Improved)
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          // فقط مختصات را آپدیت می‌کنیم، کاربر خودش شهر را انتخاب می‌کند
-          setFormData((prev) => ({
-            ...prev,
-            location: {
-              ...prev.location,
-              type: "Point",
-              coordinates: [longitude, latitude],
-            },
-          }));
-        },
-        (error) => {
-          console.log("User denied or error in Geolocation:", error.message);
-          // اگر اجازه نداد، اتفاقی نمی‌افتد و کاربر به صورت دستی انتخاب می‌کند
-        },
-        { enableHighAccuracy: true, timeout: 5000 }
-      );
+    if (!("geolocation" in navigator)) {
+      setLocationStatus("Geolocation not supported by this browser.");
+      return;
     }
+
+    setLocationStatus("Locating...");
+
+    const successHandler = (position) => {
+      const { latitude, longitude } = position.coords;
+      console.log("GPS success:", latitude, longitude);
+      
+      setFormData((prev) => ({
+        ...prev,
+        location: {
+          ...prev.location,
+          type: "Point",
+          // Mongo expects [longitude, latitude]
+          coordinates: [longitude, latitude], 
+        },
+      }));
+      setLocationStatus("Location acquired ✓");
+    };
+
+    const errorHandler = (error) => {
+      console.warn("GPS Error:", error.message);
+      let msg = "Could not get precise location.";
+      if (error.code === 1) msg = "Location permission denied.";
+      else if (error.code === 2) msg = "Location unavailable.";
+      else if (error.code === 3) msg = "Location request timed out.";
+      
+      setLocationStatus(msg + " defaulting to city center.");
+      
+      // Fallback: Default to [0,0] or handle in backend if coordinates are empty
+      // We keep existing coordinates if they were set, otherwise 0,0
+      setFormData((prev) => {
+          if(prev.location?.coordinates && prev.location.coordinates[0] !== 0) return prev;
+          return {
+            ...prev,
+            location: { ...prev.location, type: "Point", coordinates: [0, 0] }
+          };
+      });
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      successHandler,
+      errorHandler,
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   }, [setFormData]);
 
+  // ... (options logic remains the same) ...
   const countryOptions = useMemo(() => {
     return availableLocations.map((loc) => ({
       name: loc.country,
@@ -135,6 +164,11 @@ const OnboardingStep2 = ({ formData, setFormData, onNext, onBack, loading }) => 
       <h2 className="onboarding-step__title">Where do you live?</h2>
       
       {errorMessage && <div className="onboarding-step__error-message">{errorMessage}</div>}
+      
+      {/* نمایش وضعیت GPS برای اطمینان کاربر */}
+      <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '10px', textAlign: 'center' }}>
+        GPS Status: {locationStatus}
+      </div>
 
       <div className="onboarding-step__input-group onboarding-step__input-group--location">
         <label className="onboarding-step__label">Country</label>
@@ -144,7 +178,12 @@ const OnboardingStep2 = ({ formData, setFormData, onNext, onBack, loading }) => 
           placeholder={fetchingLoc ? "Loading Countries..." : "Select Country"}
           disabled={fetchingLoc}
           onChange={(selected) => {
-            setFormData({ ...formData, country: selected?.name || "", countryCode: selected?.isoCode || "", city: "" });
+            setFormData({ 
+                ...formData, 
+                country: selected?.name || "", 
+                countryCode: selected?.isoCode || "", 
+                city: "" 
+            });
           }}
         />
 
@@ -163,6 +202,7 @@ const OnboardingStep2 = ({ formData, setFormData, onNext, onBack, loading }) => 
         <button 
           className="onboarding-step__btn onboarding-step__btn--primary" 
           onClick={onNext} 
+          // دکمه فقط زمانی فعال می‌شود که کشور و شهر پر شده باشند
           disabled={!formData.country || !formData.city || loading}
         >
           {loading ? "Saving..." : "Next"}
@@ -171,5 +211,7 @@ const OnboardingStep2 = ({ formData, setFormData, onNext, onBack, loading }) => 
     </div>
   );
 };
+
+
 
 export default OnboardingStep2;
