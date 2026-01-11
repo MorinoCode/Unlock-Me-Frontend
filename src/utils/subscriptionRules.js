@@ -134,3 +134,32 @@ export const getMatchListLimit = (plan, type) => {
   
   return 0;
 };
+
+// ---------------------------------------------
+// 9. Go Date (Date Invite) Configuration ✅ NEW
+// ---------------------------------------------
+export const getGoDateConfig = (plan) => {
+  const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
+  
+  switch (normalizedPlan) {
+    case PLANS.PLATINUM: 
+      return { 
+        limitLabel: 'Unlimited', 
+        canCreate: true,
+        period: 'always'
+      };
+    case PLANS.GOLD: 
+      return { 
+        limitLabel: '1 per Week', 
+        canCreate: true,
+        period: 'week'
+      };
+    case PLANS.FREE: 
+    default: 
+      return { 
+        limitLabel: '1 per Month', 
+        canCreate: true,
+        period: 'month'
+      };
+  }
+};

@@ -66,6 +66,9 @@ const UpgradePage = lazy(() =>
 const PaymentSuccessPage = lazy(() =>
   import("./pages/paymentSuccessPage/PaymentSuccessPage.jsx")
 );
+const GoDatePage = lazy(() =>
+  import("./pages/goDatePage/GoDatePage.jsx")
+);
 
 /**
  * AppContent Component:
@@ -127,6 +130,7 @@ const AppContent = () => {
             <Route path="/swipe" element={<SwipePage />} />
             <Route path="/blind-date" element={<BlindDatePage />} />
             <Route path="/feed" element={<FeedPage />} />
+            <Route path="/go-date" element={<GoDatePage />} />
           </Route>
         </Route>
 
