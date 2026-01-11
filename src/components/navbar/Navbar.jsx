@@ -24,14 +24,12 @@ const Navbar = ({ isVisible }) => {
   const [notifications, setNotifications] = useState([]);
   const dropdownRef = useRef(null);
 
-  // مانیتور اسکرول فقط برای استایل Navbar--scrolled (تار شدن پس‌زمینه)
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // دریافت نوتیفیکیشن‌ها
   useEffect(() => {
     const fetchNotifications = async () => {
       if (!currentUser?._id) return;
@@ -48,7 +46,6 @@ const Navbar = ({ isVisible }) => {
     fetchNotifications();
   }, [currentUser, API_URL]);
 
-  // سینک آواتار
   useEffect(() => {
     if (!currentUser?._id) return;
     fetch(`${API_URL}/api/user/user/${currentUser._id}`, { credentials: "include" })
@@ -56,7 +53,6 @@ const Navbar = ({ isVisible }) => {
       .then((d) => d.avatar && setAvatar(d.avatar));
   }, [currentUser, API_URL]);
 
-  // بستن دراپ‌داون با کلیک بیرون
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setShowDropdown(false);
@@ -65,7 +61,6 @@ const Navbar = ({ isVisible }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // گوش دادن به سوکت
   useEffect(() => {
     if (!socket) return;
     const handleNewNotif = (data) => {
@@ -137,7 +132,7 @@ const Navbar = ({ isVisible }) => {
         transition={{ duration: 0.4, ease: "easeInOut" }}
       >
         <div className="navbar__container">
-          <Link to="/" className="navbar__logo" onClick={() => setMobileOpen(false)}>
+          <Link to="/" className="navbar__logo" onClick={() => setMobileOpen(false)} aria-label="UnlockMe Home">
             <div className="navbar__logo-icon">U</div>
             <div className="navbar__logo-text">
               <span className="navbar__logo-text--main">UNLOCK</span>
@@ -149,7 +144,6 @@ const Navbar = ({ isVisible }) => {
             {allLinks.map((l) => (
               <Link key={l.to} to={l.to} className={`navbar__link ${location.pathname === l.to ? "navbar__link--active" : ""}`}>
                 {l.icon}<span className="navbar__label">{l.label}</span>
-                {/* بخش اصلاح شده: حذف layoutId برای جلوگیری از لغزش */}
                 {location.pathname === l.to && (
                   <Motion.div 
                     initial={{ opacity: 0 }} 
@@ -164,10 +158,16 @@ const Navbar = ({ isVisible }) => {
           <div className="navbar__actions">
             {currentUser && (
               <div className="navbar__notif-container" ref={dropdownRef}>
-                <div className="navbar__notification-wrapper" onClick={() => {setShowDropdown(!showDropdown); setNotificationsCount(0)}}>
+                {/* ✅ Accessibility Fix: Changed div to button & added aria-label */}
+                <button 
+                  className="navbar__notification-wrapper" 
+                  onClick={() => {setShowDropdown(!showDropdown); setNotificationsCount(0)}}
+                  aria-label={`Notifications ${notificationsCount > 0 ? `(${notificationsCount} unread)` : ''}`}
+                >
                   <Bell size={22} className="navbar__notification-icon" />
                   {notificationsCount > 0 && <span className="navbar__notification-badge">{notificationsCount}</span>}
-                </div>
+                </button>
+                
                 <AnimatePresence>
                   {showDropdown && (
                     <Motion.div className="navbar__dropdown" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 15 }}>
@@ -194,17 +194,25 @@ const Navbar = ({ isVisible }) => {
 
             {currentUser ? (
               <div className="navbar__user-section navbar__user-section--desktop">
-                <Link to="/myprofile" className="navbar__profile">
+                <Link to="/myprofile" className="navbar__profile" aria-label="Go to My Profile">
                   <div className="navbar__avatar-wrapper"><img src={avatar} alt="Profile" className="navbar__profile-avatar" /></div>
                   <span className="navbar__profile-name">{currentUser.name}</span>
                 </Link>
-                <button onClick={signout} className="navbar__icon-btn--logout"><LogOut size={20} /></button>
+                {/* ✅ Accessibility Fix: Added aria-label for Logout */}
+                <button onClick={signout} className="navbar__icon-btn--logout" aria-label="Sign Out">
+                    <LogOut size={20} />
+                </button>
               </div>
             ) : (
-              <Link to="/signin" className="navbar__btn-login navbar__btn-login--desktop"><Key size={18} /><span>Sign In</span></Link>
+              <Link to="/signin" className="navbar__btn-login navbar__btn-login--desktop" aria-label="Sign In">
+                  <Key size={18} /><span>Sign In</span>
+              </Link>
             )}
 
-            <button className="navbar__burger" onClick={() => setMobileOpen(true)}><Menu size={28} /></button>
+            {/* ✅ Accessibility Fix: Added aria-label for Menu */}
+            <button className="navbar__burger" onClick={() => setMobileOpen(true)} aria-label="Open Menu">
+                <Menu size={28} />
+            </button>
           </div>
         </div>
 
@@ -212,7 +220,13 @@ const Navbar = ({ isVisible }) => {
           {mobileOpen && (
             <Motion.div className="navbar__sidebar" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
               <div className="navbar__sidebar-content">
-                <div className="navbar__sidebar-header"><span>Navigation</span><button className="navbar__close-btn" onClick={() => setMobileOpen(false)}><X size={24} /></button></div>
+                <div className="navbar__sidebar-header">
+                    <span>Navigation</span>
+                    {/* ✅ Accessibility Fix: Added aria-label for Close */}
+                    <button className="navbar__close-btn" onClick={() => setMobileOpen(false)} aria-label="Close Menu">
+                        <X size={24} />
+                    </button>
+                </div>
                 {currentUser && (
                   <div className="navbar__sidebar-user-card" onClick={() => {navigate("/myprofile"); setMobileOpen(false)}} >
                     <img src={avatar} alt="User" className="navbar__sidebar-avatar" />
@@ -226,7 +240,6 @@ const Navbar = ({ isVisible }) => {
                   {sidebarLinks.map((l) => (
                     <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)} className={`navbar__sidebar-link ${location.pathname === l.to ? "navbar__sidebar-link--active" : ""}`}>
                       {l.icon} <span>{l.label}</span>
-                      {/* بخش اصلاح شده: حذف layoutId برای سایدبار */}
                       {location.pathname === l.to && (
                         <Motion.div 
                           initial={{ opacity: 0 }} 
@@ -239,7 +252,7 @@ const Navbar = ({ isVisible }) => {
                 </div>
                 <div className="navbar__sidebar-footer">
                   {currentUser ? (
-                    <button onClick={signout} className="navbar__sidebar-logout"><LogOut size={20} /> <span>Logout</span></button>
+                    <button onClick={signout} className="navbar__sidebar-logout" aria-label="Sign Out"><LogOut size={20} /> <span>Logout</span></button>
                   ) : (
                     <Link to="/signin" className="navbar__sidebar-link" onClick={() => setMobileOpen(false)}><Key size={20} /> <span>Sign In</span></Link>
                   )}

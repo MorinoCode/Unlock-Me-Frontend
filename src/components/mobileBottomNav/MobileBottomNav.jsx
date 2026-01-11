@@ -8,10 +8,10 @@ const MobileBottomNav = ({ isVisible }) => {
   const location = useLocation();
 
   const navItems = [
-    { path: "/swipe", icon: <Flame size={26} /> },
-    { path: "/explore", icon: <Compass size={26} /> },
-    { path: "/blind-date", icon: <Ghost size={26} /> },
-    { path: "/messages", icon: <MessageSquare size={26} /> },
+    { path: "/swipe", icon: <Flame size={26} />, label: "Swipe Page" },
+    { path: "/explore", icon: <Compass size={26} />, label: "Explore Page" },
+    { path: "/blind-date", icon: <Ghost size={26} />, label: "Blind Date" },
+    { path: "/messages", icon: <MessageSquare size={26} />, label: "Messages" },
   ];
 
   return (
@@ -28,7 +28,13 @@ const MobileBottomNav = ({ isVisible }) => {
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
-                <Link key={item.path} to={item.path} className="mobile-bottom-nav__item">
+                <Link 
+                    key={item.path} 
+                    to={item.path} 
+                    className="mobile-bottom-nav__item"
+                    // ✅ Accessibility Fix: Added aria-label
+                    aria-label={item.label} 
+                >
                   <div className={`mobile-bottom-nav__icon-wrapper ${isActive ? "active" : ""}`}>
                     {item.icon}
                     {isActive && (

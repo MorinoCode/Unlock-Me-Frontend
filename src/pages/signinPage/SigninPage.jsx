@@ -134,7 +134,7 @@ const SigninPage = () => {
           <p className="signin-card__forgot-text">
             Forgot Password?{" "}
             <a href="/forgot-password" className="signin-card__forgot-link">
-              click here
+              Forgot Password?
             </a>
           </p>
 
