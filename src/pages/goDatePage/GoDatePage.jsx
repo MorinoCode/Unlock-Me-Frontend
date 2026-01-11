@@ -92,7 +92,8 @@ const GoDatePage = () => {
             toast.error(data.error || "Error applying");
         }
     } catch (err) {
-        toast.error("Connection error");
+        toast.error("Connection error")
+        console.log(err);;
     }
   };
 
@@ -122,7 +123,7 @@ const GoDatePage = () => {
   };
 
   // Check plan for FAB label (optional)
-  const config = getGoDateConfig(currentUser?.subscription?.plan);
+//   const config = getGoDateConfig(currentUser?.subscription?.plan);
 
   return (
     <ExploreBackgroundLayout>

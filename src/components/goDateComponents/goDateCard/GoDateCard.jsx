@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MapPin, Calendar, Clock, DollarSign, User } from "lucide-react";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 const GoDateCard = ({ date, isOwner, onApply, onAccept }) => {
   const [loading, setLoading] = useState(false);
