@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, Instagram, Twitter, Globe } from 'lucide-react';
+import { Github, Instagram, Twitter } from 'lucide-react';
 import './Footer.css';
 
 const Footer = () => {
@@ -13,9 +13,16 @@ const Footer = () => {
         
         <div className="main-footer__links">
           <div className="main-footer__social">
-            <a href="#" className="main-footer__social-link"><Instagram size={20} /></a>
-            <a href="#" className="main-footer__social-link"><Twitter size={20} /></a>
-            <a href="#" className="main-footer__social-link"><Github size={20} /></a>
+            {/* ✅ Accessibility Fix: Added aria-labels */}
+            <a href="#" className="main-footer__social-link" aria-label="Visit our Instagram page">
+                <Instagram size={20} />
+            </a>
+            <a href="#" className="main-footer__social-link" aria-label="Visit our Twitter page">
+                <Twitter size={20} />
+            </a>
+            <a href="#" className="main-footer__social-link" aria-label="Visit our Github profile">
+                <Github size={20} />
+            </a>
           </div>
         </div>
 
@@ -24,8 +31,8 @@ const Footer = () => {
             © {new Date().getFullYear()} UnlockMe. All rights reserved.
           </p>
           <div className="main-footer__legal">
-            <a href="/privacypolicy">Privacy Policy</a>
-            <a href="/termsofservice">Terms of Service</a>
+            <a href="/privacypolicy" aria-label="Read Privacy Policy">Privacy Policy</a>
+            <a href="/termsofservice" aria-label="Read Terms of Service">Terms of Service</a>
           </div>
         </div>
       </div>
