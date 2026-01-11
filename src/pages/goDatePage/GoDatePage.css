@@ -1,0 +1,256 @@
+.go-date-page {
+  padding: 20px;
+  min-height: 100vh;
+  padding-bottom: 80px; /* Space for bottom nav */
+}
+
+/* --- Header & Tabs --- */
+.go-date-header {
+  margin-bottom: 20px;
+}
+
+.go-date-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ff4b1f, #ff9068); /* Sunset Gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 15px;
+}
+
+.go-date-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 5px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.go-date-tab {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  color: #64748b;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.go-date-tab--active {
+  background: #fff;
+  color: #ff4b1f;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* --- FAB (Floating Action Button) --- */
+.go-date-fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4b1f, #ff9068);
+  color: white;
+  border: none;
+  box-shadow: 0 10px 25px rgba(255, 75, 31, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 0.2s;
+}
+
+.go-date-fab:active {
+  transform: scale(0.9);
+}
+
+/* --- GRID --- */
+.go-date-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* --- CARD --- */
+.go-date-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.go-date-card__header {
+  height: 120px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 15px;
+}
+/* Fallback gradient if no image */
+.go-date-card__header--no-img {
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+}
+
+.go-date-card__category-badge {
+  background: rgba(255,255,255,0.9);
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.go-date-card__body {
+  padding: 15px;
+}
+
+.go-date-card__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 5px;
+}
+
+.go-date-card__info-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.go-date-card__payment-pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: #475569;
+  margin-top: 10px;
+}
+
+.go-date-card__footer {
+  padding: 15px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.go-date-card__btn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.go-date-card__btn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
+/* Applicants Section */
+.go-date-card__applicants {
+  margin-top: 15px;
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 12px;
+}
+.go-date-card__applicant-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+.go-date-card__user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.go-date-card__avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.go-date-card__accept-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* --- MODAL FORM --- */
+.go-date-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end; /* Bottom sheet style on mobile */
+}
+@media (min-width: 768px) {
+  .go-date-modal-overlay { align-items: center; justify-content: center; }
+}
+
+.go-date-modal {
+  background: #fff;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px 20px 0 0;
+  padding: 25px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+@media (min-width: 768px) {
+  .go-date-modal { border-radius: 20px; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.go-date-form-group { margin-bottom: 15px; }
+.go-date-label { display: block; font-weight: 600; margin-bottom: 5px; color: #334155; }
+.go-date-input, .go-date-select, .go-date-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+.go-date-submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #ff4b1f, #ff9068);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
