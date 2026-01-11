@@ -5,7 +5,7 @@ import GoDateCard from "../../components/goDateComponents/goDateCard/GoDateCard"
 import CreateDateModal from "../../components/goDateComponents/createDateModal/CreateDateModal";
 import SubscriptionModal from "../../components/modals/subscriptionModal/SubscriptionModal";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
-import { useAuth } from "../../context/useAuth.js";
+// import { useAuth } from "../../context/useAuth.js";
 import toast from "react-hot-toast";
 import "./GoDatePage.css";
 
@@ -22,7 +22,7 @@ const GoDatePage = () => {
   const [showSubModal, setShowSubModal] = useState(false);
   const [limitMsg, setLimitMsg] = useState("");
 
-  const { currentUser } = useAuth();
+//   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -106,6 +106,7 @@ const GoDatePage = () => {
         }
     } catch (err) {
         toast.error("Connection error");
+        console.log(err);
     }
   };
 

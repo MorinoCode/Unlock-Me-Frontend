@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import Cropper from "react-easy-crop";
 import "./onboardingSteps.css";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 15 * 1024 * 1024; // اجازه انتخاب فایل بزرگ (تا ۱۵ مگ) را بده، چون ما فشرده‌اش می‌کنیم
 
 const OnboardingStep4 = ({ formData, setFormData, onNext, onBack, loading }) => {
   const [image, setImage] = useState(null);
@@ -14,25 +14,30 @@ const OnboardingStep4 = ({ formData, setFormData, onNext, onBack, loading }) => 
 
   const previewUrl = useMemo(() => {
     if (formData.avatar) {
-      return URL.createObjectURL(formData.avatar);
+      // اگر آواتار قبلاً Blob شده باشد
+      if (formData.avatar instanceof Blob) {
+          return URL.createObjectURL(formData.avatar);
+      }
+      return formData.avatar;
     }
     return null;
   }, [formData.avatar]);
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
+      if (previewUrl && formData.avatar instanceof Blob) {
         URL.revokeObjectURL(previewUrl);
       }
     };
-  }, [previewUrl]);
+  }, [previewUrl, formData.avatar]);
 
   const onFileChange = useCallback((e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       
+      // چک کردن سایز اولیه (فقط برای فایل‌های خیلی خیلی بزرگ)
       if (file.size > MAX_FILE_SIZE) {
-        setErrorMessage("File size must be less than 5MB");
+        setErrorMessage("File is too large. Please choose a smaller one.");
         return;
       }
 
@@ -55,23 +60,27 @@ const OnboardingStep4 = ({ formData, setFormData, onNext, onBack, loading }) => 
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
+  // ✅✅✅ بخش مهم: تابع بهینه‌سازی شده برای فشرده‌سازی و تغییر سایز
   const getCroppedImg = useCallback(async (imageSrc, pixelCrop) => {
     const image = new Image();
     image.src = imageSrc;
     await new Promise((resolve) => (image.onload = resolve));
     
+    // 1. ساخت بوم (Canvas) با سایز فیکس شده (500x500)
+    // این کار باعث می‌شود فایل ۱۱ مگابایتی به زیر ۱۰۰ کیلوبایت برسد!
     const canvas = document.createElement("canvas");
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+    canvas.width = 500;
+    canvas.height = 500;
     const ctx = canvas.getContext("2d");
     
+    // 2. رسم عکس برش خورده روی بوم ۵۰۰ پیکسلی
     ctx.drawImage(
       image,
       pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height,
-      0, 0, pixelCrop.width, pixelCrop.height
+      0, 0, 500, 500
     );
     
-    // ✅ تغییر: خروجی با فرمت webp و کیفیت 0.8
+    // 3. خروجی WebP با کیفیت 80%
     return new Promise((resolve) => 
       canvas.toBlob((blob) => resolve(blob), "image/webp", 0.8)
     );
@@ -80,6 +89,7 @@ const OnboardingStep4 = ({ formData, setFormData, onNext, onBack, loading }) => 
   const handleConfirmCrop = useCallback(async () => {
     try {
       const croppedImageBlob = await getCroppedImg(image, croppedAreaPixels);
+      // الان croppedImageBlob بسیار کم حجم است
       setFormData({ ...formData, avatar: croppedImageBlob });
       setShowCropper(false);
     } catch (e) {
