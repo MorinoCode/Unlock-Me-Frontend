@@ -71,8 +71,9 @@ const OnboardingStep4 = ({ formData, setFormData, onNext, onBack, loading }) => 
       0, 0, pixelCrop.width, pixelCrop.height
     );
     
+    // ✅ تغییر: خروجی با فرمت webp و کیفیت 0.8
     return new Promise((resolve) => 
-      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.9)
+      canvas.toBlob((blob) => resolve(blob), "image/webp", 0.8)
     );
   }, []);
 
