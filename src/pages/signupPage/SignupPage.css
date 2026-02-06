@@ -11,11 +11,13 @@
 .signup-page__card {
   width: 100%;
   max-width: 420px;
-  padding: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
+  /* ✅ Glassy effect: Semi-transparent background with blur */
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   animation: signup-page-fade-in 0.5s ease-out;
   will-change: opacity, transform;
@@ -28,7 +30,7 @@
 }
 
 .signup-page__title {
-  font-size: 2.2rem;
+  font-size: clamp(1.8rem, 4vw, 2.2rem);
   font-weight: 800;
   text-align: center;
   margin-bottom: 0.5rem;
@@ -37,10 +39,11 @@
 }
 
 .signup-page__subtitle {
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
   color: #94a3b8;
   margin-bottom: 2rem;
   text-align: center;
+  line-height: 1.5;
 }
 
 .signup-page__form {
@@ -51,12 +54,12 @@
 
 .signup-page__btn {
   margin-top: 1rem;
-  padding: 1rem;
+  padding: clamp(0.875rem, 2vw, 1rem);
   border-radius: 12px;
   border: none;
   background: #6366f1;
   color: white;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1rem);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -66,6 +69,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  min-height: 44px; /* بهبود Accessibility: حداقل touch target */
 }
 
 .signup-page__btn:hover:not(:disabled) {
@@ -121,6 +125,9 @@
   margin-left: 5px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  min-height: 44px; /* بهبود Accessibility: حداقل touch target */
+  display: inline-flex;
+  align-items: center;
 }
 
 .signup-page__link:hover {
@@ -130,6 +137,12 @@
 
 .signup-page__link:active {
   color: #c7d2fe;
+}
+
+.signup-page__link:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 .signup-page__terms {
   margin: 15px 0 20px 0;
@@ -177,16 +190,58 @@
   transform: translate(-50%, -50%);
 }
 
-.signup-page__terms-text a {
+.signup-page__terms-link {
   color: #818cf8;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
+  min-height: 44px; /* بهبود Accessibility: حداقل touch target */
+  display: inline-flex;
+  align-items: center;
 }
 
-.signup-page__terms-text a:hover {
+.signup-page__terms-link:hover {
   color: #a5b4fc;
   text-decoration: underline;
+}
+
+.signup-page__terms-link:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* بهبود Performance: استفاده از will-change برای animations */
+.signup-page__card {
+  will-change: opacity, transform;
+}
+
+/* بهبود Accessibility: Focus states */
+.signup-page__btn:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+.signup-page__checkbox:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* بهبود Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .signup-page__card {
+    animation: none;
+  }
+  
+  .signup-page__btn,
+  .signup-page__link,
+  .signup-page__terms-link {
+    transition: none;
+  }
+  
+  .signup-page__spinner {
+    animation: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -195,32 +250,24 @@
   }
 
   .signup-page__card {
-    margin-top: 3rem;
+    margin-top: 2rem;
     max-width: 90%;
-    padding: 2rem;
-  }
-  
-  .signup-page__title {
-    font-size: 2rem;
+    padding: clamp(1.5rem, 4vw, 2rem);
   }
 }
 
 @media (max-width: 480px) {
   .signup-page__card {
-    padding: 2rem 1.5rem;
-  }
-  
-  .signup-page__title {
-    font-size: 1.8rem;
-  }
-
-  .signup-page__btn {
-    padding: 0.875rem;
-    font-size: 0.95rem;
+    padding: clamp(1.25rem, 3vw, 1.5rem);
+    margin-top: 1rem;
   }
 
   .signup-page__form {
-    gap: 0.875rem;
+    gap: clamp(0.75rem, 2vw, 0.875rem);
+  }
+  
+  .signup-page__terms {
+    margin: clamp(12px, 2vw, 15px) 0 clamp(16px, 2vw, 20px) 0;
   }
 }
 

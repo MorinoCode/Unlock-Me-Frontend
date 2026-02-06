@@ -1,23 +1,30 @@
 .quiz-card {
   background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* ✅ iOS Safari support */
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 2rem;
+  border-radius: clamp(20px, 4vw, 24px); /* ✅ Responsive border-radius */
+  padding: clamp(1.5rem, 4vw, 2rem); /* ✅ Responsive padding */
   width: 100%;
   max-width: 500px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: clamp(1.25rem, 3vw, 1.5rem); /* ✅ Responsive gap */
   animation: quiz-card-fade-in 0.5s ease-out;
   animation-fill-mode: both;
   will-change: opacity, transform;
 }
 
 @keyframes quiz-card-fade-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .quiz-card__header {
@@ -30,27 +37,34 @@
 .quiz-card__badge {
   background: rgba(99, 102, 241, 0.2);
   color: #a5b4fc;
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem); /* ✅ Responsive typography */
   font-weight: 700;
-  padding: 6px 12px;
+  padding: clamp(5px, 1.5vw, 6px) clamp(10px, 3vw, 12px); /* ✅ Responsive padding */
   border-radius: 9999px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border: 1px solid rgba(99, 102, 241, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%; /* ✅ Prevent overflow on mobile */
 }
 
 .quiz-card__counter {
   color: #94a3b8;
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 2.5vw, 0.9rem); /* ✅ Responsive typography */
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .quiz-card__title {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 4vw, 1.5rem); /* ✅ Responsive typography */
   color: #f8fafc;
   line-height: 1.4;
   margin: 0;
   font-weight: 700;
+  word-wrap: break-word;
+  hyphens: auto; /* ✅ Better text wrapping on mobile */
 }
 
 .quiz-card__options {
@@ -63,9 +77,9 @@
   background: rgba(15, 23, 42, 0.6);
   border: 2px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
-  padding: 16px 20px;
-  border-radius: 16px;
-  font-size: 1rem;
+  padding: clamp(14px, 4vw, 16px) clamp(16px, 5vw, 20px); /* ✅ Responsive padding */
+  border-radius: clamp(12px, 3vw, 16px); /* ✅ Responsive border-radius */
+  font-size: clamp(0.9rem, 3vw, 1rem); /* ✅ Responsive typography */
   font-weight: 500;
   text-align: left;
   cursor: pointer;
@@ -73,6 +87,12 @@
   width: 100%;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  /* ✅ Mobile: Minimum touch target size */
+  min-height: 44px;
+  /* ✅ Performance: Will-change for smoother animations */
+  will-change: transform, background-color, border-color;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 
 .quiz-card__option-btn:hover {
@@ -91,39 +111,63 @@
   outline-offset: 2px;
 }
 
+/* ✅ Responsive: Tablet */
+@media (max-width: 1024px) {
+  .quiz-card {
+    max-width: 90%;
+  }
+}
+
+/* ✅ Responsive: Mobile Tablet */
 @media (max-width: 768px) {
   .quiz-card {
-    padding: 1.5rem;
+    padding: clamp(1.25rem, 4vw, 1.5rem);
     max-width: 95%;
   }
 
   .quiz-card__title {
-    font-size: 1.3rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .quiz-card {
-    padding: 1.25rem;
-    gap: 1.25rem;
-  }
-
-  .quiz-card__badge {
-    font-size: 0.7rem;
-    padding: 5px 10px;
-  }
-
-  .quiz-card__counter {
-    font-size: 0.85rem;
-  }
-
-  .quiz-card__title {
-    font-size: 1.2rem;
+    font-size: clamp(1.15rem, 4vw, 1.3rem);
   }
 
   .quiz-card__option-btn {
-    padding: 14px 16px;
-    font-size: 0.95rem;
+    min-height: 44px; /* ✅ Mobile: Maintain touch target */
+  }
+}
+
+/* ✅ Responsive: Mobile */
+@media (max-width: 480px) {
+  .quiz-card {
+    padding: clamp(1rem, 4vw, 1.25rem);
+    gap: clamp(1rem, 3vw, 1.25rem);
+    max-width: 98%;
+  }
+
+  .quiz-card__header {
+    flex-wrap: wrap; /* ✅ Mobile: Allow wrapping */
+    gap: 0.5rem;
+  }
+
+  .quiz-card__badge {
+    font-size: clamp(0.65rem, 2.5vw, 0.7rem);
+    padding: clamp(4px, 1.5vw, 5px) clamp(8px, 3vw, 10px);
+    max-width: 100%; /* ✅ Mobile: Full width badge */
+  }
+
+  .quiz-card__counter {
+    font-size: clamp(0.8rem, 2.5vw, 0.85rem);
+    width: 100%; /* ✅ Mobile: Full width counter */
+    text-align: right;
+  }
+
+  .quiz-card__title {
+    font-size: clamp(1.1rem, 4vw, 1.2rem);
+    line-height: 1.3;
+  }
+
+  .quiz-card__option-btn {
+    padding: clamp(12px, 4vw, 14px) clamp(14px, 5vw, 16px);
+    font-size: clamp(0.85rem, 3vw, 0.95rem);
+    min-height: 48px; /* ✅ Mobile: Larger touch target */
   }
 
   .quiz-card__option-btn:hover {
@@ -131,21 +175,46 @@
   }
 }
 
-@media (orientation: landscape) and (max-height: 700px) {
+/* ✅ Responsive: Small Mobile */
+@media (max-width: 360px) {
   .quiz-card {
-    padding: 1rem;
-    gap: 1rem;
+    padding: clamp(0.875rem, 4vw, 1rem);
+    border-radius: clamp(16px, 4vw, 20px);
   }
 
   .quiz-card__title {
-    font-size: 1.1rem;
-  }
-
-  .quiz-card__options {
-    gap: 8px;
+    font-size: clamp(1rem, 4vw, 1.1rem);
   }
 
   .quiz-card__option-btn {
-    padding: 12px 16px;
+    padding: clamp(10px, 4vw, 12px) clamp(12px, 5vw, 14px);
+    font-size: clamp(0.8rem, 3vw, 0.85rem);
+    min-height: 44px;
+  }
+}
+
+/* ✅ Responsive: Landscape Mobile */
+@media (orientation: landscape) and (max-height: 700px) {
+  .quiz-card {
+    padding: clamp(0.875rem, 2vw, 1rem);
+    gap: clamp(0.75rem, 2vw, 1rem);
+    max-height: 90vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .quiz-card__title {
+    font-size: clamp(1rem, 3vw, 1.1rem);
+    line-height: 1.3;
+  }
+
+  .quiz-card__options {
+    gap: clamp(6px, 1.5vw, 8px);
+  }
+
+  .quiz-card__option-btn {
+    padding: clamp(10px, 2.5vw, 12px) clamp(12px, 3vw, 16px);
+    min-height: 40px; /* ✅ Smaller in landscape but still accessible */
+    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
   }
 }

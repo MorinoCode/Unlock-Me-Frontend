@@ -4,13 +4,13 @@
 }
 
 .interests-actions__btn {
-  padding: 1.1rem;
+  padding: clamp(0.95rem, 3vw, 1.1rem);
   border-radius: 14px;
   border: none;
   background: #6366f1;
   color: white;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 3vw, 1rem); /* ✅ Responsive typography */
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
@@ -21,6 +21,10 @@
   justify-content: center;
   gap: 0.5rem;
   outline: none;
+  /* ✅ Mobile: Minimum touch target size */
+  min-height: 44px;
+  /* ✅ Performance: Will-change for smoother animations */
+  will-change: transform, background-color;
 }
 
 .interests-actions__btn--full-width {
@@ -59,37 +63,52 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
+/* ✅ Responsive: Tablet */
+@media (max-width: 1024px) {
+  .interests-actions {
+    margin-top: clamp(2rem, 4vw, 2.25rem);
+  }
+}
+
+/* ✅ Responsive: Mobile Tablet */
 @media (max-width: 768px) {
   .interests-actions {
-    margin-top: 2rem;
+    margin-top: clamp(1.75rem, 4vw, 2rem);
   }
 
   .interests-actions__btn {
-    padding: 1rem;
+    padding: clamp(0.9rem, 3vw, 1rem);
+    min-height: 44px; /* ✅ Mobile: Maintain touch target */
   }
 }
 
+/* ✅ Responsive: Mobile */
 @media (max-width: 480px) {
   .interests-actions {
-    margin-top: 2rem;
+    margin-top: clamp(1.5rem, 4vw, 2rem);
   }
 
   .interests-actions__btn {
-    padding: 0.95rem;
-    font-size: 0.95rem;
+    padding: clamp(0.875rem, 3vw, 0.95rem);
+    font-size: clamp(0.9rem, 3vw, 0.95rem);
+    min-height: 48px; /* ✅ Mobile: Larger touch target for better UX */
   }
 }
 
+/* ✅ Responsive: Landscape Mobile */
 @media (orientation: landscape) and (max-height: 700px) {
   .interests-actions {
-    margin-top: 1.5rem;
+    margin-top: clamp(1.25rem, 3vw, 1.5rem);
   }
 
   .interests-actions__btn {
-    padding: 0.85rem;
-    font-size: 0.9rem;
+    padding: clamp(0.8rem, 2.5vw, 0.85rem);
+    font-size: clamp(0.85rem, 2.5vw, 0.9rem);
+    min-height: 44px;
   }
 }

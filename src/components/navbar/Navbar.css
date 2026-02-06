@@ -2,66 +2,64 @@
   position: fixed;
   top: 0;
   width: 100%;
-  height: 80px;
+  height: clamp(70px, 10vw, 80px); /* ✅ Responsive height */
   z-index: 10000;
   display: flex;
   align-items: center;
   transition: 0.4s ease;
+  /* ✅ Performance: Will-change for smoother animations */
+  will-change: transform, background-color;
 }
 
 .navbar--scrolled {
   background: rgba(10, 15, 30, 0.4);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); /* ✅ iOS Safari support */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  height: 70px;
+  height: clamp(60px, 9vw, 70px); /* ✅ Responsive height */
 }
 
 .navbar__container {
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 clamp(1rem, 3vw, 1.5rem); /* ✅ Responsive padding */
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: clamp(0.5rem, 2vw, 1rem); /* ✅ Responsive gap */
 }
 
 .navbar__logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   text-decoration: none;
   flex-shrink: 0;
+  /* ✅ No gap needed since only icon remains */
 }
 .navbar__logo-icon {
-  width: 40px;
-  height: 40px;
+  width: clamp(36px, 5vw, 40px); /* ✅ Responsive size */
+  height: clamp(36px, 5vw, 40px);
   background: linear-gradient(135deg, #6366f1, #a855f7);
-  border-radius: 12px;
+  border-radius: clamp(10px, 2vw, 12px);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 900;
-  font-size: 1.5rem;
+  font-size: clamp(1.3rem, 4vw, 1.5rem); /* ✅ Responsive typography */
+  flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
-.navbar__logo-text {
-  display: flex;
-  flex-direction: column;
+
+.navbar__logo:hover .navbar__logo-icon {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
 }
-.navbar__logo-text--main {
-  font-weight: 800;
-  font-size: 1.2rem;
-  color: white;
-  letter-spacing: 1px;
-}
-.navbar__logo-text--sub {
-  color: #818cf8;
-  font-size: 0.75rem;
-  font-weight: 700;
-  margin-top: -4px;
-}
+
+/* ✅ Removed: navbar__logo-text styles (no longer needed) */
 
 /* Desktop Menu */
 .navbar__menu--desktop {
@@ -77,12 +75,18 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
+  gap: clamp(6px, 2vw, 10px); /* ✅ Responsive gap */
+  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 18px); /* ✅ Responsive padding */
   color: #94a3b8;
   font-weight: 600;
+  font-size: clamp(0.85rem, 2.5vw, 1rem); /* ✅ Responsive typography */
   text-decoration: none;
   transition: 0.3s;
+  white-space: nowrap;
+  /* ✅ Mobile: Minimum touch target */
+  min-height: 44px;
+  /* ✅ Performance: Will-change for smoother animations */
+  will-change: color, transform;
 }
 
 .navbar__link:hover {
@@ -109,21 +113,45 @@
   align-items: center;
   gap: 20px;
 }
+/* Language Switcher in Navbar */
+.navbar__user-section--desktop .language-switcher {
+  margin-right: 12px;
+}
+
+[dir="rtl"] .navbar__user-section--desktop .language-switcher {
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+.navbar__sidebar-language {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 16px;
+}
+
 .navbar__user-section--desktop {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: clamp(
+    8px,
+    1.5vw,
+    12px
+  ); /* ✅ Responsive gap - smaller for better spacing */
 }
 .navbar__profile {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 6px 16px 6px 8px;
+  gap: clamp(8px, 2vw, 12px); /* ✅ Responsive gap */
+  padding: clamp(4px, 1.5vw, 6px) clamp(12px, 3vw, 16px) clamp(4px, 1.5vw, 6px)
+    clamp(6px, 2vw, 8px);
   background: rgba(255, 255, 255, 0.05);
   border-radius: 100px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   text-decoration: none;
   color: white;
+  /* ✅ Mobile: Minimum touch target */
+  min-height: 44px;
+  transition: all 0.3s ease;
 }
 .navbar__profile:hover {
   transform: scale(1.06);
@@ -131,8 +159,9 @@
 }
 .navbar__avatar-wrapper {
   position: relative;
-  width: 34px;
-  height: 34px;
+  width: clamp(30px, 4vw, 34px); /* ✅ Responsive size */
+  height: clamp(30px, 4vw, 34px);
+  flex-shrink: 0;
 }
 .navbar__profile-avatar {
   width: 100%;
@@ -156,10 +185,16 @@
   background: rgba(239, 68, 68, 0.1);
   border: none;
   color: #ef4444;
-  padding: 10px;
-  border-radius: 12px;
+  padding: clamp(8px, 2vw, 10px); /* ✅ Responsive padding */
+  border-radius: clamp(10px, 2vw, 12px);
   cursor: pointer;
   transition: 0.3s;
+  /* ✅ Mobile: Minimum touch target */
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .navbar__icon-btn--logout:hover {
   background: #ef4444;
@@ -169,15 +204,22 @@
 .navbar__btn-login {
   background: #6366f1;
   color: white;
-  padding: 10px 24px;
-  border-radius: 12px;
+  padding: clamp(8px, 2vw, 10px) clamp(18px, 4vw, 24px); /* ✅ Responsive padding */
+  border-radius: clamp(10px, 2vw, 12px);
   font-weight: 700;
+  font-size: clamp(0.85rem, 2.5vw, 1rem); /* ✅ Responsive typography */
   text-decoration: none;
   transition: 0.3s;
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1vw, 6px);
+  /* ✅ Mobile: Minimum touch target */
+  min-height: 44px;
+  white-space: nowrap;
 }
 
-/* Notification Dropdown */
+/* Notification Dropdown - Fixed Icon */
 .navbar__notif-container {
   position: relative;
 }
@@ -185,60 +227,146 @@
   cursor: pointer;
   color: #94a3b8;
   position: relative;
-  padding: 8px;
+  padding: clamp(8px, 2vw, 10px); /* ✅ Responsive padding */
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  /* ✅ Mobile: Minimum touch target */
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .navbar__notification-wrapper:hover {
-  transform: scale(1.2);
-  color: #7b889c;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 .navbar__notification-badge {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: clamp(4px, 1.5vw, 6px);
+  right: clamp(4px, 1.5vw, 6px);
   background: #ef4444;
   color: white;
-  font-size: 10px;
-  width: 16px;
-  height: 16px;
+  font-size: clamp(8px, 2vw, 9px);
+  min-width: clamp(16px, 3vw, 18px);
+  height: clamp(16px, 3vw, 18px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #0f172a;
+  border: 2px solid #0a0f1e;
+  font-weight: bold;
+  padding: 0 clamp(2px, 1vw, 3px);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.navbar__link-icon-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.navbar__messages-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  padding: 0 4px;
+  white-space: nowrap;
+  line-height: 1;
+  border: 2px solid var(--color-bg-secondary, #0f172a);
 }
 
 .navbar__dropdown {
   position: absolute;
-  top: calc(100% + 15px);
-  right: -50px;
-  width: 320px;
+  top: calc(100% + clamp(10px, 2vw, 15px)); /* ✅ Responsive spacing */
+  right: clamp(-30px, -8vw, -50px); /* ✅ Responsive positioning */
+  width: clamp(280px, 40vw, 320px); /* ✅ Responsive width */
+  max-width: calc(100vw - 2rem); /* ✅ Mobile: Prevent overflow */
+  max-height: calc(
+    100vh - 2rem - env(safe-area-inset-top, 0px)
+  ); /* ✅ iOS notch */
   background: #0a0f1e;
-  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); /* ✅ iOS Safari support */
+  border-radius: clamp(16px, 3vw, 20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
   overflow: hidden;
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
 }
 .navbar__dropdown-header {
-  span {
-    color: white;
-    display: flex;
-    justify-content: center;
-    padding: 2px 0;
-  }
+  padding: clamp(12px, 3vw, 15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar__dropdown-header span {
+  color: white;
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
+  font-size: clamp(0.9rem, 2.5vw, 1rem); /* ✅ Responsive typography */
+}
+
+.navbar__dropdown-empty {
+  padding: clamp(20px, 5vw, 30px);
+  text-align: center;
+  color: #94a3b8;
+  font-size: clamp(0.85rem, 2.5vw, 0.9rem); /* ✅ Responsive typography */
+}
+
+/* ✅ Navbar label for desktop links */
+.navbar__label {
+  white-space: nowrap;
+}
+
+/* ✅ Profile name */
+.navbar__profile-name {
+  font-size: clamp(0.8rem, 2.5vw, 0.9rem); /* ✅ Responsive typography */
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: clamp(100px, 15vw, 120px); /* ✅ Responsive max-width */
 }
 .navbar__dropdown-list {
-  max-height: 400px; /* حداکثر ارتفاع لیست قبل از اسکرول خوردن */
-  overflow-y: auto; /* فعال کردن اسکرول عمودی */
-  scrollbar-width: thin; /* نازک کردن نوار اسکرول در فایرفاکس */
-  scrollbar-color: #6366f1 rgba(255, 255, 255, 0.05); /* رنگ اسکرول */
+  flex: 1;
+  min-height: 0;
+  max-height: clamp(300px, 50vh, 400px); /* ✅ Responsive max-height */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #6366f1 rgba(255, 255, 255, 0.05);
+  /* ✅ Mobile: Smooth scrolling (iOS/Android) */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .navbar__dropdown-item {
   display: flex;
-  gap: 12px;
-  padding: 15px;
+  gap: clamp(10px, 2vw, 12px); /* ✅ Responsive gap */
+  padding: clamp(12px, 3vw, 15px); /* ✅ Responsive padding */
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   cursor: pointer;
+  /* ✅ Mobile: Minimum touch target */
+  min-height: 44px;
+  transition: background-color 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .navbar__dropdown-item:hover {
@@ -257,91 +385,174 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  background: rgba(99, 102, 241, 0.15); /* placeholder while loading */
+}
+.navbar__dropdown-info {
+  min-width: 0;
+  flex: 1;
 }
 .navbar__dropdown-info p {
   margin: 0;
   color: #cbd5e1;
   font-size: 0.85rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
 }
 
 /* Sidebar Mobile */
 .navbar__burger {
-  display: none;
+  display: none; /* ✅ Hidden by default (desktop) */
   background: none;
   border: none;
   color: white;
   cursor: pointer;
+  /* ✅ Mobile: Minimum touch target */
+  min-width: 44px;
+  min-height: 44px;
+  padding: clamp(8px, 2vw, 10px);
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  /* ✅ Will be set to flex in media query for mobile */
+}
+
+.navbar__burger:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.navbar__burger:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ✅ Overlay for mobile sidebar */
+.navbar__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px); /* ✅ iOS Safari support */
+  z-index: 1999;
+  /* ✅ Mobile: Prevent body scroll */
+  touch-action: none;
 }
 
 .navbar__sidebar {
   position: fixed;
   top: 0;
   right: 0;
-  width: 300px;
+  width: clamp(280px, 85vw, 300px); /* ✅ Responsive width */
   height: 100vh;
   background: #0a0f1e;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); /* ✅ iOS Safari support */
   z-index: 2000;
   box-shadow: -15px 0 35px rgba(0, 0, 0, 0.6);
+  /* ✅ Mobile: Prevent body scroll */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .navbar__sidebar-content {
-  padding: 30px 20px;
+  padding: clamp(1.5rem, 4vw, 30px) clamp(1rem, 3vw, 20px); /* ✅ Responsive padding */
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
+  /* ✅ Mobile: Safe area for notched devices */
+  padding-top: max(clamp(1.5rem, 4vw, 30px), env(safe-area-inset-top));
+  padding-bottom: max(clamp(1rem, 3vw, 20px), env(safe-area-inset-bottom));
 }
 
 .navbar__sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 35px;
+  margin-bottom: clamp(1.5rem, 4vw, 35px); /* ✅ Responsive margin */
   color: #6366f1;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 3vw, 1.2rem); /* ✅ Responsive typography */
 }
 .navbar__close-btn {
   background: rgba(255, 255, 255, 0.05);
   border: none;
   color: white;
-  padding: 8px;
-  border-radius: 10px;
+  padding: clamp(6px, 2vw, 8px); /* ✅ Responsive padding */
+  border-radius: clamp(8px, 2vw, 10px);
   cursor: pointer;
+  /* ✅ Mobile: Minimum touch target */
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.navbar__close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar__close-btn:active {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .navbar__sidebar-user-card {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 15px;
+  gap: clamp(12px, 3vw, 15px); /* ✅ Responsive gap */
+  padding: clamp(12px, 3vw, 15px); /* ✅ Responsive padding */
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 20px;
-  margin-bottom: 35px;
+  border-radius: clamp(16px, 3vw, 20px);
+  margin-bottom: clamp(1.5rem, 4vw, 35px); /* ✅ Responsive margin */
   border: 1px solid rgba(255, 255, 255, 0.05);
   cursor: pointer;
+  /* ✅ Mobile: Minimum touch target */
+  min-height: 44px;
+  transition: background-color 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navbar__sidebar-user-card:active {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .navbar__sidebar-avatar {
-  width: 60px;
-  height: 60px;
+  width: clamp(50px, 8vw, 60px); /* ✅ Responsive size */
+  height: clamp(50px, 8vw, 60px);
   border-radius: 50%;
   object-fit: cover;
-  border: 2.5px solid #6366f1;
+  border: clamp(2px, 0.5vw, 2.5px) solid #6366f1;
   flex-shrink: 0;
 }
 .navbar__sidebar-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: clamp(2px, 0.5vw, 3px); /* ✅ Responsive gap */
+  flex: 1;
+  min-width: 0; /* ✅ Allow text truncation */
 }
 .navbar__sidebar-name {
   color: white;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 3vw, 1.1rem); /* ✅ Responsive typography */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .navbar__sidebar-status {
   color: #22c55e;
-  font-size: 0.8rem;
+  font-size: clamp(0.75rem, 2.5vw, 0.8rem); /* ✅ Responsive typography */
   font-weight: 600;
 }
 
@@ -354,13 +565,18 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 15px;
+  gap: clamp(12px, 3vw, 15px); /* ✅ Responsive gap */
+  padding: clamp(12px, 3vw, 15px); /* ✅ Responsive padding */
   color: #94a3b8;
   text-decoration: none;
   font-weight: 600;
-  border-radius: 12px;
+  font-size: clamp(0.9rem, 2.5vw, 1rem); /* ✅ Responsive typography */
+  border-radius: clamp(10px, 2vw, 12px);
   transition: 0.2s;
+  /* ✅ Mobile: Minimum touch target */
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .navbar__sidebar-link:hover {
   background: rgba(99, 102, 241, 0.1);
@@ -390,61 +606,177 @@
 .navbar__sidebar-logout {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: clamp(10px, 2.5vw, 12px); /* ✅ Responsive gap */
   width: 100%;
-  padding: 15px;
+  padding: clamp(12px, 3vw, 15px); /* ✅ Responsive padding */
   background: rgba(239, 68, 68, 0.1);
   border: none;
   color: #ef4444;
-  border-radius: 15px;
+  border-radius: clamp(12px, 2.5vw, 15px);
   cursor: pointer;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem); /* ✅ Responsive typography */
+  /* ✅ Mobile: Minimum touch target */
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease;
 }
+
+.navbar__sidebar-logout:active {
+  background: rgba(239, 68, 68, 0.2);
+}
+/* ✅ Responsive: Large Desktop */
 @media (max-width: 1235px) {
   .navbar__link {
-    gap: 0px;
-    padding: 10px 15px;
+    gap: clamp(4px, 1vw, 6px);
+    padding: clamp(8px, 2vw, 10px) clamp(12px, 2.5vw, 15px);
   }
 }
+
+/* ✅ Responsive: Medium Desktop */
 @media (max-width: 1143px) {
   .navbar__link {
-    gap: 0px;
-    padding: 10px 8px;
+    gap: clamp(2px, 1vw, 4px);
+    padding: clamp(8px, 2vw, 10px) clamp(6px, 1.5vw, 8px);
+  }
+
+  .navbar__label {
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
   }
 }
+
+/* ✅ Responsive: Tablet - Hide desktop menu, show burger */
+/* ✅ Responsive: Tablet - Hide desktop menu, show hamburger */
 @media (max-width: 1053px) {
   .navbar__menu--desktop,
   .navbar__user-section--desktop,
   .navbar__btn-login--desktop {
     display: none !important;
   }
+
   .navbar__burger {
-    display: block;
+    display: flex !important; /* ✅ Show hamburger menu on tablet/mobile */
   }
+
   .navbar__container {
-    padding: 0 1.5rem;
+    padding: 0 clamp(1rem, 3vw, 1.5rem);
   }
+
   .navbar__dropdown {
     position: fixed;
-    top: 80px;
-    left: 15px;
-    right: 15px;
+    top: clamp(70px, 10vw, 80px);
+    left: clamp(10px, 3vw, 15px);
+    right: clamp(10px, 3vw, 15px);
     width: auto;
+    max-width: none;
   }
 }
 
-@media (max-width: 480px) {
-  .navbar__logo-text {
-    display: none;
+/* ✅ Responsive: Mobile */
+@media (max-width: 768px) {
+  .navbar {
+    height: clamp(60px, 9vw, 70px);
   }
-  .navbar__sidebar {
-    width: 85%;
+
+  .navbar--scrolled {
+    height: clamp(55px, 8vw, 60px);
+  }
+
+  .navbar__container {
+    padding: 0 clamp(0.75rem, 3vw, 1rem);
+  }
+
+  .navbar__logo-icon {
+    width: clamp(32px, 5vw, 36px);
+    height: clamp(32px, 5vw, 36px);
+  }
+
+  .navbar__notification-wrapper {
+    padding: clamp(6px, 2vw, 8px);
+  }
+
+  .navbar__dropdown {
+    top: clamp(60px, 9vw, 70px);
+    left: clamp(8px, 2vw, 10px);
+    right: clamp(8px, 2vw, 10px);
   }
 }
-/* استایل دهی به نوار اسکرول برای مرورگرهای کروم و اج */
+
+/* ✅ Responsive: Small Mobile */
+@media (max-width: 480px) {
+  /* ✅ Logo text already removed, no need to hide */
+
+  .navbar__sidebar {
+    width: clamp(85%, 90vw, 95%);
+  }
+
+  .navbar__dropdown {
+    border-radius: clamp(12px, 3vw, 16px);
+  }
+
+  .navbar__dropdown-item {
+    padding: clamp(10px, 3vw, 12px);
+  }
+
+  .navbar__dropdown-avatar {
+    width: clamp(36px, 6vw, 40px);
+    height: clamp(36px, 6vw, 40px);
+  }
+
+  .navbar__dropdown-info p {
+    font-size: clamp(0.8rem, 2.5vw, 0.85rem);
+  }
+}
+
+/* ✅ Responsive: Very Small Mobile */
+@media (max-width: 360px) {
+  .navbar__container {
+    padding: 0 clamp(0.5rem, 2vw, 0.75rem);
+  }
+
+  .navbar__sidebar {
+    width: 90%;
+  }
+
+  .navbar__dropdown {
+    left: 5px;
+    right: 5px;
+  }
+}
+
+/* ✅ Responsive: Landscape Mobile */
+@media (orientation: landscape) and (max-height: 600px) {
+  .navbar {
+    height: clamp(55px, 8vw, 60px);
+  }
+
+  .navbar--scrolled {
+    height: clamp(50px, 7vw, 55px);
+  }
+
+  .navbar__sidebar-content {
+    padding-top: clamp(1rem, 3vw, 1.5rem);
+    padding-bottom: clamp(0.75rem, 2vw, 1rem);
+  }
+
+  .navbar__sidebar-header {
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .navbar__sidebar-user-card {
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    padding: clamp(10px, 2vw, 12px);
+  }
+
+  .navbar__sidebar-link {
+    padding: clamp(10px, 2vw, 12px);
+    min-height: 40px; /* ✅ Smaller but still accessible */
+  }
+}
+
 .navbar__dropdown-list::-webkit-scrollbar {
-  width: 6px;
+  width: clamp(4px, 1.5vw, 6px); /* ✅ Responsive scrollbar */
 }
 
 .navbar__dropdown-list::-webkit-scrollbar-track {
@@ -453,5 +785,31 @@
 
 .navbar__dropdown-list::-webkit-scrollbar-thumb {
   background-color: #6366f1;
-  border-radius: 10px;
+  border-radius: clamp(8px, 2vw, 10px);
+}
+
+.navbar__dropdown-list::-webkit-scrollbar-thumb:hover {
+  background-color: #4f46e5;
+}
+
+/* ✅ Prevent body scroll when sidebar is open on mobile */
+body.navbar-sidebar-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* ✅ Accessibility: Focus visible styles */
+.navbar__link:focus-visible,
+.navbar__profile:focus-visible,
+.navbar__btn-login:focus-visible,
+.navbar__burger:focus-visible,
+.navbar__close-btn:focus-visible,
+.navbar__sidebar-link:focus-visible,
+.navbar__sidebar-logout:focus-visible,
+.navbar__notification-wrapper:focus-visible,
+.navbar__dropdown-item:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+  border-radius: 4px;
 }

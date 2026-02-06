@@ -1,0 +1,241 @@
+/* RTL Support for Arabic and other RTL languages */
+
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .navbar__container {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .navbar__logo {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+[dir="rtl"] .navbar__links {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .main-footer__links-grid {
+  direction: rtl;
+}
+
+[dir="rtl"] .main-footer__nav {
+  text-align: right;
+}
+
+[dir="rtl"] .main-footer__social {
+  justify-content: flex-start;
+}
+
+/* RTL for forms */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+  direction: rtl;
+}
+
+[dir="rtl"] .form-group {
+  text-align: right;
+}
+
+[dir="rtl"] .form-label {
+  text-align: right;
+}
+
+/* RTL for buttons */
+[dir="rtl"] .btn {
+  direction: rtl;
+}
+
+[dir="rtl"] .btn-icon {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+/* RTL for cards */
+[dir="rtl"] .card {
+  text-align: right;
+}
+
+/* RTL for lists */
+[dir="rtl"] ul,
+[dir="rtl"] ol {
+  padding-right: 20px;
+  padding-left: 0;
+}
+
+/* RTL for navigation */
+[dir="rtl"] .nav-link {
+  text-align: right;
+}
+
+/* RTL for modals */
+[dir="rtl"] .modal {
+  direction: rtl;
+}
+
+[dir="rtl"] .modal-header {
+  flex-direction: row-reverse;
+}
+
+/* RTL for tables */
+[dir="rtl"] table {
+  direction: rtl;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+  text-align: right;
+}
+
+/* RTL for dropdowns */
+[dir="rtl"] .dropdown-menu {
+  right: auto;
+  left: 0;
+  text-align: right;
+}
+
+/* RTL for tooltips */
+[dir="rtl"] .tooltip {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL for pagination */
+[dir="rtl"] .pagination {
+  direction: rtl;
+  flex-direction: row-reverse;
+}
+
+/* RTL for breadcrumbs */
+[dir="rtl"] .breadcrumb {
+  direction: rtl;
+  flex-direction: row-reverse;
+}
+
+/* RTL for accordion */
+[dir="rtl"] .accordion-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .accordion-icon {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* RTL for language switcher */
+[dir="rtl"] .language-switcher__dropdown {
+  right: auto;
+  left: 0;
+}
+
+/* RTL for mobile bottom nav */
+[dir="rtl"] .mobile-bottom-nav {
+  direction: rtl;
+}
+
+/* RTL for sidebar */
+[dir="rtl"] .sidebar {
+  right: 0;
+  left: auto;
+  transform: translateX(100%);
+}
+
+[dir="rtl"] .sidebar.open {
+  transform: translateX(0);
+}
+
+/* RTL for flex containers */
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .justify-start {
+  justify-content: flex-end;
+}
+
+[dir="rtl"] .justify-end {
+  justify-content: flex-start;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* RTL for margins and paddings (common patterns) */
+[dir="rtl"] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+[dir="rtl"] .pl-4 {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+[dir="rtl"] .pr-4 {
+  padding-right: 0;
+  padding-left: 1rem;
+}
+
+/* RTL for icons in buttons */
+[dir="rtl"] button svg:first-child {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+[dir="rtl"] button svg:last-child {
+  margin-left: 0;
+  margin-right: 8px;
+}
+
+/* RTL for navbar sidebar */
+[dir="rtl"] .navbar__sidebar {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+}
+
+[dir="rtl"] .navbar__sidebar.open {
+  transform: translateX(0);
+}
+
+/* RTL for animations */
+[dir="rtl"] .slide-in-right {
+  animation: slideInLeft 0.3s ease;
+}
+
+[dir="rtl"] .slide-in-left {
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

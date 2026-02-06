@@ -56,14 +56,31 @@
   color: #f1f5f9;
 }
 
+.post-owner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.post-edit-btn,
 .post-delete-btn {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border: none;
-  color: #ef4444;
+  color: #94a3b8;
   padding: 8px;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.post-edit-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.post-delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
 }
 
 .post-delete-btn:hover {
@@ -225,6 +242,23 @@
   color: #a5b4fc;
 }
 
+.comment-replies {
+  margin-top: 8px;
+  margin-left: 20px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(129, 140, 248, 0.3);
+}
+
+.comment-is-reply .comment-main-body {
+  font-size: 0.82rem;
+}
+
+.comment-reply-label {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
 /* بخش ورودی کامنت و ریپلای بار */
 .post-comment-field-container {
   padding: 12px 18px 18px;
@@ -330,7 +364,8 @@
   margin-left: 5px;
 }
 
-.comment-spacer, .caption-spacer {
+.comment-spacer,
+.caption-spacer {
   margin-left: 6px;
 }
 /* فقط در دستگاه‌هایی که موس دارند (Desktop) هاور کار کند */
@@ -346,17 +381,26 @@
   .comment-delete-small-btn {
     opacity: 0.7; /* کمی کمرنگ‌تر برای شلوغ نشدن صفحه */
     visibility: visible;
-    background: rgba(255, 255, 255, 0.05); /* یک پس‌زمینه بسیار ملایم برای لمس راحت‌تر */
+    background: rgba(
+      255,
+      255,
+      255,
+      0.05
+    ); /* یک پس‌زمینه بسیار ملایم برای لمس راحت‌تر */
   }
 }
 
-.comment-delete-small-btn:hover, 
+.comment-delete-small-btn:hover,
 .comment-delete-small-btn:active {
   color: #ef4444;
   background: rgba(239, 68, 68, 0.15);
   opacity: 1;
 }
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -1,50 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import UserCard from "../../components/userCard/UserCard";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
 import "./MyMatchesPage.css";
 import { useAuth } from "../../context/useAuth.js";
+import { useMatchesStore } from "../../store/matchesStore";
 import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
 
+const EMPTY_ARR = [];
+
 const MyMatchesPage = () => {
-  const [data, setData] = useState({
-    mutualMatches: [],
-    sentLikes: [],
-    incomingLikes: [],
-  });
   const { currentUser } = useAuth();
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+  const userId = currentUser?._id;
+
+  const entry = useMatchesStore((state) => state.cache[`${userId ?? ""}:dashboard`]);
+  const mutualMatches = entry?.mutualMatches ?? EMPTY_ARR;
+  const sentLikes = entry?.sentLikes ?? EMPTY_ARR;
+  const incomingLikes = entry?.incomingLikes ?? EMPTY_ARR;
+  const superLikes = entry?.superLikes ?? EMPTY_ARR;
+  const loading = useMatchesStore((state) => state.loading);
+  const getDashboardCached = useMatchesStore((state) => state.getDashboardCached);
+  const fetchDashboard = useMatchesStore((state) => state.fetchDashboard);
+
+  const loadDashboard = useCallback(
+    async (forceRefresh = false) => {
+      if (!userId) return;
+      const cached = getDashboardCached(userId);
+      const silent = cached && !forceRefresh;
+      await fetchDashboard(API_URL, userId, silent);
+    },
+    [API_URL, userId, getDashboardCached, fetchDashboard]
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(
-          `${API_URL}/api/user/matches/matches-dashboard`,
-          { credentials: "include" }
-        );
-        const dashboardData = await res.json();
-        setData(dashboardData);
-        console.log(dashboardData);
-      } catch (err) {
-        console.error("Error fetching matches:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [API_URL]);
+    if (!userId) return;
+    loadDashboard();
+  }, [userId, loadDashboard]);
 
   const userPlan = currentUser?.subscription?.plan || "free";
 
   const renderSection = (title, list, type, subtitle, showUpgradeCard = false) => {
-    // نمایش حداکثر ۲۰ کارت
     const displayList = list.slice(0, 20);
-    
-    // تعداد کارت‌های قفل شده (برای نمایش متن "+5 More")
-    // این را می‌توانیم از روی تعداد isLocked ها بشماریم
-    // const lockedCount = list.filter(u => u.isLocked).length;
 
     return (
       <section className="matches-section">
@@ -64,7 +62,6 @@ const MyMatchesPage = () => {
         </div>
 
         <div className="matches-section__list">
-          {/* حالت خالی */}
           {list.length === 0 ? (
              <div className="matches-section__empty">
                 <p>No users found in this section.</p>
@@ -75,12 +72,9 @@ const MyMatchesPage = () => {
                  <UserCard
                    key={user._id}
                    user={user}
-                   // ✅ نکته: isLocked دیگر دستی پاس داده نمی‌شود
-                   // چون داخل آبجکت user از سرور آمده است
                  />
                ))}
 
-               {/* کارت تبلیغاتی اگر لیست قفل است یا ادامه دارد */}
                {showUpgradeCard && userPlan === 'free' && (
                   <div className="locked-card" onClick={() => navigate("/upgrade")}>
                     <div className="locked-card__icon">🔒</div>
@@ -97,7 +91,9 @@ const MyMatchesPage = () => {
     );
   };
 
-  if (loading) return <HeartbeatLoader />;
+  if (loading && mutualMatches.length === 0 && sentLikes.length === 0 && incomingLikes.length === 0 && superLikes.length === 0) {
+    return <HeartbeatLoader />;
+  }
 
   return (
     <ExploreBackgroundLayout>
@@ -113,33 +109,31 @@ const MyMatchesPage = () => {
         </header>
 
         <div className="matches-page__content">
-          
-          {/* 1. Mutual Matches (همیشه باز) */}
           {renderSection(
             "Mutual Matches",
-            data.mutualMatches,
+            mutualMatches,
             "mutual",
             "People you both liked each other"
           )}
-
-          {/* 2. Who Liked You (بسته برای رایگان) */}
-          {/* پارامتر آخر true است تا بنر آپگرید نشان داده شود */}
           {renderSection(
             "Who Liked You",
-            data.incomingLikes,
+            incomingLikes,
             "incoming",
             "They liked you! Swipe back to match.",
-            true 
+            true
           )}
-
-          {/* 3. Sent Likes */}
           {renderSection(
             "Sent Likes",
-            data.sentLikes,
+            sentLikes,
             "sent",
             "People you've shown interest in"
           )}
-
+          {renderSection(
+            "Super Likes",
+            superLikes,
+            "superlikes",
+            "People who Super Liked you ⭐"
+          )}
         </div>
       </div>
     </ExploreBackgroundLayout>

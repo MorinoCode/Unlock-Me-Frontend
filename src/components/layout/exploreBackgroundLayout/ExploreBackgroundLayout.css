@@ -1,117 +1,80 @@
-/* Block: .explore-bg-layout */
+/* ExploreBackgroundLayout – static gradient + soft glows only. No animations for performance. */
+
 .explore-bg-layout {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background: radial-gradient(circle at center, #1a0b2e 0%, #090215 100%);
+  background: radial-gradient(
+    ellipse at center,
+    #1a0b2e 0%,
+    #0f0618 40%,
+    #090215 100%
+  );
   overflow-x: hidden;
   color: white;
+  isolation: isolate;
 }
 
-/* Element: .explore-bg-layout__background */
 .explore-bg-layout__background {
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  /* GPU Acceleration Trick */
+  /* Single compositor layer, no will-change to avoid extra GPU cost */
   transform: translateZ(0);
 }
 
-/* Element: .explore-bg-layout__animations */
-/* یک رپر برای انیمیشن‌ها ساختیم که راحت کنترلشون کنیم */
-.explore-bg-layout__animations {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-/* Element: .explore-bg-layout__star */
-.explore-bg-layout__star {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 0 0 10px white;
-  animation: explore-bg-twinkle 3s infinite ease-in-out;
-  will-change: opacity, transform; /* بهینه‌سازی برای مرورگر */
-}
-
-@keyframes explore-bg-twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 15px white; }
-}
-
-/* Element: .explore-bg-layout__heart */
-.explore-bg-layout__heart {
-  position: absolute;
-  bottom: -50px;
-  font-size: 20px;
-  filter: drop-shadow(0 0 10px rgba(255, 0, 100, 0.5));
-  animation: explore-bg-float-up 15s infinite linear;
-  user-select: none;
-  will-change: transform, opacity;
-}
-
-@keyframes explore-bg-float-up {
-  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 0.5; }
-  100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
-}
-
-/* Element: .explore-bg-layout__glow */
 .explore-bg-layout__glow {
   position: absolute;
   width: 60vw;
   height: 60vw;
-  filter: blur(100px); /* بلور سنگین در دسکتاپ */
-  opacity: 0.15;
+  max-width: 800px;
+  max-height: 800px;
+  filter: blur(80px);
+  opacity: 0.18;
   border-radius: 50%;
-  z-index: -1;
+  z-index: 0;
 }
 
-/* Modifier: .explore-bg-layout__glow--purple */
 .explore-bg-layout__glow--purple {
-  top: -10%;
+  top: -15%;
   left: -10%;
   background: #6366f1;
 }
 
-/* Modifier: .explore-bg-layout__glow--pink */
 .explore-bg-layout__glow--pink {
-  bottom: -10%;
+  bottom: -15%;
   right: -10%;
   background: #ec4899;
 }
 
-/* Element: .explore-bg-layout__content */
 .explore-bg-layout__content {
   position: relative;
   z-index: 10;
 }
 
-/* 🚀 MOBILE & TABLET OPTIMIZATION (Up to 1024px) */
+/* Slightly lighter blur on smaller screens for performance */
 @media screen and (max-width: 1024px) {
-  
-  /* 1. حذف کامل انیمیشن‌ها برای موبایل و تبلت */
-  .explore-bg-layout__animations {
-    display: none;
+  .explore-bg-layout__glow {
+    filter: blur(60px);
+    opacity: 0.12;
+    width: 70vw;
+    height: 70vw;
   }
 
-  /* 2. ساده کردن هاله‌های رنگی (کاهش بلور برای پرفورمنس) */
-  .explore-bg-layout__glow {
-    filter: blur(60px); /* بلور کمتر = فشار کمتر روی GPU موبایل */
-    opacity: 0.1;
-    width: 80vw;
-    height: 80vw;
-  }
-  
-  /* گرادینت پس‌زمینه ساده و ثابت می‌ماند */
   .explore-bg-layout {
-     background: radial-gradient(circle at center, #130822 0%, #05010a 100%);
+    background: radial-gradient(
+      ellipse at center,
+      #130822 0%,
+      #0a0312 50%,
+      #05010a 100%
+    );
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .explore-bg-layout__glow {
+    filter: blur(50px);
+    opacity: 0.1;
   }
 }
