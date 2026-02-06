@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  resolve: {
+    dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
+  },
   plugins: [
     react(),
     VitePWA({
@@ -31,27 +34,28 @@ export default defineConfig({
     })
   ],
   build: {
-    // Code splitting برای بهبود Performance
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // React vendor chunk
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
+          // همهٔ پکیج‌هایی که از React استفاده می‌کنن باید توی یک chunk باشن تا یک نسخه React داشته باشن (جلوگیری از forwardRef undefined)
+          if (
+            id.includes('node_modules/react') ||
+            id.includes('node_modules/react-dom') ||
+            id.includes('node_modules/react-router') ||
+            id.includes('node_modules/framer-motion') ||
+            id.includes('node_modules/lucide-react') ||
+            id.includes('node_modules/react-icons') ||
+            id.includes('node_modules/recharts') ||
+            id.includes('node_modules/react-hot-toast') ||
+            id.includes('node_modules/react-i18next') ||
+            id.includes('node_modules/react-confetti') ||
+            id.includes('node_modules/react-easy-crop')
+          ) {
             return 'react-vendor';
           }
-          // Framer Motion chunk
-          if (id.includes('node_modules/framer-motion')) {
-            return 'framer-motion';
-          }
-          // Lucide React chunk (icons)
-          if (id.includes('node_modules/lucide-react')) {
-            return 'lucide-react';
-          }
-          // Socket.io chunk
           if (id.includes('node_modules/socket.io-client')) {
             return 'socket-io';
           }
-          // Other large vendor chunks
           if (id.includes('node_modules')) {
             return 'vendor';
           }
