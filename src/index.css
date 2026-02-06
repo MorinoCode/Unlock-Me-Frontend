@@ -1,10 +1,88 @@
+/* Import Design Tokens */
+@import './styles/design-tokens.css';
+@import './styles/rtl.css';
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: var(--font-family-primary);
 }
-body{
-      background: radial-gradient(circle at center, #1a0b2e 0%, #090215 100%);
+
+/* بهبود Performance: font-display برای fonts */
+@font-face {
+  font-family: system-ui;
+  font-display: swap;
+}
+
+body {
+  /* ✅ Performance: Simple static gradient - matches BackgroundLayout */
+  background: radial-gradient(circle at top left, #1a0b2e 0%, #090215 100%);
+  background-attachment: fixed; /* Prevent background scroll on mobile */
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* بهبود Accessibility: تضمین حداقل contrast */
+  min-height: 100vh;
+}
+
+/* بهبود Accessibility: Skip to main content */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-decoration: none;
+  z-index: 1000;
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
+  min-height: 44px; /* بهبود Accessibility: حداقل touch target */
+  display: flex;
+  align-items: center;
+}
+
+/* بهبود Accessibility: Visually hidden content for screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.skip-to-main:focus {
+  top: 0;
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* بهبود Accessibility: Focus visible برای همه عناصر */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* بهبود Performance: will-change برای animations */
+[class*="animate"],
+[class*="motion"] {
+  will-change: transform, opacity;
+}
+
+/* بهبود Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

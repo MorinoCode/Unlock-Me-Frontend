@@ -1,21 +1,42 @@
-/* Container and Backdrop */
+/* Navbar is on top: modal must sit below it (margin-top) and use less height */
+:root {
+  --post-modal-navbar-gap: 88px; /* navbar ~70–80px + small gap */
+}
+
+/* Container and Backdrop – works on iOS, Android, Windows */
 .post-modal-backdrop {
   position: fixed;
   inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  padding-top: max(
+    var(--post-modal-navbar-gap),
+    env(safe-area-inset-top) + 72px
+  );
+  padding-right: max(20px, env(safe-area-inset-right));
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  padding-left: max(20px, env(safe-area-inset-left));
   background: rgba(0, 0, 0, 0.85);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  padding: 20px;
+  align-items: flex-start;
+  z-index: 10500;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .post-modal-container {
-  background: rgba(30, 41, 59, 0.9);
+  background: rgba(30, 41, 59, 0.95);
   width: 100%;
   max-width: 500px;
-  max-height: 55vh;
+  min-height: 200px;
+  max-height: min(72vh, calc(100vh - var(--post-modal-navbar-gap) - 24px));
+  max-height: min(72dvh, calc(100dvh - var(--post-modal-navbar-gap) - 24px));
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
@@ -23,16 +44,27 @@
   flex-direction: column;
   overflow: hidden;
   animation: modalPopIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin: 0 auto;
 }
 
 @keyframes modalPopIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-/* Header Section */
+/* Header Section – touch-friendly close */
 .post-modal-top {
-  padding: 18px 24px;
+  padding: 16px 20px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -40,7 +72,7 @@
 }
 
 .post-modal-top h2 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #f1f5f9;
   margin: 0;
@@ -49,16 +81,19 @@
 }
 
 .post-modal-close {
+  min-width: 44px;
+  min-height: 44px;
   background: rgba(255, 255, 255, 0.05);
   border: none;
   color: #94a3b8;
-  padding: 5px;
+  padding: 10px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: background 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .post-modal-close:hover {
@@ -66,25 +101,35 @@
   color: #ef4444;
 }
 
+.post-modal-close:active {
+  transform: scale(0.96);
+}
+
 /* Upload & Crop Zone */
 .post-modal-body {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .post-modal-upload-zone {
   width: 100%;
   aspect-ratio: 1 / 1;
+  min-height: 180px;
+  max-height: min(50vh, 50dvh);
   background: #0f172a;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .upload-placeholder {
   width: 100%;
   height: 100%;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -92,7 +137,8 @@
   gap: 12px;
   color: #64748b;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: color 0.3s, background 0.3s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .upload-placeholder:hover {
@@ -100,18 +146,23 @@
   background: rgba(7, 7, 7, 0.03);
 }
 
+.upload-placeholder:active {
+  background: rgba(99, 102, 241, 0.08);
+}
+
 .upload-placeholder span {
   font-weight: 500;
   font-size: 0.9rem;
 }
 
-/* React Easy Crop Styling */
+/* React Easy Crop – constrained so it doesn’t overflow */
 .easy-crop-container {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  min-height: 200px;
 }
 
 .crop-controls {
@@ -120,9 +171,12 @@
   left: 50%;
   transform: translateX(-50%);
   width: 85%;
-  background: rgba(15, 23, 42, 0.85);
+  max-width: 320px;
+  background: rgba(15, 23, 42, 0.9);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  padding: 12px 20px;
+  padding: 14px 20px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
@@ -134,24 +188,48 @@
 
 .zoom-range {
   width: 100%;
-  height: 4px;
+  height: 6px;
+  min-height: 24px;
   -webkit-appearance: none;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
   outline: none;
   accent-color: #6366f1;
 }
 
+.zoom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
 
-
+.zoom-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
 
 /* Input Section */
 .post-modal-input-area {
-  padding: 20px 24px;
+  padding: 16px 20px;
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+  flex-shrink: 0;
 }
 
 .post-modal-input-area textarea {
   width: 100%;
+  box-sizing: border-box;
   background: transparent;
   border: none;
   color: #f1f5f9;
@@ -167,17 +245,22 @@
   color: #475569;
 }
 
-/* Footer & Submit */
+/* Footer & Submit – touch-friendly button */
 .post-modal-footer {
-  padding: 0 24px 24px;
+  padding: 0 20px 24px;
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  flex-shrink: 0;
 }
 
 .post-submit-btn {
   width: 100%;
+  min-height: 48px;
   background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
   color: white;
   border: none;
-  padding: 14px;
+  padding: 14px 20px;
   border-radius: 16px;
   font-weight: 700;
   font-size: 1rem;
@@ -187,12 +270,17 @@
   justify-content: center;
   gap: 10px;
   box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .post-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.5);
+}
+
+.post-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .post-submit-btn:disabled {
@@ -203,30 +291,65 @@
   transform: none;
 }
 
-/* Utils */
 .animate-spin {
   animation: modal-spin 1s linear infinite;
 }
 
 @keyframes modal-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Mobile Adjustments */
+/* ---------- Responsive: small phones ---------- */
 @media (max-width: 500px) {
-  .post-modal-container {
-    height: 80%;
-    max-height: 100vh;
-    border-radius: 0;
-    width: 90%;
-  }
-  
   .post-modal-backdrop {
     padding: 0;
+    padding-top: max(
+      var(--post-modal-navbar-gap),
+      env(safe-area-inset-top) + 72px
+    );
+    padding-left: 0;
+    padding-right: 0;
+    align-items: flex-start;
   }
-  
+
+  .post-modal-container {
+    width: 100%;
+    max-width: none;
+    max-height: min(75dvh, calc(100dvh - var(--post-modal-navbar-gap) - 16px));
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .post-modal-top {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
   .post-modal-upload-zone {
-    aspect-ratio: 1 / 1;
+    max-height: min(45dvh, 320px);
+  }
+
+  .post-modal-input-area,
+  .post-modal-footer {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+/* ---------- Responsive: very small height (e.g. landscape) ---------- */
+@media (max-height: 500px) {
+  .post-modal-container {
+    max-height: min(85dvh, calc(100dvh - var(--post-modal-navbar-gap) - 12px));
+  }
+
+  .post-modal-upload-zone {
+    max-height: 35dvh;
+    min-height: 140px;
   }
 }

@@ -1,0 +1,464 @@
+.godate-card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.godate-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.godate-card--closed {
+  border-color: #10b981;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+}
+
+.godate-card--cancelled {
+  opacity: 0.85;
+  border-color: #94a3b8;
+}
+
+.godate-card-header {
+  height: 160px; /* Slightly taller for better image visibility */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  cursor: default;
+}
+
+.godate-card-header[style*="url"] {
+  cursor: pointer;
+}
+
+.godate-header-gradient {
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+}
+
+.godate-badge {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-transform: capitalize;
+  z-index: 2;
+}
+
+.godate-zoom-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.godate-card-header:hover .godate-zoom-hint {
+  opacity: 1;
+}
+
+.godate-delete-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  color: white;
+  transition: all 0.2s;
+  z-index: 2;
+}
+
+.godate-delete-btn:hover {
+  background: #ef4444;
+}
+
+.godate-body {
+  padding: 16px;
+}
+
+.godate-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.godate-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.godate-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.godate-icon {
+  color: #6366f1;
+}
+
+.godate-payment {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 4px 10px;
+  border-radius: 50px;
+  margin-top: 4px;
+}
+
+/* Description Toggle */
+.godate-description-wrapper {
+  margin-top: 12px;
+}
+
+.godate-desc-toggle {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  color: #6366f1;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+}
+
+.godate-desc-toggle:hover {
+  text-decoration: underline;
+}
+
+.godate-description-text {
+  font-size: 0.9rem;
+  color: #475569;
+  margin-top: 8px;
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 8px;
+  line-height: 1.5;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.godate-creator {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.godate-creator img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.godate-creator-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.creator-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.creator-age {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.godate-footer {
+  padding: 16px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.godate-actions {
+  width: 100%;
+}
+
+.apply-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: #6366f1;
+  color: white;
+  transition: all 0.2s;
+}
+
+.apply-btn:hover {
+  background: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.apply-btn.applied {
+  background: #ef4444;
+  color: white;
+}
+.apply-btn.applied:hover {
+  background: #dc2626;
+}
+
+.date-closed-badge {
+  width: 100%;
+  padding: 12px;
+  background: #e2e8f0;
+  color: #64748b;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: default;
+}
+
+.date-cancelled-badge {
+  width: 100%;
+  padding: 12px;
+  background: rgba(248, 113, 113, 0.15);
+  color: #b91c1c;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: default;
+}
+
+.godate-cancel-date-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  min-height: 44px;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  background: rgba(248, 113, 113, 0.1);
+  color: #dc2626;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.godate-cancel-date-btn:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.2);
+  color: #b91c1c;
+}
+.godate-cancel-date-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.godate-applicants-wrapper {
+  width: 100%;
+}
+
+.applicants-header {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.applicants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.applicant-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.applicant-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.applicant-info img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.app-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.accept-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.accept-btn:hover {
+  background: #059669;
+}
+
+.no-applicants {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  text-align: center;
+  padding: 10px 0;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+}
+
+.accepted-user-box {
+  width: 100%;
+}
+.accepted-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #10b981;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.accepted-row {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+.chat-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Expanded Image Overlay */
+.godate-image-expanded-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.godate-image-expanded-overlay img {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  object-fit: contain;
+}
+
+.godate-close-expanded-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s;
+  backdrop-filter: blur(5px);
+}
+
+.godate-close-expanded-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}

@@ -1,5 +1,5 @@
 .explore-section {
-  margin-bottom: 40px;
+  margin-bottom: clamp(24px, 5vw, 40px);
 }
 
 .explore-section__header {
@@ -18,11 +18,11 @@
 }
 
 .explore-section__title {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: clamp(8px, 1.5vw, 10px);
   color: #f8fafc;
   margin: 0;
   flex-wrap: wrap;
@@ -36,8 +36,8 @@
 
 .explore-section__subtitle {
   color: #64748b;
-  font-size: 0.9rem;
-  margin-top: 5px;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  margin-top: clamp(4px, 1vw, 5px);
   margin-bottom: 0;
 }
 
@@ -72,11 +72,15 @@
 .explore-section__scroll-container {
   display: flex;
   overflow-x: auto;
-  gap: 16px;
-  padding-bottom: 20px;
+  gap: clamp(10px, 2vw, 16px);
+  padding-bottom: max(
+    clamp(15px, 2.5vw, 20px),
+    calc(clamp(15px, 2.5vw, 20px) + env(safe-area-inset-bottom))
+  );
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  touch-action: pan-x;
 }
 
 .explore-section__scroll-container::-webkit-scrollbar {
@@ -84,23 +88,25 @@
 }
 
 .explore-section__locked-more-card {
-  min-width: 240px;
-  height: 380px;
+  min-width: clamp(180px, 40vw, 240px);
+  height: clamp(280px, 65vw, 380px);
   background: rgba(30, 41, 59, 0.4);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 2px dashed rgba(167, 139, 250, 0.3);
-  border-radius: 24px;
+  border-radius: clamp(16px, 3vw, 24px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 24px;
+  padding: clamp(16px, 3vw, 24px);
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  will-change: transform;
 }
 
 .explore-section__locked-more-card:hover {
@@ -114,45 +120,45 @@
 }
 
 .explore-section__lock-icon {
-  font-size: 3rem;
-  margin-bottom: 15px;
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: clamp(12px, 2vw, 15px);
 }
 
 .explore-section__locked-title {
   color: #fff;
-  font-size: 1.2rem;
-  margin-bottom: 8px;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  margin-bottom: clamp(6px, 1vw, 8px);
 }
 
 .explore-section__locked-desc {
   color: #94a3b8;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 @media (max-width: 768px) {
   .explore-section {
-    margin-bottom: 32px;
+    margin-bottom: clamp(20px, 4vw, 32px);
   }
 
   .explore-section__title {
-    font-size: 1.3rem;
+    font-size: clamp(1.1rem, 3.5vw, 1.3rem);
   }
 
   .explore-section__subtitle {
-    font-size: 0.85rem;
+    font-size: clamp(0.75rem, 2vw, 0.85rem);
   }
 
   .explore-section__scroll-container {
-    gap: 12px;
+    gap: clamp(10px, 2vw, 12px);
   }
 
   .explore-section__locked-more-card {
-    min-width: 200px;
-    height: 320px;
+    min-width: clamp(160px, 35vw, 200px);
+    height: clamp(260px, 60vw, 320px);
   }
 
   .explore-section__lock-icon {
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 4.5vw, 2.5rem);
   }
 }
 
@@ -160,57 +166,61 @@
   .explore-section__header {
     flex-direction: row;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: clamp(0.5rem, 1.5vw, 0.75rem);
   }
 
   .explore-section__title {
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 4vw, 1.2rem);
   }
 
   .explore-section__count {
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
   }
 
   .explore-section__see-more-btn {
-    /* align-self: flex-start; */
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    min-height: 44px;
+    min-width: 44px;
   }
 
   .explore-section__scroll-container {
-    gap: 10px;
-    padding-bottom: 15px;
+    gap: clamp(8px, 1.5vw, 10px);
+    padding-bottom: max(
+      clamp(12px, 2vw, 15px),
+      calc(clamp(12px, 2vw, 15px) + env(safe-area-inset-bottom))
+    );
   }
 
   .explore-section__locked-more-card {
-    min-width: 180px;
-    height: 300px;
-    padding: 20px;
+    min-width: clamp(150px, 32vw, 180px);
+    height: clamp(240px, 55vw, 300px);
+    padding: clamp(16px, 2.5vw, 20px);
   }
 
   .explore-section__lock-icon {
-    font-size: 2rem;
+    font-size: clamp(1.6rem, 4vw, 2rem);
   }
 
   .explore-section__locked-title {
-    font-size: 1.1rem;
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
   }
 
   .explore-section__locked-desc {
-    font-size: 0.85rem;
+    font-size: clamp(0.75rem, 1.8vw, 0.85rem);
   }
 }
 
 @media (orientation: landscape) and (max-height: 700px) {
   .explore-section {
-    margin-bottom: 24px;
+    margin-bottom: clamp(16px, 3vw, 24px);
   }
 
   .explore-section__header {
-    margin-bottom: 16px;
+    margin-bottom: clamp(12px, 2vw, 16px);
   }
 
   .explore-section__locked-more-card {
-    height: 280px;
-    min-width: 200px;
+    height: clamp(240px, 50vw, 280px);
+    min-width: clamp(160px, 35vw, 200px);
   }
 }

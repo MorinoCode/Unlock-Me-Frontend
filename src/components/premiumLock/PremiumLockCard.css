@@ -1,55 +1,143 @@
-/* Block: .premium-lock-card */
+/* PremiumLockCard – aligned with subscription rules (Soulmates, Visibility). Responsive, professional, global standard. */
+
 .premium-lock-card {
   width: 100%;
-  height: 280px; 
-  border: 2px dashed rgba(99, 102, 241, 0.3); 
-  border-radius: 24px;
+  min-height: clamp(240px, 50vw, 280px);
+  padding: clamp(24px, 5vw, 32px) clamp(20px, 4vw, 28px);
+  padding-bottom: max(
+    clamp(24px, 5vw, 32px),
+    calc(clamp(24px, 5vw, 32px) + env(safe-area-inset-bottom))
+  );
+  border: 2px dashed rgba(99, 102, 241, 0.35);
+  border-radius: clamp(18px, 3.5vw, 24px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%);
   text-align: center;
-  margin-top: 10px;
+  margin-top: clamp(8px, 1.5vw, 12px);
+  background: radial-gradient(
+    circle at center,
+    rgba(30, 41, 59, 0.5) 0%,
+    rgba(15, 23, 42, 0.7) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  touch-action: manipulation;
 }
 
-/* Element: .premium-lock-card__icon */
 .premium-lock-card__icon {
-  font-size: 3rem;
-  margin-bottom: 15px;
-  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6));
+  font-size: clamp(2.5rem, 6vw, 3rem);
+  margin-bottom: clamp(12px, 2.5vw, 15px);
+  filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.5));
+  line-height: 1;
 }
 
-/* Element: .premium-lock-card__title */
 .premium-lock-card__title {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
   font-weight: 700;
-  color: white;
-  margin: 0 0 10px 0;
+  color: #fff;
+  margin: 0 0 clamp(8px, 1.5vw, 10px) 0;
+  line-height: 1.25;
 }
 
-/* Element: .premium-lock-card__description */
 .premium-lock-card__description {
   color: #94a3b8;
-  font-size: 0.95rem;
-  margin-bottom: 25px;
-  max-width: 80%;
+  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+  line-height: 1.5;
+  margin: 0 0 clamp(20px, 4vw, 25px) 0;
+  max-width: 90%;
 }
 
-/* Element: .premium-lock-card__btn */
 .premium-lock-card__btn {
-  background: #f59e0b; 
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
   color: #0f172a;
   border: none;
-  padding: 12px 32px;
-  font-size: 1rem;
+  padding: clamp(12px, 2.5vw, 14px) clamp(28px, 5vw, 32px);
+  min-height: 44px;
+  min-width: 44px;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
   font-weight: 700;
-  border-radius: 12px;
+  border-radius: clamp(10px, 2vw, 12px);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .premium-lock-card__btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+  filter: brightness(1.05);
+}
+
+.premium-lock-card__btn:active {
+  transform: scale(0.98);
+}
+
+.premium-lock-card__btn:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .premium-lock-card {
+    min-height: clamp(220px, 55vw, 260px);
+    padding: clamp(20px, 4vw, 24px) clamp(16px, 3vw, 20px);
+  }
+
+  .premium-lock-card__title {
+    font-size: clamp(1.1rem, 4vw, 1.3rem);
+  }
+
+  .premium-lock-card__description {
+    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+    margin-bottom: clamp(16px, 3vw, 20px);
+  }
+
+  .premium-lock-card__btn {
+    padding: 12px 24px;
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .premium-lock-card {
+    min-height: clamp(180px, 45vw, 220px);
+    padding: clamp(16px, 3vw, 20px) clamp(20px, 4vw, 24px);
+  }
+
+  .premium-lock-card__icon {
+    font-size: clamp(2rem, 5vw, 2.5rem);
+    margin-bottom: 10px;
+  }
+
+  .premium-lock-card__title {
+    font-size: clamp(1.1rem, 2.8vw, 1.3rem);
+    margin-bottom: 6px;
+  }
+
+  .premium-lock-card__description {
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    margin-bottom: 14px;
+  }
+
+  .premium-lock-card__btn {
+    padding: 10px 24px;
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-lock-card__btn {
+    transition: none;
+  }
+
+  .premium-lock-card__btn:hover {
+    transform: none;
+  }
 }

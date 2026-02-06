@@ -1,17 +1,23 @@
 .matches-view {
-  padding: 2rem 5% 8rem 5%;
+  padding: clamp(1.5rem, 4vw, 2rem) clamp(1rem, 5vw, 5%) clamp(4rem, 10vw, 8rem) clamp(1rem, 5vw, 5%);
   width: 100%;
   max-width: 1400px;
-  margin: 3rem auto;
+  margin: clamp(1.5rem, 4vw, 3rem) auto;
   position: relative;
   z-index: 5;
+  min-height: calc(100vh - 200px);
+  /* Performance optimizations */
+  will-change: scroll-position;
+  contain: layout style paint;
 }
 
 .matches-view__header {
   margin-bottom: 3rem;
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  flex-wrap: wrap;
 }
 
 .matches-view__back-button {
@@ -19,11 +25,19 @@
   background: rgba(99, 102, 241, 0.1);
   border: 1px solid rgba(99, 102, 241, 0.3);
   color: #a5b4fc;
-  padding: 10px 10px;
+  padding: clamp(12px, 2vw, 16px) clamp(20px, 3vw, 24px);
   border-radius: 16px;
   font-weight: 600;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  min-height: 44px; /* iOS touch target */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .matches-view__back-button:hover {
@@ -32,15 +46,23 @@
   border-color: #6366f1;
 }
 
+.matches-view__back-button:active {
+  transform: translateX(-3px) scale(0.98);
+}
+
 .matches-view__title {
-  font-size: clamp(1.8rem, 5vw, 3.5rem);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
+  line-height: 1.2;
+  flex: 1;
+  min-width: 0; /* Allow text to shrink */
 }
 
 .matches-view__promo-container {
@@ -57,11 +79,14 @@
 
 .matches-view__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(160px, 20vw, 200px), 1fr));
+  gap: clamp(12px, 2vw, 20px);
   width: 100%;
   justify-items: center;
   align-items: start;
+  /* Performance optimizations */
+  contain: layout;
+  will-change: contents;
 }
 
 .matches-view__grid-item {
@@ -78,15 +103,17 @@
   grid-column: 1 / -1;
   color: #94a3b8;
   text-align: center;
-  font-size: 1.2rem;
-  padding: 2rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  padding: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.6;
 }
 
 .matches-view__pagination-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 2rem 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: clamp(1.5rem, 3vw, 2rem) 0;
+  padding: 0 clamp(0.5rem, 1vw, 1rem);
 }
 
 .matches-view-loading {
@@ -94,54 +121,159 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  min-height: 400px;
   background: #020617;
+  padding: 2rem;
 }
 
 .matches-view-loading__text {
   color: #6366f1;
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
   font-weight: bold;
+  text-align: center;
 }
 
+/* Loading state responsive */
+@media screen and (max-width: 480px) {
+  .matches-view-loading {
+    min-height: 300px;
+    padding: 1rem;
+  }
+}
+
+/* Tablet and smaller desktop */
 @media screen and (max-width: 1024px) {
   .matches-view {
-    padding: 2rem 3% 6rem 3%;
+    padding: clamp(1.5rem, 3vw, 2rem) clamp(1rem, 3vw, 3%) clamp(4rem, 8vw, 6rem) clamp(1rem, 3vw, 3%);
   }
   .matches-view__grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 18vw, 180px), 1fr));
+    gap: clamp(12px, 1.5vw, 15px);
+  }
+  .matches-view__header {
+    gap: clamp(0.75rem, 2vw, 1rem);
   }
 }
 
+/* Mobile landscape and small tablets */
 @media screen and (max-width: 768px) {
   .matches-view {
-    padding: 1.5rem 2% 5rem 2%;
+    padding: clamp(1rem, 2vw, 1.5rem) clamp(0.75rem, 2vw, 2%) clamp(3rem, 6vw, 5rem) clamp(0.75rem, 2vw, 2%);
   }
   .matches-view__grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 16vw, 160px), 1fr));
+    gap: clamp(10px, 1.2vw, 12px);
+  }
+  .matches-view__header {
+    flex-direction: row;
+    align-items: center;
+  }
+  .matches-view__title {
+    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
   }
 }
 
+/* Mobile portrait */
 @media screen and (max-width: 480px) {
   .matches-view {
-    padding: 1rem 10px 4rem 10px;
+    padding: clamp(0.75rem, 1.5vw, 1rem) clamp(0.5rem, 1vw, 10px) clamp(2.5rem, 5vw, 4rem) clamp(0.5rem, 1vw, 10px);
   }
   .matches-view__grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: clamp(8px, 1vw, 10px);
+  }
+  .matches-view__header {
+    gap: 0.75rem;
+    margin-bottom: clamp(1.5rem, 4vw, 2rem);
   }
   .matches-view__title {
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    letter-spacing: -0.3px;
   }
   .matches-view__back-button {
-    padding: 8px 16px;
-    font-size: 0.8rem;
+    padding: clamp(10px, 1.5vw, 12px) clamp(16px, 2.5vw, 20px);
+    font-size: clamp(0.85rem, 1.8vw, 0.9rem);
+    min-height: 44px; /* iOS touch target */
   }
 }
 
+/* Very small mobile */
 @media screen and (max-width: 340px) {
   .matches-view__grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .matches-view__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .matches-view__back-button {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .matches-view__back-button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  .matches-view {
+    /* Prevent iOS bounce scrolling issues */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}
+
+/* Android specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .matches-view__back-button {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Windows touch devices */
+@media (pointer: coarse) {
+  .matches-view__back-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .matches-view__title {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Landscape orientation */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .matches-view {
+    padding-top: clamp(1rem, 2vw, 1.5rem);
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .matches-view__header {
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .matches-view__back-button {
+    transition: none;
+  }
+  .matches-view__back-button:hover {
+    transform: none;
+  }
+  .matches-view__back-button:active {
+    transform: scale(0.98);
   }
 }

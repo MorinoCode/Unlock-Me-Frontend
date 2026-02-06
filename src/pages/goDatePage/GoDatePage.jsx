@@ -1,260 +1,439 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Plus, Filter, X } from "lucide-react"; // آیکون‌های جدید
+import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { Plus, Filter, X, Calendar, User, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import GoDateCard from "../../components/goDateComponents/goDateCard/GoDateCard";
 import CreateDateModal from "../../components/goDateComponents/createDateModal/CreateDateModal";
 import SubscriptionModal from "../../components/modals/subscriptionModal/SubscriptionModal";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
-// import { useAuth } from "../../context/useAuth.js";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/useAuth.js";
+import { useGoDateStore } from "../../store/goDateStore";
 import "./GoDatePage.css";
 
 const GoDatePage = () => {
+  const { t } = useTranslation();
+  const { currentUser } = useAuth();
+  const userId = currentUser?._id || currentUser?.userId;
   const [activeTab, setActiveTab] = useState("browse");
   const [dates, setDates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  
-  // --- Filters State ✅ ---
+
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterCity, setFilterCity] = useState("");
-  
+
   const [showSubModal, setShowSubModal] = useState(false);
   const [limitMsg, setLimitMsg] = useState("");
 
-//   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-
-  // --- 1. Fetch Dates (With Filters) ---
-  const fetchDates = useCallback(async () => {
-    setLoading(true);
-    try {
-        let endpoint = activeTab === 'browse' ? '/api/go-date/all' : '/api/go-date/mine';
-        
-        // ارسال فیلترها به بک‌اند برای تب Browse
-        if (activeTab === 'browse') {
-             const params = new URLSearchParams();
-             if (filterCity) params.append('city', filterCity);
-             if (filterCategory && filterCategory !== 'all') params.append('category', filterCategory);
-             endpoint += `?${params.toString()}`;
-        }
-
-        const res = await fetch(`${API_URL}${endpoint}`, { credentials: 'include' });
-        const data = await res.json();
-        
-        if (Array.isArray(data)) setDates(data);
-        else setDates([]);
-
-    } catch (err) {
-        console.error(err);
-    } finally {
-        setLoading(false);
-    }
-  }, [activeTab, API_URL, filterCity, filterCategory]);
+  const getCached = useGoDateStore((s) => s.getCached);
+  const fetchDates = useGoDateStore((s) => s.fetchDates);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    fetchDates();
-  }, [fetchDates]);
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
-  // --- 2. Create Date Handler ---
-  const handleCreateDate = async (formData) => {
-    try {
-        const res = await fetch(`${API_URL}/api/go-date/create`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData),
-            credentials: 'include'
+  useEffect(() => {
+    if (!userId) {
+      queueMicrotask(() => setLoading(false));
+      return;
+    }
+
+    const city = (filterCity || "").trim();
+    const category = (filterCategory || "all").trim();
+    const cached = getCached(userId, activeTab, city, category);
+
+    const applyCached = (entry) => {
+      if (!entry || !mountedRef.current) return;
+      setDates(entry.dates ?? []);
+    };
+
+    if (cached) {
+      applyCached(cached);
+      queueMicrotask(() => setLoading(false));
+      fetchDates(API_URL, userId, activeTab, city, category, true, null).then(
+        () => {
+          if (mountedRef.current)
+            applyCached(getCached(userId, activeTab, city, category));
+        }
+      );
+    } else {
+      queueMicrotask(() => setLoading(true));
+      fetchDates(API_URL, userId, activeTab, city, category, false, null)
+        .then(() => {
+          if (mountedRef.current) {
+            applyCached(getCached(userId, activeTab, city, category));
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (mountedRef.current) setLoading(false);
         });
+    }
+  }, [
+    userId,
+    activeTab,
+    filterCity,
+    filterCategory,
+    API_URL,
+    getCached,
+    fetchDates,
+  ]);
 
-        if (res.status === 403) {
-            const data = await res.json();
-            setLimitMsg(data.message || "Limit reached");
-            setShowCreate(false);
-            setShowSubModal(true);
-            return;
-        }
+  const handleCreateDate = async (formDataObj) => {
+    try {
+      const formData = new FormData();
+      Object.keys(formDataObj).forEach((key) => {
+        formData.append(key, formDataObj[key]);
+      });
 
-        if (res.ok) {
-            toast.success("Date Created Successfully!");
-            setShowCreate(false);
-            setActiveTab('mine'); 
-            fetchDates();
-        } else {
-            toast.error("Failed to create date");
-        }
+      const res = await fetch(`${API_URL}/api/go-date/create`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      if (res.status === 403) {
+        const data = await res.json();
+        setLimitMsg(data.message || t("chat.limitReached"));
+        setShowCreate(false);
+        setShowSubModal(true);
+        return;
+      }
+
+      if (res.ok) {
+        const newDate = await res.json();
+        toast.success(t("createDate.dateCreatedSuccess"));
+        setShowCreate(false);
+        setActiveTab("mine");
+        setDates((prev) => [
+          {
+            ...newDate,
+            applicants: newDate.applicants || [],
+            acceptedUser: newDate.acceptedUser || null,
+          },
+          ...prev,
+        ]);
+      } else {
+        toast.error(t("createDate.failedToCreate"));
+      }
     } catch (err) {
-        console.error(err);
+      console.error(err);
+      toast.error(t("createDate.errorCreating"));
     }
   };
 
-  // --- 3. Apply Handler ---
   const handleApply = async (dateId) => {
     try {
-        const res = await fetch(`${API_URL}/api/go-date/apply`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ dateId }),
-            credentials: 'include'
-        });
-        if (res.ok) {
-            toast.success("Request Sent!");
-            setDates(prev => prev.map(d => d._id === dateId ? {...d, hasApplied: true} : d));
-        } else {
-            const data = await res.json();
-            toast.error(data.error || "Error applying");
-        }
+      const res = await fetch(`${API_URL}/api/go-date/apply`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dateId }),
+        credentials: "include",
+      });
+      if (res.ok) {
+        toast.success("Request Sent!");
+        setDates((prev) =>
+          prev.map((d) => (d._id === dateId ? { ...d, hasApplied: true } : d))
+        );
+      } else {
+        const data = await res.json();
+        toast.error(data.message || data.error || "Error applying");
+      }
     } catch (err) {
-        toast.error("Connection error");
-        console.log(err);
+      console.log(err);
     }
   };
 
-  // --- 4. Accept Handler ---
+  const handleWithdraw = async (dateId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/go-date/withdraw`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dateId }),
+        credentials: "include",
+      });
+      if (res.ok) {
+        toast.success("Request Withdrawn");
+        setDates((prev) =>
+          prev.map((d) => (d._id === dateId ? { ...d, hasApplied: false } : d))
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleAccept = async (dateId, applicantId) => {
     try {
-        const res = await fetch(`${API_URL}/api/go-date/accept`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ dateId, applicantId }),
-            credentials: 'include'
-        });
-        
-        if (res.ok) {
-            const data = await res.json();
-            toast.success("Match Created! Redirecting to chat...");
-            if (data.chatRuleId) {
-                navigate(`/chat/${applicantId}`);
+      const res = await fetch(`${API_URL}/api/go-date/accept`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dateId, applicantId }),
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success("Match Confirmed! Redirecting to chat...");
+
+        // ✅ آپدیت فوری UI: دیت را پیدا کن و وضعیتش را تغییر بده
+        // این کار باعث می‌شود UI بلافاصله لیست درخواست‌ها را ببندد و ارور ندهد
+        setDates((prevDates) =>
+          prevDates.map((d) => {
+            if (d._id === dateId) {
+              // پیدا کردن اطلاعات اپلیکنت برای نمایش
+              const acceptedApplicant = d.applicants.find(
+                (app) => app._id === applicantId
+              );
+              return {
+                ...d,
+                status: "closed",
+                acceptedUser: acceptedApplicant, // ست کردن یوزر قبول شده
+              };
             }
-        } else {
-            toast.error("Failed to accept");
-        }
+            return d;
+          })
+        );
+
+        // انتقال به چت با کمی تاخیر برای دیدن موفقیت
+        setTimeout(() => {
+          if (data.chatRuleId) {
+            navigate(`/chat/${applicantId}`);
+          }
+        }, 1000);
+      } else {
+        toast.error(data.error || "Failed to accept");
+      }
     } catch (err) {
-        console.error(err);
+      console.error(err);
+      toast.error("Connection error");
     }
   };
 
-  // --- 5. Delete Handler ✅ ---
-  const handleDelete = async (dateId) => {
-      if(!window.confirm("Are you sure you want to cancel this date?")) return;
-      
-      try {
-        const res = await fetch(`${API_URL}/api/go-date/${dateId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-
-        if (res.ok) {
-            toast.success("Date deleted");
-            setDates(prev => prev.filter(d => d._id !== dateId));
-        } else {
-            toast.error("Failed to delete");
-        }
-      } catch (err) {
-          console.error(err);
+  const doCancelDate = async (dateId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/go-date/${dateId}/cancel`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(t("goDate.dateCancelled"));
+        setDates((prev) =>
+          prev.map((d) =>
+            d._id === dateId ? { ...d, status: "cancelled" } : d
+          )
+        );
+      } else {
+        toast.error(data.message || data.error || t("goDate.failedToCancel"));
       }
+    } catch (err) {
+      console.error(err);
+      toast.error(t("goDate.connectionError"));
+    }
+  };
+
+  const handleCancel = (dateId) => {
+    toast(
+      (t) => (
+        <span className="godate-toast-wrap">
+          <div className="godate-toast-text">
+            <strong>{t("goDate.cancelDateConfirm")}</strong>
+            <span className="godate-toast-subtext">{t("goDate.cancelDateNotify")}</span>
+          </div>
+          <div className="godate-toast-btns">
+            <button
+              type="button"
+              className="godate-toast-confirm-btn godate-toast-confirm-btn--danger"
+              onClick={() => {
+                toast.dismiss(t.id);
+                doCancelDate(dateId);
+              }}
+            >
+              {t("goDate.confirm")}
+            </button>
+            <button
+              type="button"
+              className="godate-toast-cancel-btn"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              {t("common.cancel")}
+            </button>
+          </div>
+        </span>
+      ),
+      { duration: 8000 }
+    );
+  };
+
+  const doDeleteDate = async (dateId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/go-date/${dateId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) {
+        toast.success(t("goDate.dateDeleted"));
+        setDates((prev) => prev.filter((d) => d._id !== dateId));
+      } else {
+        const data = await res.json();
+        toast.error(data.message || data.error || t("goDate.failedToDelete"));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = (dateId) => {
+    toast(
+      (toastId) => (
+        <span className="godate-toast-wrap">
+          {t("goDate.deleteDatePlanConfirm")}
+          <div className="godate-toast-btns">
+            <button
+              type="button"
+              className="godate-toast-confirm-btn godate-toast-confirm-btn--danger"
+              onClick={() => {
+                toast.dismiss(toastId.id);
+                doDeleteDate(dateId);
+              }}
+            >
+              {t("common.delete")}
+            </button>
+            <button
+              type="button"
+              className="godate-toast-cancel-btn"
+              onClick={() => toast.dismiss(toastId.id)}
+            >
+              {t("common.cancel")}
+            </button>
+          </div>
+        </span>
+      ),
+      { duration: 8000 }
+    );
   };
 
   return (
     <ExploreBackgroundLayout>
-      <div className="go-date-page">
-        
-        {/* Header */}
-        <div className="go-date-header">
-            <div className="go-date-title"><h1 className="go-date-title-heading">Go Date</h1> <span className="go-date-title-icon"> 📅</span></div>
-            <div className="go-date-tabs">
-                <button 
-                    className={`go-date-tab ${activeTab === 'browse' ? 'go-date-tab--active' : ''}`}
-                    onClick={() => setActiveTab('browse')}
-                >
-                    Browse
-                </button>
-                <button 
-                    className={`go-date-tab ${activeTab === 'mine' ? 'go-date-tab--active' : ''}`}
-                    onClick={() => setActiveTab('mine')}
-                >
-                    My Plans
-                </button>
-            </div>
+      <div className="go-date-wrapper">
+        <div className="go-date-header-tabs">
+          <button
+            className={`go-date-tab ${activeTab === "browse" ? "active" : ""}`}
+            onClick={() => setActiveTab("browse")}
+          >
+            <Calendar size={18} />
+            {t("goDate.browseDates")}
+          </button>
+          <button
+            className={`go-date-tab ${activeTab === "mine" ? "active" : ""}`}
+            onClick={() => setActiveTab("mine")}
+          >
+            <User size={18} />
+            {t("goDate.myPlans")}
+          </button>
         </div>
 
-        {/* --- Filters Area (Only on Browse) ✅ --- */}
-        {activeTab === 'browse' && (
-            <div className="go-date-filters">
-                <div className="go-date-filter-item">
-                    <Filter size={16} />
-                    <select 
-                        value={filterCategory} 
-                        onChange={(e) => setFilterCategory(e.target.value)}
-                        className="go-date-filter-select"
-                    >
-                        <option value="all">All Categories</option>
-                        <option value="coffee">☕ Coffee</option>
-                        <option value="food">🍽️ Food</option>
-                        <option value="drink">🍷 Drink</option>
-                        <option value="movie">🎬 Movie</option>
-                        <option value="activity">🏃 Activity</option>
-                    </select>
-                </div>
-                
-                <div className="go-date-filter-item">
-                    <input 
-                        type="text" 
-                        placeholder="City..." 
-                        value={filterCity}
-                        onChange={(e) => setFilterCity(e.target.value)}
-                        className="go-date-filter-input"
-                    />
-                    {filterCity && <button onClick={() => setFilterCity("")}><X size={14}/></button>}
-                </div>
+        {activeTab === "browse" && (
+          <div className="go-date-filters-container">
+            <div className="go-date-filter-pill">
+              <Filter size={14} className="filter-icon" />
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="go-date-filter-select"
+              >
+                <option value="all">{t("goDate.allCategories")}</option>
+                <option value="coffee">☕ Coffee</option>
+                <option value="food">🍽️ Food</option>
+                <option value="drink">🍷 Drink</option>
+                <option value="movie">🎬 Movie</option>
+                <option value="activity">🏃 Activity</option>
+              </select>
             </div>
+
+            <div className="go-date-filter-pill">
+              <MapPin size={14} className="filter-icon" />
+              <input
+                type="text"
+                placeholder={t("goDate.searchCity")}
+                value={filterCity}
+                onChange={(e) => setFilterCity(e.target.value)}
+                className="go-date-filter-input"
+              />
+              {filterCity && (
+                <button
+                  className="clear-filter-btn"
+                  onClick={() => setFilterCity("")}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
         )}
 
-        {/* Content Grid */}
         <div className="go-date-grid">
-            {loading ? (
-                <p>Loading dates...</p>
-            ) : dates.length === 0 ? (
-                <div style={{gridColumn:'1/-1', textAlign:'center', marginTop:'50px', color:'#64748b'}}>
-                    {activeTab === 'browse' ? (
-                        <p>No open dates found. Try changing filters or create one!</p>
-                    ) : (
-                        <p>You haven't planned any dates yet.</p>
-                    )}
-                </div>
-            ) : (
-                dates.map(date => (
-                    <GoDateCard 
-                        key={date._id} 
-                        date={date} 
-                        isOwner={activeTab === 'mine'} 
-                        onApply={handleApply}
-                        onAccept={handleAccept}
-                        onDelete={handleDelete} // پاس دادن تابع حذف
-                    />
-                ))
-            )}
+          {loading ? (
+            <div className="go-date-loading-state">
+              <div className="loading-spinner"></div>
+            </div>
+          ) : dates.length === 0 ? (
+            <div className="go-date-empty-state">
+              {activeTab === "browse" ? (
+                <>
+                  <h3>{t("goDate.noUpcomingDates")}</h3>
+                  <p>{t("goDate.noUpcomingDatesDesc")}</p>
+                </>
+              ) : (
+                <>
+                  <h3>{t("goDate.noPlansYet")}</h3>
+                  <p>{t("goDate.noPlansYetDesc")}</p>
+                </>
+              )}
+            </div>
+          ) : (
+            dates.map((date) => (
+              <GoDateCard
+                key={date._id}
+                date={date}
+                isOwner={activeTab === "mine"}
+                onApply={handleApply}
+                onWithdraw={handleWithdraw}
+                onAccept={handleAccept}
+                onCancel={handleCancel}
+                onDelete={handleDelete}
+              />
+            ))
+          )}
         </div>
 
         <button className="go-date-fab" onClick={() => setShowCreate(true)}>
-            <Plus />
+          <Plus size={32} />
         </button>
 
         {showCreate && (
-            <CreateDateModal 
-                onClose={() => setShowCreate(false)}
-                onCreate={handleCreateDate}
-                loading={loading && showCreate} 
-            />
+          <CreateDateModal
+            onClose={() => setShowCreate(false)}
+            onCreate={handleCreateDate}
+            loading={loading && showCreate}
+          />
         )}
 
         {showSubModal && (
-            <SubscriptionModal 
-                onClose={() => setShowSubModal(false)}
-                message={limitMsg}
-            />
+          <SubscriptionModal
+            onClose={() => setShowSubModal(false)}
+            message={limitMsg}
+          />
         )}
-
       </div>
     </ExploreBackgroundLayout>
   );

@@ -1,95 +1,23 @@
-/* Block: .background-layout */
+/* ✅ Performance Optimization: Simple, static background - matches HomePage */
 .background-layout {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  /* رنگ پایه تیره */
-  background-color: #020617; 
-  overflow: hidden; 
+  /* Same background as HomePage - no animations, just color */
+  background-color: #020617; /* --color-bg-primary */
+  background-image: 
+    radial-gradient(circle at 50% -20%, #1e1b4b 0%, transparent 50%), /* --gradient-bg-primary */
+    radial-gradient(circle at 0% 100%, #0f172a 0%, transparent 40%); /* --gradient-bg-secondary */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 0;
 }
 
-/* Element: .background-layout__effects */
-.background-layout__effects {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1; 
-}
-
-/* Element: .background-layout__blob */
-.background-layout__blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px); 
-  opacity: 0.5;
-  animation: float 20s infinite alternate ease-in-out;
-  will-change: transform; /* برای پرفورمنس بهتر در دسکتاپ */
-}
-
-/* Modifier: .background-layout__blob--purple */
-.background-layout__blob--purple {
-  top: -10%;
-  left: -10%;
-  width: 50vw;
-  height: 50vw;
-  background: #6366f1;
-  animation-delay: 0s;
-}
-
-/* Modifier: .background-layout__blob--green */
-.background-layout__blob--green {
-  bottom: -10%;
-  right: -10%;
-  width: 40vw;
-  height: 40vw;
-  background: #4ade80;
-  animation-delay: -5s;
-  opacity: 0.3;
-}
-
-/* Modifier: .background-layout__blob--blue */
-.background-layout__blob--blue {
-  top: 40%;
-  left: 40%;
-  width: 30vw;
-  height: 30vw;
-  background: #3b82f6;
-  animation-duration: 25s;
-  opacity: 0.2;
-}
-
-@keyframes float {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, 50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(10px, -30px) scale(1.05); }
-}
-
-/* Element: .background-layout__grid-overlay */
-/* این گرید سبک است و می‌تواند بماند، اما باز هم برای اطمینان بهینه می‌کنیم */
-.background-layout__grid-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 90%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 90%);
-  pointer-events: none;
-}
-
 /* Element: .background-layout__content */
 .background-layout__content {
   position: relative;
-  z-index: 10;
+  z-index: 1;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -97,20 +25,9 @@
   padding: 1.5rem;
 }
 
-/* 🚀 MOBILE & TABLET OPTIMIZATION (Up to 1024px) */
-@media (max-width: 1024px) {
-  /* 1. حذف حباب‌های سنگین متحرک */
-  .background-layout__blob {
-    display: none;
-  }
-
-  /* 2. اضافه کردن یک گرادینت ثابت و سبک به جای حباب‌ها */
-  .background-layout {
-    background: radial-gradient(circle at top left, #1e1b4b 0%, #020617 60%);
-  }
-
-  /* 3. حفظ گرید اما کمی کمرنگ‌تر */
-  .background-layout__grid-overlay {
-    opacity: 0.5;
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .background-layout__content {
+    padding: 1rem;
   }
 }

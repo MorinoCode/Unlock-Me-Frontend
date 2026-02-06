@@ -22,16 +22,16 @@
   text-align: center;
   padding: 100px 20px 80px;
   background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.25) 0%, transparent 70%);
-  
 }
 
 .how-it-works-component__hero-content {
   max-width: 800px;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .how-it-works-component__hero-title {
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 8vw, 3.5rem);
   font-weight: 900;
   margin: 0 0 20px 0;
   letter-spacing: -0.02em;
@@ -42,10 +42,11 @@
   background: linear-gradient(135deg, var(--hw-primary) 0%, var(--hw-accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .how-it-works-component__hero-subtitle {
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 3vw, 1.25rem);
   color: var(--hw-text-muted);
   max-width: 600px;
   margin: 0 auto;
@@ -60,6 +61,13 @@
   display: flex;
   flex-direction: column;
   gap: 100px;
+}
+
+@media (max-width: 768px) {
+  .how-it-works-component__features-list {
+    padding: 0 16px;
+    gap: 60px;
+  }
 }
 
 /* --- Single Feature Item --- */
@@ -99,7 +107,7 @@
 }
 
 .how-it-works-component__item-title {
-  font-size: 2.2rem;
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
   font-weight: 800;
   margin: 0 0 16px 0;
   color: var(--hw-text-main);
@@ -107,7 +115,7 @@
 }
 
 .how-it-works-component__item-desc {
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
   line-height: 1.7;
   color: var(--hw-text-muted);
   margin: 0;
@@ -194,29 +202,30 @@
 }
 
 .how-it-works-component__cta-title {
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
   font-weight: 800;
   margin: 0 0 16px 0;
   color: var(--hw-text-main);
 }
 
 .how-it-works-component__cta-text {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 3vw, 1.2rem);
   color: var(--hw-text-muted);
   margin: 0 0 40px 0;
 }
 
 .how-it-works-component__cta-btn {
-  padding: 18px 48px;
+  padding: clamp(14px, 4vw, 18px) clamp(32px, 8vw, 48px);
   background: linear-gradient(135deg, var(--hw-primary) 0%, #6366f1 100%);
   color: white;
   border: none;
   border-radius: 99px;
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
   transition: all 0.3s ease;
+  min-height: 44px; /* بهبود Accessibility: حداقل touch target */
 }
 
 .how-it-works-component__cta-btn:hover {
@@ -225,20 +234,115 @@
   filter: brightness(1.1);
 }
 
+/* --- Step-by-Step Section (استاندارد جهانی) --- */
+.how-it-works-component__steps {
+  padding: 80px 24px;
+  background: linear-gradient(180deg, transparent 0%, rgba(139, 92, 246, 0.03) 50%, transparent 100%);
+}
+
+.how-it-works-component__steps-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.how-it-works-component__steps-title {
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 60px 0;
+  color: var(--hw-text-main);
+  padding: 0 1rem;
+}
+
+.how-it-works-component__steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  position: relative;
+}
+
+.how-it-works-component__step-card {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid var(--hw-glass-border);
+  border-radius: 24px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.how-it-works-component__step-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 20px 40px -12px rgba(139, 92, 246, 0.2);
+}
+
+.how-it-works-component__step-number {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--hw-primary) 0%, #6366f1 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: white;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.how-it-works-component__step-icon {
+  color: var(--hw-primary);
+  margin: 1.5rem 0 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.how-it-works-component__step-title {
+  font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: var(--hw-text-main);
+}
+
+.how-it-works-component__step-description {
+  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+  line-height: 1.6;
+  color: var(--hw-text-muted);
+  margin: 0;
+}
+
+.how-it-works-component__section-title {
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 60px 0;
+  color: var(--hw-text-main);
+  padding: 0 1rem;
+}
+
 /* --- Responsive Media Queries --- */
+
+/* Tablet and below */
 @media (max-width: 968px) {
-  .how-it-works-component__hero-title {
-    font-size: 2.8rem;
+  .how-it-works-component__hero {
+    padding: 80px 16px 60px;
   }
   
   .how-it-works-component__item {
     flex-direction: column;
     text-align: center;
     gap: 40px;
+    margin-top: 2rem;
   }
 
-  /* Force normal order on mobile so text comes before image usually, 
-     or you can remove this to keep image bottom */
   .how-it-works-component__item--reversed {
     flex-direction: column; 
   }
@@ -246,13 +350,122 @@
   .how-it-works-component__item-icon-wrapper {
     margin: 0 auto 20px;
   }
-
-  .how-it-works-component__item-title {
-    font-size: 1.8rem;
-  }
   
   .how-it-works-component__visual-card {
     max-width: 320px;
     margin: 0 auto;
+  }
+
+  .how-it-works-component__steps {
+    padding: 60px 16px;
+  }
+
+  .how-it-works-component__steps-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .how-it-works-component__step-card {
+    padding: 1.5rem;
+  }
+
+  .how-it-works-component__cta {
+    margin-top: 80px;
+    padding: 60px 16px;
+  }
+}
+
+/* Mobile (small screens) */
+@media (max-width: 480px) {
+  .how-it-works-component {
+    padding-bottom: 60px;
+  }
+
+  .how-it-works-component__hero {
+    padding: 60px 12px 40px;
+  }
+
+  .how-it-works-component__features-list {
+    padding: 0 12px;
+    gap: 50px;
+  }
+
+  .how-it-works-component__item {
+    gap: 30px;
+    margin-top: 1.5rem;
+  }
+
+  .how-it-works-component__item-icon-wrapper {
+    padding: 14px;
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+  }
+
+  .how-it-works-component__visual-card {
+    max-width: 280px;
+  }
+
+  .how-it-works-component__visual-icon {
+    font-size: 5rem;
+  }
+
+  .how-it-works-component__steps {
+    padding: 50px 12px;
+  }
+
+  .how-it-works-component__steps-title,
+  .how-it-works-component__section-title {
+    margin-bottom: 40px;
+  }
+
+  .how-it-works-component__steps-grid {
+    gap: 2rem;
+  }
+
+  .how-it-works-component__step-card {
+    padding: 1.25rem;
+  }
+
+  .how-it-works-component__step-number {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    top: -18px;
+  }
+
+  .how-it-works-component__step-icon {
+    margin: 1rem 0 0.75rem;
+  }
+
+  .how-it-works-component__cta {
+    margin-top: 60px;
+    padding: 50px 12px;
+  }
+
+  .how-it-works-component__cta-text {
+    margin-bottom: 30px;
+  }
+}
+
+/* Tablet (medium screens) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .how-it-works-component__steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .how-it-works-component__hero {
+    padding: 90px 20px 70px;
+  }
+}
+
+/* Large screens optimization */
+@media (min-width: 1400px) {
+  .how-it-works-component__features-list {
+    gap: 120px;
+  }
+
+  .how-it-works-component__item {
+    gap: 100px;
   }
 }

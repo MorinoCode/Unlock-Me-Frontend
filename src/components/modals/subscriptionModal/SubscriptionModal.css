@@ -1,50 +1,64 @@
+/* SubscriptionModal – طراحی مشابه UpgradePage، responsive و cross-platform */
+
 /* Container Overlay - Always Centered */
 .sub-modal {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* iOS Safari support */
   display: flex;
-  align-items: center; /* Center Vertically */
-  justify-content: center; /* Center Horizontally */
-  z-index: 99999; /* Ensure it's on top of everything including navbars */
-  padding: 20px;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: clamp(16px, 3vw, 20px);
+  padding-left: max(clamp(16px, 3vw, 20px), env(safe-area-inset-left));
+  padding-right: max(clamp(16px, 3vw, 20px), env(safe-area-inset-right));
+  padding-top: max(clamp(16px, 3vw, 20px), env(safe-area-inset-top));
+  padding-bottom: max(clamp(16px, 3vw, 20px), env(safe-area-inset-bottom));
   animation: sub-modal-fadeIn 0.3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
 }
 
 /* Modal Content Box */
 .sub-modal__content {
   background: #fff;
   width: 100%;
-  max-width: 700px;
-  max-height: 80vh; /* Prevent overflowing screen height */
-  border-radius: 24px;
-  padding: 40px;
+  max-width: 1200px; /* افزایش عرض برای 3 ستون */
+  max-height: 90vh;
+  border-radius: clamp(20px, 4vw, 24px);
+  padding: clamp(24px, 4vw, 40px);
   position: relative;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: sub-modal-slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow-y: auto; /* Allow scrolling inside modal if content is tall */
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  margin: auto;
 }
 
 /* Close Button */
 .sub-modal__close-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: clamp(16px, 2.5vw, 20px);
+  right: clamp(16px, 2.5vw, 20px);
   background: #f3f4f6;
   border: none;
-  width: 36px;
-  height: 36px;
+  width: clamp(36px, 5vw, 40px);
+  height: clamp(36px, 5vw, 40px);
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
-  font-size: 1.2rem;
+  font-size: clamp(1.2rem, 2.5vw, 1.4rem);
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: 0.2s;
+  transition: background 0.2s ease, transform 0.1s ease;
   color: #4b5563;
   z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .sub-modal__close-btn:hover {
@@ -52,248 +66,578 @@
   color: #000;
 }
 
+.sub-modal__close-btn:active {
+  transform: scale(0.95);
+}
+
+.sub-modal__close-btn:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
 /* Header Section */
 .sub-modal__header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: clamp(24px, 4vw, 30px);
   flex-shrink: 0;
 }
 
 .sub-modal__icon-wrapper {
-  font-size: 3rem;
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
   color: #fbbf24;
-  margin-bottom: 10px;
+  margin-bottom: clamp(8px, 1.5vw, 12px);
   filter: drop-shadow(0 4px 6px rgba(251, 191, 36, 0.4));
   display: flex;
   justify-content: center;
 }
 
 .sub-modal__title {
-  font-size: 1.8rem;
+  font-size: clamp(1.5rem, 5vw, 1.8rem);
   font-weight: 800;
-  color: #111827;
-  margin: 0;
+  color: #111827; /* رنگ تیره برای contrast بهتر */
+  margin: 0 0 clamp(6px, 1vw, 8px);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .sub-modal__subtitle {
-  color: #6b7280;
-  margin-top: 8px;
+  color: #4b5563; /* رنگ تیره‌تر برای خوانایی بهتر */
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  margin-top: clamp(6px, 1vw, 8px);
+  line-height: 1.5;
 }
 
 /* Plans Grid Layout */
 .sub-modal__plans-grid {
   display: grid;
-  grid-template-columns: 1fr 1.1fr; /* Platinum slightly wider on desktop */
-  gap: 20px;
-  align-items: stretch; /* Cards stretch to equal height */
+  grid-template-columns: 1fr; /* Mobile: 1 ستون */
+  gap: clamp(16px, 3vw, 24px);
+  align-items: stretch;
   width: 100%;
+  margin-bottom: clamp(20px, 3vw, 24px);
+}
+
+/* Tablet: 2 ستون */
+@media (min-width: 640px) {
+  .sub-modal__plans-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop: 3 ستون */
+@media (min-width: 1024px) {
+  .sub-modal__plans-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 100%;
+  }
 }
 
 /* Card Component */
 .sub-modal__card {
-  border: 2px solid #e5e7eb;
-  border-radius: 20px;
-  padding: 30px;
+  border: 2px solid transparent;
+  border-radius: clamp(18px, 3.5vw, 24px);
+  padding: clamp(20px, 3.5vw, 30px);
   position: relative;
-  transition: 0.3s;
-  background: #fff;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  background: rgba(255, 255, 255, 0.98);
   display: flex;
   flex-direction: column;
+  text-align: left;
+  min-height: 380px;
+  height: 100%;
+  overflow: visible;
+  color: #1f2937; /* رنگ پیش‌فرض متن برای کارت */
+}
+
+.sub-modal__card:hover {
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sub-modal__card:hover {
+    transform: none;
+  }
 }
 
 /* Gold Plan Style */
 .sub-modal__card--gold {
-  border-color: #fbbf24;
-  background: #fffbeb;
+  border-color: rgba(251, 191, 36, 0.6);
+  background: linear-gradient(to bottom, #fffbeb, #fff);
+  box-shadow: 0 10px 30px rgba(251, 191, 36, 0.12);
 }
 
 /* Platinum Plan Style */
 .sub-modal__card--platinum {
-  border: 2px solid #8b5cf6;
-  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
-  transform: scale(1.02); /* Pop effect */
+  border-color: rgba(139, 92, 246, 0.6);
   background: linear-gradient(to bottom right, #fff, #f5f3ff);
-  z-index: 2;
+  box-shadow: 0 16px 40px rgba(139, 92, 246, 0.18);
 }
 
+/* Diamond Plan Style */
+.sub-modal__card--diamond {
+  border-color: rgba(167, 139, 250, 0.7);
+  background: linear-gradient(to bottom right, #faf5ff, #f5f3ff);
+  box-shadow: 0 16px 48px rgba(167, 139, 250, 0.2);
+}
+
+/* Current Plan Highlight */
+.sub-modal__card--current {
+  border-width: 3px;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.4);
+}
+
+.sub-modal__card--current.sub-modal__card--gold {
+  border-color: #22c55e;
+}
+
+.sub-modal__card--current.sub-modal__card--platinum {
+  border-color: #22c55e;
+}
+
+.sub-modal__card--current.sub-modal__card--diamond {
+  border-color: #22c55e;
+}
+
+/* Badge */
 .sub-modal__badge {
   position: absolute;
-  top: -12px;
+  top: clamp(-12px, -2vw, -14px);
   left: 50%;
   transform: translateX(-50%);
-  background: #8b5cf6;
-  color: white;
-  padding: 6px 16px;
+  color: #fff;
+  padding: clamp(5px, 1vw, 6px) clamp(12px, 2.5vw, 18px);
   border-radius: 100px;
-  font-size: 0.75rem;
+  font-size: clamp(0.7rem, 1.8vw, 0.8rem);
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.sub-modal__badge--gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+
+.sub-modal__badge--platinum {
+  background: #8b5cf6;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
+
+.sub-modal__badge--diamond {
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.4);
+}
+
+.sub-modal__badge--current {
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
 
 /* Card Header */
 .sub-modal__card-header {
   text-align: center;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  padding-bottom: 20px;
+  margin-bottom: clamp(18px, 2.5vw, 24px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* خط واضح‌تر */
+  padding-bottom: clamp(16px, 2.5vw, 20px);
 }
 
 .sub-modal__plan-name {
   margin: 0;
-  font-size: 1.4rem;
-  color: #374151;
+  font-size: clamp(1.2rem, 3vw, 1.4rem);
+  color: #1f2937; /* رنگ تیره‌تر برای contrast بهتر */
+  font-weight: 700;
 }
 
 .sub-modal__price {
-  font-size: 2.2rem;
+  font-size: clamp(1.75rem, 4.5vw, 2.2rem);
   font-weight: 800;
-  color: #111827;
-  margin-top: 10px;
+  color: #111827; /* رنگ تیره برای خوانایی */
+  margin-top: clamp(8px, 1.5vw, 10px);
   display: flex;
   align-items: baseline;
   justify-content: center;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .sub-modal__interval {
-  font-size: 1rem;
+  font-size: clamp(0.8rem, 1.8vw, 1rem);
   font-weight: 500;
-  color: #9ca3af;
+  color: #6b7280; /* رنگ تیره‌تر برای خوانایی بهتر */
+}
+
+/* Features Wrap */
+.sub-modal__features-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 /* Features List */
 .sub-modal__features-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 25px;
+  margin: 0 0 clamp(20px, 3vw, 25px);
   flex-grow: 1;
+  min-height: 0;
 }
 
 .sub-modal__feature-item {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-  font-size: 0.95rem;
-  color: #4b5563;
-  text-align: left;
+  align-items: flex-start;
+  gap: clamp(8px, 1.5vw, 12px);
+  margin-bottom: clamp(10px, 1.8vw, 14px);
+  font-size: clamp(0.85rem, 1.9vw, 0.95rem);
+  color: #374151; /* رنگ تیره‌تر برای خوانایی بهتر */
+  line-height: 1.5;
+  word-break: break-word;
 }
 
+.sub-modal__feature-item:last-child {
+  margin-bottom: 0;
+}
+
+.sub-modal__feature-item span {
+  flex: 1;
+}
+
+/* Icons */
 .sub-modal__icon {
-  color: #10b981; /* Green check */
-  font-size: 1.2rem;
+  color: #10b981;
+  font-size: clamp(1.2rem, 2.8vw, 1.4rem);
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .sub-modal__icon--plat {
-  color: #8b5cf6; /* Platinum purple */
+  color: #8b5cf6;
+}
+
+.sub-modal__icon--diamond {
+  color: #a78bfa;
 }
 
 /* Subscribe Buttons */
 .sub-modal__subscribe-btn {
   width: 100%;
-  padding: 16px;
-  border-radius: 12px;
+  padding: clamp(14px, 2.5vw, 18px);
+  min-height: 48px;
+  border-radius: clamp(12px, 2.5vw, 14px);
   border: none;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: clamp(1rem, 2.2vw, 1.1rem);
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s ease, filter 0.2s ease;
   margin-top: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sub-modal__subscribe-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.sub-modal__subscribe-btn:active {
+  transform: scale(0.98);
 }
 
 .sub-modal__subscribe-btn--gold {
-  background: #fcd34d;
+  background: linear-gradient(180deg, #fcd34d, #fbbf24);
   color: #78350f;
-  box-shadow: 0 4px 6px rgba(251, 191, 36, 0.3);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
 }
 
-.sub-modal__subscribe-btn--gold:hover {
-  background: #fbbf24;
-  transform: translateY(-2px);
+.sub-modal__subscribe-btn--gold:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 .sub-modal__subscribe-btn--platinum {
-  background: #8b5cf6;
-  color: white;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  background: linear-gradient(180deg, #a78bfa, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
 }
 
-.sub-modal__subscribe-btn--platinum:hover {
-  background: #7c3aed;
-  transform: translateY(-2px);
+.sub-modal__subscribe-btn--platinum:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.sub-modal__subscribe-btn--diamond {
+  background: linear-gradient(135deg, #c4b5fd, #a78bfa);
+  color: #1e1b4b;
+  box-shadow: 0 6px 16px rgba(167, 139, 250, 0.4);
+}
+
+.sub-modal__subscribe-btn--diamond:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.sub-modal__subscribe-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Current Label */
+.sub-modal__current-label {
+  width: 100%;
+  padding: clamp(14px, 2.5vw, 18px);
+  min-height: 48px;
+  border-radius: clamp(12px, 2.5vw, 14px);
+  font-weight: 700;
+  font-size: clamp(1rem, 2.2vw, 1.1rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  pointer-events: none;
 }
 
 /* Footer Text */
 .sub-modal__footer-text {
   text-align: center;
-  font-size: 0.8rem;
-  color: #9ca3af;
-  margin-top: 20px;
+  font-size: clamp(0.8rem, 2vw, 0.85rem);
+  color: #6b7280; /* رنگ تیره‌تر برای خوانایی بهتر */
+  margin-top: clamp(16px, 3vw, 20px);
   flex-shrink: 0;
+  line-height: 1.5;
 }
 
 /* Loading State */
 .sub-modal__loading {
   text-align: center;
-  padding: 50px;
+  padding: clamp(40px, 8vw, 50px);
+}
+
+.sub-modal__loading p {
+  margin: 0;
+  color: #6b7280; /* رنگ تیره‌تر برای خوانایی بهتر */
+  font-size: clamp(0.95rem, 2vw, 1rem);
 }
 
 .sub-modal__spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f4f6;
+  width: clamp(40px, 8vw, 50px);
+  height: clamp(40px, 8vw, 50px);
+  border: 3px solid rgba(248, 250, 252, 0.2);
   border-top-color: #8b5cf6;
   border-radius: 50%;
-  animation: sub-modal-spin 1s linear infinite;
-  margin: 0 auto 15px;
+  animation: sub-modal-spin 0.9s linear infinite;
+  margin: 0 auto clamp(12px, 2vw, 15px);
+}
+
+/* Empty State */
+.sub-modal__empty {
+  text-align: center;
+  padding: clamp(32px, 6vw, 48px);
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: clamp(16px, 3vw, 20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sub-modal__empty p {
+  margin: 0;
+  color: #6b7280; /* رنگ تیره‌تر برای خوانایی بهتر */
+  font-size: clamp(0.95rem, 2vw, 1rem);
 }
 
 /* Animations */
-@keyframes sub-modal-spin { to { transform: rotate(360deg); } }
-@keyframes sub-modal-slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes sub-modal-fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* --- RESPONSIVE QUERIES --- */
-
-/* Tablet (max-width: 1024px) */
-@media (max-width: 1024px) {
-  .sub-modal__content {
-    max-width: 95%;
+@keyframes sub-modal-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* Mobile (max-width: 768px) */
-@media (max-width: 768px) {
+@keyframes sub-modal-slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sub-modal-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sub-modal__spinner {
+    animation: none;
+    border-top-color: #a78bfa;
+  }
+  .sub-modal__content {
+    animation: none;
+  }
   .sub-modal {
-    padding: 0; /* Remove padding to use full screen if needed */
-    align-items: flex-end; /* Slide up from bottom on mobile */
+    animation: none;
+  }
+}
+
+/* Responsive: Mobile First */
+@media (max-width: 639px) {
+  .sub-modal {
+    padding: 0;
+    align-items: flex-end;
   }
 
   .sub-modal__content {
-    height: auto;
-    max-height: 90vh; /* Leave some space at top */
-    border-radius: 24px 24px 0 0; /* Rounded top corners only */
-    padding: 24px;
-    width: 100%;
-    animation: sub-modal-slideUp 0.3s ease-out;
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: clamp(20px, 5vw, 24px) clamp(20px, 5vw, 24px) 0 0;
+    padding: clamp(20px, 4vw, 24px);
+    padding-bottom: max(
+      clamp(20px, 4vw, 24px),
+      calc(clamp(20px, 4vw, 24px) + env(safe-area-inset-bottom))
+    );
   }
 
   .sub-modal__plans-grid {
-    grid-template-columns: 1fr; /* Stack cards vertically */
-    gap: 24px;
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    gap: clamp(16px, 4vw, 20px);
+  }
+
+  .sub-modal__card {
+    min-height: 320px;
+    padding: clamp(18px, 4vw, 24px);
   }
 
   .sub-modal__card--platinum {
-    transform: scale(1); /* Remove pop scale on mobile */
-    order: -1; /* Show Platinum FIRST */
+    transform: scale(1);
+    order: -1;
   }
 
   .sub-modal__title {
-    font-size: 1.5rem;
+    font-size: clamp(1.4rem, 5vw, 1.6rem);
   }
-  
+
   .sub-modal__price {
-    font-size: 1.8rem;
+    font-size: clamp(1.6rem, 5vw, 2rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .sub-modal__card {
+    min-height: 280px;
+    padding: clamp(16px, 4vw, 20px);
+  }
+
+  .sub-modal__plan-name {
+    font-size: clamp(1.1rem, 4vw, 1.25rem);
+  }
+
+  .sub-modal__price {
+    font-size: clamp(1.5rem, 6vw, 1.9rem);
+  }
+
+  .sub-modal__feature-item {
+    font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+  }
+}
+
+/* Tablet */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .sub-modal__content {
+    max-width: 95%;
+    padding: clamp(28px, 4vw, 36px);
+  }
+
+  .sub-modal__plans-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 ستون روی تبلت */
+    gap: clamp(18px, 3vw, 22px);
+  }
+}
+
+/* Desktop Large */
+@media (min-width: 1024px) {
+  .sub-modal__content {
+    max-width: 1200px;
+    padding: clamp(32px, 4vw, 40px);
+  }
+
+  .sub-modal__plans-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 ستون روی دسکتاپ */
+    gap: clamp(20px, 3vw, 24px);
+  }
+}
+
+/* Landscape Orientation */
+@media (orientation: landscape) and (max-height: 600px) {
+  .sub-modal__content {
+    max-height: 95vh;
+  }
+
+  .sub-modal__header {
+    margin-bottom: clamp(16px, 3vw, 20px);
+  }
+
+  .sub-modal__icon-wrapper {
+    font-size: clamp(2rem, 6vw, 2.5rem);
+    margin-bottom: 6px;
+  }
+
+  .sub-modal__title {
+    font-size: clamp(1.4rem, 4vw, 1.7rem);
+  }
+
+  .sub-modal__subtitle {
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+  }
+
+  .sub-modal__card {
+    min-height: 300px;
+  }
+}
+
+/* iOS Specific Fixes */
+@supports (-webkit-touch-callout: none) {
+  .sub-modal {
+    /* Fix iOS viewport height */
+    min-height: -webkit-fill-available;
+  }
+
+  .sub-modal__content {
+    /* Better scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Android Specific Fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .sub-modal__content {
+    /* Better rendering on Android */
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Windows Touch Devices */
+@media (pointer: coarse) {
+  .sub-modal__close-btn,
+  .sub-modal__subscribe-btn {
+    /* Larger touch targets for touch devices */
+    min-height: 48px;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .sub-modal__icon-wrapper {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 }

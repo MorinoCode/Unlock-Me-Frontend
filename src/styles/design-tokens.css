@@ -1,0 +1,189 @@
+/**
+ * 🎨 Design Tokens - Unlock-Me App
+ * Centralized design system variables for consistent theming
+ */
+
+:root {
+  /* ============================================
+     Color Palette - Primary
+     ============================================ */
+  --color-primary: #6366f1; /* Indigo */
+  --color-primary-dark: #4f46e5;
+  --color-primary-light: #818cf8;
+  --color-primary-glow: rgba(99, 102, 241, 0.3);
+  
+  --color-secondary: #a855f7; /* Purple */
+  --color-secondary-dark: #9333ea;
+  --color-secondary-light: #c084fc;
+  
+  --color-accent: #ec4899; /* Pink */
+  --color-accent-dark: #db2777;
+  --color-accent-light: #f472b6;
+
+  /* ============================================
+     Color Palette - Backgrounds
+     ============================================ */
+  --color-bg-primary: #020617; /* Darkest */
+  --color-bg-secondary: #0f172a; /* Dark */
+  --color-bg-tertiary: #1e293b; /* Medium Dark */
+  --color-bg-card: rgba(255, 255, 255, 0.02);
+  --color-bg-card-hover: rgba(255, 255, 255, 0.04);
+  --color-bg-glass: rgba(30, 41, 59, 0.6);
+  
+  /* Gradient Backgrounds */
+  --gradient-bg-primary: radial-gradient(circle at 50% -20%, #1e1b4b 0%, transparent 50%);
+  --gradient-bg-secondary: radial-gradient(circle at 0% 100%, #0f172a 0%, transparent 40%);
+  --gradient-bg-hero: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.25) 0%, transparent 70%);
+
+  /* ============================================
+     Color Palette - Text
+     ============================================ */
+  --color-text-primary: #f8fafc; /* White */
+  --color-text-secondary: #f1f5f9; /* Light Gray */
+  --color-text-muted: #cbd5e1; /* Medium Gray - بهبود Contrast: تغییر از #94a3b8 به #cbd5e1 */
+  --color-text-disabled: #64748b; /* Dark Gray */
+  
+  /* Text Gradients */
+  --gradient-text-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  --gradient-text-secondary: linear-gradient(to bottom, #fff, #94a3b8);
+  --gradient-text-accent: linear-gradient(to right, #fff, #cbd5e1);
+
+  /* ============================================
+     Color Palette - Borders & Dividers
+     ============================================ */
+  --color-border-primary: rgba(255, 255, 255, 0.1);
+  --color-border-secondary: rgba(255, 255, 255, 0.05);
+  --color-border-accent: rgba(99, 102, 241, 0.2);
+  --color-border-accent-hover: rgba(99, 102, 241, 0.3);
+
+  /* ============================================
+     Spacing Scale (8px base)
+     ============================================ */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+  --spacing-3xl: 4rem;     /* 64px */
+  --spacing-4xl: 5rem;     /* 80px */
+  --spacing-5xl: 6rem;     /* 96px */
+  --spacing-6xl: 10rem;   /* 160px */
+
+  /* ============================================
+     Typography Scale
+     ============================================ */
+  --font-family-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --font-family-display: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  --font-size-5xl: 3rem;      /* 48px */
+  --font-size-6xl: 3.75rem;  /* 60px */
+  --font-size-7xl: 4.5rem;   /* 72px */
+  --font-size-8xl: 5.5rem;   /* 88px */
+  
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+  
+  /* Line Heights */
+  --line-height-tight: 1.1;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.05em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.05em;
+
+  /* ============================================
+     Border Radius
+     ============================================ */
+  --radius-sm: 0.5rem;    /* 8px */
+  --radius-md: 1rem;      /* 16px */
+  --radius-lg: 1.5rem;    /* 24px */
+  --radius-xl: 2rem;      /* 32px */
+  --radius-2xl: 2.5rem;   /* 40px */
+  --radius-full: 9999px; /* Full circle */
+
+  /* ============================================
+     Shadows & Effects
+     ============================================ */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+  
+  --shadow-primary: 0 15px 35px -5px rgba(99, 102, 241, 0.4);
+  --shadow-primary-hover: 0 20px 40px -5px rgba(99, 102, 241, 0.6);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  
+  --blur-sm: blur(5px);
+  --blur-md: blur(10px);
+  --blur-lg: blur(12px);
+  --blur-xl: blur(20px);
+
+  /* ============================================
+     Transitions & Animations
+     ============================================ */
+  --transition-fast: 0.15s ease-out;
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s ease-out;
+  
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ============================================
+     Z-Index Scale
+     ============================================ */
+  --z-base: 1;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal-backdrop: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+
+  /* ============================================
+     Accessibility
+     ============================================ */
+  --focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.5);
+  --focus-ring-offset: 2px;
+  --touch-target-min: 44px; /* Minimum touch target size */
+  
+  /* ============================================
+     Breakpoints (for reference in JS)
+     ============================================ */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0s;
+    --transition-base: 0s;
+    --transition-slow: 0s;
+  }
+}

@@ -1,20 +1,23 @@
-// Frontend/src/utils/subscriptionRules.js
+// Backend/utils/subscriptionRules.js
 
 export const PLANS = {
   FREE: "free",
   GOLD: "gold",
   PLATINUM: "platinum",
+  DIAMOND: "diamond", // ✅ New: Ultimate unlimited plan
 };
 
 // ---------------------------------------------
-// 1. Soulmate Permissions (مورد نیاز ExploreSection)
+// 1. Soulmate Permissions
 // ---------------------------------------------
 export const getSoulmatePermissions = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
 
   switch (normalizedPlan) {
+    case PLANS.DIAMOND:
+      return { isLocked: false, limit: Infinity }; // ✅ Unlimited Soulmates
     case PLANS.PLATINUM:
-      return { isLocked: false, limit: Infinity };
+      return { isLocked: false, limit: 10 };
     case PLANS.GOLD:
       return { isLocked: false, limit: 5 }; 
     case PLANS.FREE:
@@ -24,36 +27,40 @@ export const getSoulmatePermissions = (plan) => {
 };
 
 // ---------------------------------------------
-// 2. Visibility Threshold (مورد نیاز ExploreSection)
+// 2. Visibility Threshold
 // ---------------------------------------------
 export const getVisibilityThreshold = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
 
   switch (normalizedPlan) {
+    case PLANS.DIAMOND:
+      return 100; // ✅ See ALL users regardless of match score
     case PLANS.PLATINUM:
-      return 100; // مشاهده تا ۱۰۰٪
+      return 90; 
     case PLANS.GOLD:
-      return 90;
+      return 80;
     case PLANS.FREE:
     default:
-      return 80;
+      return 70;
   }
 };
 
 // ---------------------------------------------
-// 3. Direct Message (DM) Limits (مورد نیاز Chat)
+// 3. Direct Message (DM) Limits
 // ---------------------------------------------
 export const getDailyDmLimit = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
 
   switch (normalizedPlan) {
+    case PLANS.DIAMOND:
+      return Infinity; // ✅ Unlimited Direct Messages
     case PLANS.PLATINUM:
       return 10;
     case PLANS.GOLD:
       return 5;
     case PLANS.FREE:
     default:
-      return 0;
+      return 0; // ✅ اصلاح شد: 0 یعنی قفل برای کاربر رایگان
   }
 };
 
@@ -63,8 +70,9 @@ export const getDailyDmLimit = (plan) => {
 export const getSwipeLimit = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
   switch (normalizedPlan) {
-    case PLANS.PLATINUM: return Infinity;
-    case PLANS.GOLD: return 80;
+    case PLANS.DIAMOND: return Infinity; // ✅ Unlimited Swipes
+    case PLANS.PLATINUM: return 110;
+    case PLANS.GOLD: return 70;
     case PLANS.FREE: default: return 30;
   }
 };
@@ -75,9 +83,10 @@ export const getSwipeLimit = (plan) => {
 export const getSuperLikeLimit = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
   switch (normalizedPlan) {
-    case PLANS.PLATINUM: return Infinity;
-    case PLANS.GOLD: return 5;
-    case PLANS.FREE: default: return 1;
+    case PLANS.DIAMOND: return Infinity; // ✅ Unlimited Super Likes
+    case PLANS.PLATINUM: return 12;
+    case PLANS.GOLD: return 6;
+    case PLANS.FREE: default: return 2;
   }
 };
 
@@ -87,8 +96,9 @@ export const getSuperLikeLimit = (plan) => {
 export const getBlindDateConfig = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
   switch (normalizedPlan) {
-    case PLANS.PLATINUM: return { limit: Infinity, cooldownHours: 0 };
-    case PLANS.GOLD: return { limit: 4, cooldownHours: 1 };
+    case PLANS.DIAMOND: return { limit: Infinity, cooldownHours: 0 }; // ✅ Unlimited Blind Dates, No Cooldown
+    case PLANS.PLATINUM: return { limit: 8, cooldownHours: 1 };
+    case PLANS.GOLD: return { limit: 4, cooldownHours: 2 };
     case PLANS.FREE: default: return { limit: 2, cooldownHours: 4 };
   }
 };
@@ -99,22 +109,24 @@ export const getBlindDateConfig = (plan) => {
 export const getPromoBannerConfig = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
   switch (normalizedPlan) {
-    case PLANS.PLATINUM: return { showGold: false, showPlatinum: false, showBoost: true };
-    case PLANS.GOLD: return { showGold: false, showPlatinum: true, showBoost: true };
-    case PLANS.FREE: default: return { showGold: true, showPlatinum: true, showBoost: true };
+    case PLANS.DIAMOND: return { showGold: false, showPlatinum: false, showDiamond: false, showBoost: false }; // ✅ No promos for Diamond
+    case PLANS.PLATINUM: return { showGold: false, showPlatinum: false, showDiamond: true, showBoost: true };
+    case PLANS.GOLD: return { showGold: false, showPlatinum: true, showDiamond: true, showBoost: true };
+    case PLANS.FREE: default: return { showGold: true, showPlatinum: true, showDiamond: true, showBoost: true };
   }
 };
 
 // ---------------------------------------------
-// 8. Match List Limits (مورد نیاز MyMatches)
+// 8. Match List Limits
 // ---------------------------------------------
 export const getMatchListLimit = (plan, type) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
   
   if (type === 'mutual') return Infinity; 
 
-  if (type === 'incoming') { // Who liked you
+  if (type === 'incoming') { 
     switch (normalizedPlan) {
+      case PLANS.DIAMOND:
       case PLANS.PLATINUM:
       case PLANS.GOLD:
         return Infinity; 
@@ -126,7 +138,8 @@ export const getMatchListLimit = (plan, type) => {
 
   if (type === 'sent') {
     switch (normalizedPlan) {
-      case PLANS.PLATINUM: return Infinity;
+      case PLANS.DIAMOND: return Infinity; // ✅ Unlimited Sent Likes List
+      case PLANS.PLATINUM: return 90;
       case PLANS.GOLD: return 50; 
       case PLANS.FREE: default: return 10;
     }
@@ -136,17 +149,23 @@ export const getMatchListLimit = (plan, type) => {
 };
 
 // ---------------------------------------------
-// 9. Go Date (Date Invite) Configuration ✅ NEW
+// 9. Go Date (Date Invite) Configuration
 // ---------------------------------------------
 export const getGoDateConfig = (plan) => {
   const normalizedPlan = plan?.toLowerCase() || PLANS.FREE;
   
   switch (normalizedPlan) {
-    case PLANS.PLATINUM: 
+    case PLANS.DIAMOND: 
       return { 
         limitLabel: 'Unlimited', 
         canCreate: true,
-        period: 'always'
+        period: 'unlimited' // ✅ Unlimited Go Dates
+      };
+    case PLANS.PLATINUM: 
+      return { 
+        limitLabel: '1 per Day', 
+        canCreate: true,
+        period: 'day'
       };
     case PLANS.GOLD: 
       return { 

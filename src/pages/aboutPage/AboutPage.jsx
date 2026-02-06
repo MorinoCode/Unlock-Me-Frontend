@@ -1,5 +1,6 @@
 import React from 'react';
 import AboutComponent from '../../components/aboutComponent/AboutComponent';
+import SEO from '../../components/seo/SEO';
 import { IoFlask, IoShieldCheckmark, IoHeartCircle, IoPeople } from "react-icons/io5";
 import './AboutPage.css';
 
@@ -36,9 +37,16 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="about-page">
-      <AboutComponent values={coreValues} stats={stats} />
-    </div>
+    <>
+      <SEO
+        title="About Us | Unlock Me - Reimagining Human Connection"
+        description="Learn about Unlock Me's mission to create meaningful relationships through science-backed personality matching. Discover our story, values, and commitment to authentic connections."
+        keywords="about us, Unlock Me, dating app, personality matching, meaningful relationships, science-backed matching, authentic connections"
+      />
+      <div className="about-page">
+        <AboutComponent values={coreValues} stats={stats} />
+      </div>
+    </>
   );
 };
 

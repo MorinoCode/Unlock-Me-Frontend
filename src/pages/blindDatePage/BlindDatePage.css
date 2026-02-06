@@ -1,169 +1,269 @@
+/* Blind Date page: responsive, safe-area, design-token aligned (Unlock-Me) */
 .blind-date-page {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #0f172a;
-  padding: 20px;
-  font-family: "Inter", sans-serif;
+  min-height: 100dvh;
+  background-color: var(--color-bg-secondary, #0f172a);
+  padding: clamp(12px, 3vw, 24px);
+  padding-top: max(clamp(12px, 3vw, 24px), env(safe-area-inset-top));
+  padding-bottom: max(clamp(12px, 3vw, 24px), env(safe-area-inset-bottom));
+  padding-left: max(clamp(12px, 3vw, 24px), env(safe-area-inset-left));
+  padding-right: max(clamp(12px, 3vw, 24px), env(safe-area-inset-right));
+  font-family: var(--font-family-primary);
+  box-sizing: border-box;
 }
 
-/* Intro State */
+.blind-date-page__loading {
+  color: var(--color-text-muted, #cbd5e1);
+  font-size: var(--font-size-sm, 0.875rem);
+  padding: clamp(16px, 4vw, 24px);
+}
+
+/* Intro State — card aligned with Unlock-Me design system */
 .blind-date-page__intro {
-  max-width: 420px;
+  position: relative;
+  max-width: min(420px, 100%);
   width: 100%;
   text-align: center;
-  padding: 40px;
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 32px;
-  backdrop-filter: blur(12px);
+  padding: clamp(28px, 6vw, 48px);
+  background: var(--color-bg-tertiary, #1e293b);
+  border: 1px solid var(--color-border-accent, rgba(99, 102, 241, 0.2));
+  border-radius: var(--radius-xl, 20px);
+  box-shadow: var(--shadow-xl, 0 20px 25px rgba(0, 0, 0, 0.15));
+  backdrop-filter: var(--blur-sm, blur(5px));
+  -webkit-backdrop-filter: var(--blur-sm, blur(5px));
+}
+
+.blind-date-page__product-label {
+  display: inline-block;
+  margin-bottom: clamp(12px, 2.5vw, 16px);
+  font-size: clamp(0.7rem, 2vw, 0.8rem);
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  background: linear-gradient(
+    135deg,
+    #a78bfa 0%,
+    #818cf8 35%,
+    #6366f1 70%,
+    #4f46e5 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.35));
+  position: relative;
+}
+.blind-date-page__product-label::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 40%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(129, 140, 248, 0.6),
+    transparent
+  );
+  transform: translateX(-50%);
+  border-radius: 2px;
 }
 
 .blind-date-page__icon-box {
-  margin-bottom: 24px;
+  margin-bottom: clamp(16px, 3vw, 24px);
 }
+
 .blind-date-page__spinner-small_message {
-  color: white;
+  color: #f8fafc;
+  font-size: clamp(0.85rem, 2vw, 1rem);
 }
-.blind-date-page__status-msg{
-  color: #f472b6;
-  margin-bottom: 1rem;
+
+.blind-date-page__status-msg {
+  color: var(--color-accent, #ec4899);
+  margin-bottom: var(--spacing-md, 1rem);
+  font-size: var(--font-size-sm, 0.875rem);
+  cursor: pointer;
 }
+
 .blind-date-page__icon {
-  font-size: 72px;
-  display: inline-block;
-  animation: blind-float 3s ease-in-out infinite;
+  width: clamp(48px, 12vw, 64px);
+  height: clamp(48px, 12vw, 64px);
+  color: var(--color-primary, #6366f1);
+  margin: 0 auto;
+  display: block;
+  transition: color var(--transition-base, 0.2s ease);
+}
+
+.blind-date-page__icon--img {
+  width: auto;
+  height: auto;
+  max-width: min(280px, 85vw);
+  max-height: clamp(120px, 28vw, 180px);
+  object-fit: contain;
 }
 
 .blind-date-page__title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 12px;
-  background: linear-gradient(to right, #a78bfa, #f472b6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: clamp(
+    var(--font-size-2xl, 1.5rem),
+    5vw,
+    var(--font-size-3xl, 1.875rem)
+  );
+  font-weight: var(--font-weight-bold, 700);
+  margin-bottom: clamp(8px, 2vw, 12px);
+  line-height: var(--line-height-tight, 1.2);
+  color: var(--color-text-primary, #f8fafc);
+  letter-spacing: var(--letter-spacing-tight, -0.02em);
 }
 
 .blind-date-page__text {
-  color: #94a3b8;
-  line-height: 1.6;
-  margin-bottom: 32px;
+  color: var(--color-text-muted, #cbd5e1);
+  line-height: var(--line-height-relaxed, 1.6);
+  margin-bottom: clamp(24px, 4vw, 32px);
+  font-size: var(--font-size-sm, 0.875rem);
+  max-width: 36ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .blind-date-page__btn {
   width: 100%;
-  padding: 16px;
-  font-weight: 700;
-  border-radius: 16px;
+  padding: clamp(14px, 3.5vw, 18px);
+  min-height: var(--touch-target-min, 48px);
+  font-weight: var(--font-weight-semibold, 600);
+  font-size: var(--font-size-base, 1rem);
+  border-radius: var(--radius-md, 12px);
   border: none;
-  background: linear-gradient(90deg, #8b5cf6, #d946ef);
+  background: var(--color-primary, #6366f1);
   color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background var(--transition-base),
+    transform var(--transition-fast), box-shadow var(--transition-base);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .blind-date-page__btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+  background: var(--color-primary-dark, #4f46e5);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-primary, 0 15px 35px -5px rgba(99, 102, 241, 0.4));
+}
+
+.blind-date-page__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring, 0 0 0 3px rgba(99, 102, 241, 0.5));
+}
+
+.blind-date-page__btn:active:not(:disabled) {
+  transform: scale(0.99);
 }
 
 .blind-date-page__btn--disabled {
-  background: #475569;
+  background: var(--color-text-disabled, #64748b);
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 /* Session Layout */
 .blind-date-page__session-container {
   width: 100%;
-  max-width: 500px;
+  max-width: min(500px, 100%);
   display: flex;
   flex-direction: column;
+  padding: 0 clamp(8px, 2vw, 16px);
+  box-sizing: border-box;
 }
 
 .blind-date-page__game-layout {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: clamp(12px, 3vw, 20px);
 }
 
 .blind-date-page__chat-wrapper {
-  margin-top: 10px;
+  margin-top: clamp(8px, 2vw, 10px);
 }
 
 .blind-date-page__final-chat-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: clamp(12px, 3vw, 20px);
 }
 
 .blind-date-page__stage-title {
   color: #f8fafc;
   text-align: center;
-  font-size: 1.2rem;
-  letter-spacing: 1px;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  letter-spacing: 0.5px;
 }
 
 /* Transitions & Errors */
 .blind-date-page__transition-card {
   text-align: center;
-  padding: 30px;
+  padding: clamp(20px, 4vw, 30px);
   background: #1e293b;
-  border-radius: 20px;
-  margin-top: 20px;
+  border-radius: clamp(16px, 3vw, 20px);
+  margin-top: clamp(16px, 3vw, 20px);
 }
 
 .blind-date-page__transition-msg {
   color: #cbd5e1;
-  margin-bottom: 20px;
+  margin-bottom: clamp(16px, 3vw, 20px);
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .blind-date-page__proceed-btn {
   background: #10b981;
   color: white;
-  padding: 12px 24px;
+  padding: clamp(12px, 2.5vw, 14px) clamp(20px, 4vw, 24px);
+  min-height: 48px;
   border: none;
-  border-radius: 12px;
+  border-radius: clamp(10px, 2.5vw, 12px);
   font-weight: 600;
+  font-size: clamp(0.95rem, 2vw, 1rem);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease;
+}
+
+.blind-date-page__proceed-btn:active {
+  transform: scale(0.98);
 }
 
 .blind-date-page__error-state {
   text-align: center;
-  padding: 40px;
+  padding: clamp(24px, 5vw, 40px);
 }
 
 .blind-date-page__error-icon {
-  font-size: 60px;
-  margin-bottom: 20px;
+  font-size: clamp(48px, 12vw, 60px);
+  margin-bottom: clamp(16px, 3vw, 20px);
 }
 
 .blind-date-page__error-title {
-  color: white;
-  margin-bottom: 10px;
+  color: #f8fafc;
+  margin-bottom: clamp(8px, 2vw, 10px);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
 }
 
 .blind-date-page__error-desc {
   color: #94a3b8;
-  margin-bottom: 30px;
+  margin-bottom: clamp(24px, 4vw, 30px);
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .blind-date-page__retry-btn {
   background: transparent;
   color: #8b5cf6;
   border: 1px solid #8b5cf6;
-  padding: 10px 25px;
-  border-radius: 10px;
+  padding: clamp(12px, 2.5vw, 14px) clamp(24px, 5vw, 28px);
+  min-height: 48px;
+  border-radius: clamp(8px, 2vw, 10px);
+  font-size: clamp(0.95rem, 2vw, 1rem);
   cursor: pointer;
-}
-
-@keyframes blind-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease;
 }

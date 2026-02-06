@@ -1,14 +1,16 @@
-/* کانتینر اصلی چت */
+/* کانتینر اصلی چت - responsive height */
 .blind-chat-section {
   display: flex;
   flex-direction: column;
-  height: 450px; /* ارتفاع مناسب */
-  background: rgba(15, 23, 42, 0.8); /* پس‌زمینه تیره و شفاف */
-  border-radius: 24px;
-  border: 1px solid white;
+  height: clamp(320px, 55vh, 450px);
+  min-height: 280px;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: clamp(16px, 4vw, 24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  margin-top: 20px;
+  margin-top: clamp(12px, 3vw, 20px);
+  box-sizing: border-box;
 }
 
 /* لیست پیام‌ها */
@@ -50,11 +52,11 @@
   font-size: 0.95rem;
   line-height: 1.5;
   position: relative;
-  
+
   /* ✅ FIX: شکستن کلمات طولانی */
   word-wrap: break-word;
   word-break: break-word;
-  overflow-wrap: anywhere; 
+  overflow-wrap: anywhere;
 }
 
 /* پیام‌های من (Gradient) */
@@ -70,7 +72,7 @@
 .blind-chat-section__bubble--partner {
   align-self: flex-start;
   background: #ffffff; /* رنگ سفید */
-  color: #0f172a;      /* متن تیره برای خوانایی */
+  color: #0f172a; /* متن تیره برای خوانایی */
   border-bottom-left-radius: 4px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
@@ -106,22 +108,24 @@
   color: #64748b;
 }
 
-/* دکمه ارسال */
+/* دکمه ارسال - min 44px touch target */
 .blind-chat-section__send-btn {
   background: #8b5cf6;
   color: white;
   border: none;
-  width: 50px;
-  height: 50px;
+  width: clamp(44px, 12vw, 50px);
+  height: clamp(44px, 12vw, 50px);
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: transform 0.2s ease, background 0.2s ease;
   font-weight: 600;
   box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
-
+  -webkit-tap-highlight-color: transparent;
 }
 
 .blind-chat-section__send-btn:hover:not(:disabled) {

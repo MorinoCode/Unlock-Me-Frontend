@@ -1,93 +1,76 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import UserCard from "../../components/userCard/UserCard";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
 import { Pagination } from "../../components/pagination/Pagination";
 import "./ViewAllMatchesPage.css";
 import { useAuth } from "../../context/useAuth.js";
+import { useMatchesStore } from "../../store/matchesStore";
+import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
+
+const EMPTY_USERS = [];
+const usersPerPage = 20;
 
 const ViewAllMatchesPage = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
-
-  // State
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState("");
   const { currentUser } = useAuth();
+  const userId = currentUser?._id;
 
-  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const usersPerPage = 20;
 
-  useEffect(() => {
-    if (type === "mutual") setTitle("Mutual Matches");
-    else if (type === "sent") setTitle("People You Liked");
-    else if (type === "incoming") setTitle("People Who Liked You");
+  const title = useMemo(() => {
+    if (type === "mutual") return "Mutual Matches";
+    if (type === "sent") return "People You Liked";
+    if (type === "incoming") return "People Who Liked You";
+    if (type === "superlikes") return "Super Likes ⭐";
+    return "";
   }, [type]);
 
+  const cacheKey = `${userId ?? ""}:${type ?? ""}:${currentPage}`;
+  const entry = useMatchesStore((state) => state.cache[cacheKey]);
+  const users = entry?.users ?? EMPTY_USERS;
+  const pagination = entry?.pagination ?? null;
+  const totalPages = pagination?.totalPages ?? 1;
+  const totalCount = pagination?.totalUsers ?? 0;
+
+  const loading = useMatchesStore((state) => state.loading);
+  const getViewAllCached = useMatchesStore((state) => state.getViewAllCached);
+  const fetchViewAll = useMatchesStore((state) => state.fetchViewAll);
+
+  const loadViewAll = useCallback(
+    async (forceRefresh = false) => {
+      if (!userId || !type) return;
+      const cached = getViewAllCached(userId, type, currentPage);
+      const silent = cached && !forceRefresh;
+      await fetchViewAll(API_URL, userId, type, currentPage, usersPerPage, silent);
+    },
+    [API_URL, userId, type, currentPage, getViewAllCached, fetchViewAll]
+  );
+
   useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        setLoading(true);
-
-        const queryParams = new URLSearchParams({
-          type: type,
-          page: currentPage,
-          limit: usersPerPage,
-        });
-
-        const res = await fetch(
-          `${API_URL}/api/user/matches/matches-dashboard?${queryParams}`,
-          {
-            credentials: "include",
-          }
-        );
-
-        if (!res.ok) throw new Error("Failed to fetch dashboard matches");
-
-        const data = await res.json();
-        console.log(data);
-        setUsers(data.users || []);
-        if (data.pagination) {
-          setTotalPages(data.pagination.totalPages);
-          setTotalCount(data.pagination.totalUsers);
-        }
-      } catch (err) {
-        console.error("Error fetching all matches:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMatches();
-  }, [type, currentPage, API_URL]);
+    if (!userId || !type) return;
+    loadViewAll();
+  }, [userId, type, currentPage, loadViewAll]);
 
   const userPlan = currentUser?.subscription?.plan || "free";
-
-  const limits = {
-    free: { mutual: 20, sent: 10, incoming: 0 },
-    premium: { mutual: 100, sent: 50, incoming: 10 },
-    gold: { mutual: 999, sent: 999, incoming: 999 },
-  };
-
-  const baseIndex = (currentPage - 1) * usersPerPage;
-  const currentLimit = limits[userPlan]?.[type] || 0;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (loading)
+  const isLoadingFirst = loading && users.length === 0;
+
+  if (isLoadingFirst) {
     return (
       <div className="matches-loader">
         <div className="matches-loader__spinner"></div>
         <p className="matches-loader__text">Loading {type} connections...</p>
       </div>
     );
+  }
 
   return (
     <ExploreBackgroundLayout>
@@ -113,22 +96,17 @@ const ViewAllMatchesPage = () => {
               </span>
             </div>
           </div>
-          
         </header>
 
         <div className="matches-page__grid">
           {users.map((user, index) => {
-            // محاسبه دقیق قفل بودن بر اساس ایندکس کلی
-            const globalIndex = baseIndex + index;
-            const isLocked = globalIndex >= currentLimit;
-
             return (
               <div
                 className="matches-page__card-wrapper"
                 key={user._id}
                 style={{ "--delay": `${index * 0.05}s` }}
               >
-                <UserCard user={user} isLocked={isLocked} userPlan={userPlan} />
+                <UserCard user={user} userPlan={userPlan} />
               </div>
             );
           })}
@@ -149,7 +127,6 @@ const ViewAllMatchesPage = () => {
           )}
         </div>
 
-        {/* Pagination UI */}
         {totalPages > 1 && (
           <div
             className="matches-view__pagination-wrapper"
@@ -163,7 +140,6 @@ const ViewAllMatchesPage = () => {
           </div>
         )}
 
-        {/* بنر ارتقا برای کاربران فری در لیست لایک‌های دریافتی */}
         {userPlan === "free" && type === "incoming" && (
           <div
             className="matches-page__upsell-banner"

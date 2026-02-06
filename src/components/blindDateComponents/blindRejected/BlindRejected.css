@@ -22,13 +22,17 @@
 
 /* افکت نور پس‌زمینه */
 .blind-rejected__card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(244, 63, 94, 0.05) 0%, transparent 60%);
+  background: radial-gradient(
+    circle,
+    rgba(244, 63, 94, 0.05) 0%,
+    transparent 60%
+  );
   animation: pulseLight 4s infinite ease-in-out;
   pointer-events: none;
 }
@@ -63,7 +67,12 @@
 
 .blind-rejected__divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   margin: 0 auto 25px;
   width: 80%;
 }
@@ -77,16 +86,18 @@
 
 .blind-rejected__btn {
   width: 100%;
-  padding: 16px;
-  border-radius: 16px;
+  padding: clamp(14px, 3.5vw, 18px);
+  min-height: 48px;
+  border-radius: clamp(12px, 3vw, 16px);
   border: none;
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
   color: white;
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .blind-rejected__btn:hover {
@@ -100,17 +111,38 @@
 }
 
 @keyframes fadeInReject {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes breakHeart {
-  0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes pulseLight {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.1); }
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }

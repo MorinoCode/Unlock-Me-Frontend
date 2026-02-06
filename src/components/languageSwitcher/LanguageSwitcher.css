@@ -1,0 +1,204 @@
+.language-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.language-switcher__button {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1vw, 6px); /* ✅ Responsive gap - smaller */
+  padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 10px); /* ✅ Responsive padding - smaller */
+  /* ✅ Glassy effect: Enhanced glassy background */
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: clamp(6px, 1.5vw, 8px);
+  color: #f8fafc;
+  font-size: clamp(0.75rem, 2vw, 0.875rem); /* ✅ Responsive font size */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  min-height: 44px; /* ✅ Maintain accessibility */
+  min-width: auto; /* ✅ Allow smaller width */
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.15);
+  white-space: nowrap; /* ✅ Prevent text wrapping */
+}
+
+.language-switcher__button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
+  transform: translateY(-1px);
+}
+
+.language-switcher__button:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* ✅ Removed: language-switcher__current (flag) - no longer needed */
+
+.language-switcher__code {
+  font-size: clamp(0.7rem, 2vw, 0.8rem); /* ✅ Responsive font size */
+  font-weight: 600;
+  opacity: 1; /* ✅ Full opacity for better visibility */
+  letter-spacing: 0.5px; /* ✅ Better readability */
+}
+
+.language-switcher__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  /* ✅ Glassy effect: Enhanced glassy dropdown */
+  background: rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+[dir="rtl"] .language-switcher__dropdown {
+  right: auto;
+  left: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.language-switcher__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #f8fafc;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  min-height: 44px;
+}
+
+[dir="rtl"] .language-switcher__option {
+  text-align: right;
+}
+
+.language-switcher__option:hover {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.language-switcher__option--active {
+  background: rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
+}
+
+.language-switcher__flag {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.language-switcher__name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.language-switcher__english {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  margin-left: auto;
+}
+
+[dir="rtl"] .language-switcher__english {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.language-switcher__check {
+  color: #8b5cf6;
+  flex-shrink: 0;
+}
+
+/* ✅ Responsive: Tablet */
+@media (max-width: 1024px) {
+  .language-switcher__button {
+    padding: clamp(5px, 1.2vw, 7px) clamp(7px, 1.8vw, 9px);
+    gap: clamp(3px, 0.8vw, 5px);
+  }
+
+  .language-switcher__code {
+    font-size: clamp(0.65rem, 1.8vw, 0.75rem);
+  }
+}
+
+/* ✅ Responsive: Mobile */
+@media (max-width: 768px) {
+  .language-switcher__button {
+    padding: clamp(5px, 1vw, 6px) clamp(6px, 1.5vw, 8px);
+    gap: clamp(3px, 0.7vw, 4px);
+    font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+    min-height: 40px; /* ✅ Slightly smaller for mobile */
+  }
+
+  .language-switcher__code {
+    display: block; /* ✅ Show code on mobile too */
+    font-size: clamp(0.65rem, 1.6vw, 0.7rem);
+  }
+
+  .language-switcher__button .lucide-globe {
+    width: clamp(14px, 3vw, 16px);
+    height: clamp(14px, 3vw, 16px);
+  }
+
+  .language-switcher__dropdown {
+    min-width: clamp(160px, 40vw, 180px);
+  }
+
+  .language-switcher__option {
+    padding: clamp(8px, 2vw, 10px);
+    font-size: clamp(0.8rem, 2vw, 0.85rem);
+  }
+}
+
+/* ✅ Responsive: Very Small Mobile */
+@media (max-width: 480px) {
+  .language-switcher__button {
+    padding: clamp(4px, 0.8vw, 5px) clamp(5px, 1.2vw, 6px);
+    min-height: 38px;
+  }
+
+  .language-switcher__code {
+    font-size: clamp(0.6rem, 1.5vw, 0.65rem);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .language-switcher__button,
+  .language-switcher__option {
+    transition: none;
+  }
+
+  .language-switcher__dropdown {
+    animation: none;
+  }
+}

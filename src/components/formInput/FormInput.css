@@ -5,9 +5,17 @@
   width: 100%;
 }
 
+/* Element: .form-input__wrapper */
+.form-input__wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
 /* Element: .form-input__field */
 .form-input__field {
-  width: 100%; 
+  width: 100%;
   padding: 0.9rem 1.2rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -15,7 +23,11 @@
   color: #ffffff;
   font-size: 1rem;
   transition: all 0.3s ease;
-  box-sizing: border-box; 
+  box-sizing: border-box;
+}
+
+.form-input__field--password {
+  padding-right: 3rem; /* Space for eye icon */
 }
 
 .form-input__field:focus {
@@ -29,10 +41,44 @@
   color: #64748b;
 }
 
+/* Element: .form-input__toggle-password */
+.form-input__toggle-password {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+  min-height: 44px; /* Accessibility: minimum touch target */
+  min-width: 44px;
+  border-radius: 4px;
+}
+
+.form-input__toggle-password:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.form-input__toggle-password:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+.form-input__eye-icon {
+  pointer-events: none;
+}
+
 /* Element: .form-input__error */
 .form-input__error {
   font-size: 0.8rem;
-  color: #fb7185; 
-  margin-top: 0.3rem; 
+  color: #fb7185;
+  margin-top: 0.3rem;
   margin-left: 0.5rem;
 }
