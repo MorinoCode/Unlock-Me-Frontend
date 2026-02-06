@@ -34,7 +34,10 @@ const BlindDatePage = () => {
   const [socketReady, setSocketReady] = useState(false);
   const socketRef = useRef(null);
   const sessionSettersRef = useRef({ setSession, setIsSearching });
-  sessionSettersRef.current = { setSession, setIsSearching };
+
+  useEffect(() => {
+    sessionSettersRef.current = { setSession, setIsSearching };
+  }, []);
 
   const accessStatus = useBlindDateStore((s) => s.accessStatus);
   const statusLoading = useBlindDateStore((s) => s.statusLoading);
@@ -125,7 +128,7 @@ const BlindDatePage = () => {
             method: "POST",
             credentials: "include",
           });
-        } catch (_) {}
+        } catch { /* ignore */ }
       }
     };
     const onSessionUpdate = (updatedSession) => setSession(updatedSession);
@@ -155,7 +158,7 @@ const BlindDatePage = () => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [currentUser?._id, API_URL]);
+  }, [currentUser?._id, currentUser?.id, API_URL]);
 
   const getCachedSession = useBlindDateSessionStore((s) => s.getCached);
   const fetchActiveSession = useBlindDateSessionStore((s) => s.fetchActiveSession);
@@ -180,7 +183,7 @@ const BlindDatePage = () => {
               method: "POST",
               credentials: "include",
             });
-          } catch (_) {}
+          } catch { /* ignore */ }
         }
         await fetchActiveSession(API_URL, silent);
         const fresh = getCachedSession();
@@ -197,9 +200,9 @@ const BlindDatePage = () => {
               method: "POST",
               credentials: "include",
             });
-          } catch (_) {}
+          } catch { /* ignore */ }
         }
-      } catch (_) {}
+      } catch { /* ignore */ }
     };
     const interval = setInterval(poll, 2500);
     poll();
@@ -237,7 +240,7 @@ const BlindDatePage = () => {
         sessionId: session._id,
       });
     }
-  }, [session?._id]);
+  }, [session]);
 
   const handleProceed = useCallback(() => {
     if (socketRef.current && session?._id) {
@@ -245,7 +248,7 @@ const BlindDatePage = () => {
         sessionId: session._id,
       });
     }
-  }, [session?._id]);
+  }, [session]);
 
   const getCancelReason = useCallback(() => {
     if (!session?.participants?.length || !currentUser?._id)
@@ -258,12 +261,7 @@ const BlindDatePage = () => {
       ? session.u2RevealDecision
       : session.u1RevealDecision;
     return partnerDecision === "no" ? "partner_rejected" : "disconnected";
-  }, [
-    session?.participants,
-    session?.u1RevealDecision,
-    session?.u2RevealDecision,
-    currentUser?._id,
-  ]);
+  }, [session, currentUser]);
 
   const totalMatchPercentage = useMemo(() => {
     if (!session || !session.questions || session.questions.length === 0)

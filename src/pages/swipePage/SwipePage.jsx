@@ -171,7 +171,7 @@ const SwipePage = () => {
         console.error(err);
       }
     },
-    [API_URL, checkLimits, childRefs, currentUser, setCurrentUser]
+    [API_URL, checkLimits, childRefs, currentUser, setCurrentUser, t]
   );
 
   const triggerSwipe = useCallback(

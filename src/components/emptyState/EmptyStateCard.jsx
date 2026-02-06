@@ -66,6 +66,21 @@ const EmptyStateCard = ({ type, userPlan }) => {
     return isLocked;
   }, [normalizedType, userPlan]);
 
+  const copyLinkFallback = useCallback(() => {
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(window.location.origin).then(() => {
+        if (typeof document !== "undefined" && document.body) {
+          const el = document.createElement("div");
+          el.setAttribute("role", "status");
+          el.className = "empty-state-card__toast";
+          el.textContent = "Link copied to clipboard";
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 2500);
+        }
+      });
+    }
+  }, []);
+
   const handleShare = useCallback(async () => {
     const sharePayload = {
       title: "Unlock Me",
@@ -81,22 +96,7 @@ const EmptyStateCard = ({ type, userPlan }) => {
     } else {
       copyLinkFallback();
     }
-  }, [data.shareText]);
-
-  const copyLinkFallback = useCallback(() => {
-    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(window.location.origin).then(() => {
-        if (typeof document !== "undefined" && document.body) {
-          const el = document.createElement("div");
-          el.setAttribute("role", "status");
-          el.className = "empty-state-card__toast";
-          el.textContent = "Link copied to clipboard";
-          document.body.appendChild(el);
-          setTimeout(() => el.remove(), 2500);
-        }
-      });
-    }
-  }, []);
+  }, [data.shareText, copyLinkFallback]);
 
   const handleUpgrade = useCallback(() => {
     navigate("/upgrade");

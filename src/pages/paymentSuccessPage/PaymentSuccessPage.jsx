@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Confetti from 'react-confetti'; 
+import Confetti from 'react-confetti';
 import { useAuth } from '../../context/useAuth.js';
-import toast from 'react-hot-toast';
 import './PaymentSuccessPage.css';
 
 const PaymentSuccessPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
-  const [verifying, setVerifying] = useState(true);
+  const [_verifying, setVerifying] = useState(true);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const { checkAuth } = useAuth(); 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   MapPin,
@@ -32,12 +32,16 @@ const GoDateCard = ({
   const [isImageExpanded, setIsImageExpanded] = useState(false);
   const navigate = useNavigate();
 
-  const canCancelByTime = () => {
-    if (!date?.dateTime) return false;
+  const [canCancelByTime, setCanCancelByTime] = useState(false);
+  useEffect(() => {
+    if (!date?.dateTime) {
+      queueMicrotask(() => setCanCancelByTime(false));
+      return;
+    }
     const dt = new Date(date.dateTime);
-    const hoursLeft = (dt - Date.now()) / (1000 * 60 * 60);
-    return hoursLeft >= 24;
-  };
+    const hoursLeft = (dt.getTime() - Date.now()) / (1000 * 60 * 60);
+    queueMicrotask(() => setCanCancelByTime(hoursLeft >= 24));
+  }, [date?.dateTime]);
 
   const formatDate = (dateString) => {
     const d = new Date(dateString);
@@ -316,7 +320,7 @@ const GoDateCard = ({
                   )}
                 </>
               )}
-              {date.status !== "cancelled" && canCancelByTime() && (
+              {date.status !== "cancelled" && canCancelByTime && (
                 <button
                   className="godate-cancel-date-btn"
                   onClick={handleCancelClick}

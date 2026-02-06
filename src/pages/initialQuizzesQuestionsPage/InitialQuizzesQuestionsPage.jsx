@@ -15,7 +15,7 @@ const InitialQuizzesQuestionsPage = () => {
   const { checkAuth } = useAuth();
   const [allQuestions, setAllQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
+  const [_answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

@@ -38,7 +38,7 @@ const COPY = {
   },
 };
 
-const PremiumLockCard = ({ onUnlock, feature: featureProp, userPlan }) => {
+const PremiumLockCard = ({ onUnlock, feature: featureProp }) => {
   const navigate = useNavigate();
   const feature = useMemo(() => {
     if (featureProp && Object.values(FEATURES).includes(featureProp))

@@ -2,6 +2,7 @@ import React, { memo, useMemo } from "react";
 import "./PromoBanner.css";
 
 /** Variants aligned with subscriptionRules: getPromoBannerConfig(plan) */
+/* eslint-disable react-refresh/only-export-components -- shared constants with components */
 export const PROMO_VARIANTS = {
   BOOST: "boost", // Answer more / profile boost
   GOLD: "gold", // Upgrade to Gold

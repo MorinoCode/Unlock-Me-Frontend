@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -63,6 +63,7 @@ const PostCard = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
+  const [loadingComments, setLoadingComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,12 +109,15 @@ const PostCard = ({
     const cached = getCached(post._id);
     const silent = !!cached;
     if (cached) setShowComments(true);
+    setLoadingComments(true);
     try {
       await fetchComments(API_URL, post._id, silent);
       setShowComments(true);
     } catch (err) {
       toast.error(t("feed.failedToLoadComments"));
       console.error(err);
+    } finally {
+      setLoadingComments(false);
     }
   };
 

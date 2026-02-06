@@ -164,7 +164,7 @@ const Navbar = ({ isVisible }) => {
   useEffect(() => {
     if (!currentUser?._id) return;
     if (profileCacheEntry?.profile?.avatar) {
-      setAvatar(profileCacheEntry.profile.avatar);
+      queueMicrotask(() => setAvatar(profileCacheEntry.profile.avatar));
       return;
     }
     const ac = new AbortController();
@@ -429,11 +429,9 @@ const Navbar = ({ isVisible }) => {
                             credentials: "include",
                           }
                         );
-                        setNotificationsCount(0);
-                        setNotifications((prev) =>
-                          prev.map((n) => ({ ...n, isRead: true }))
-                        );
-                      } catch (_) {}
+                        notifInvalidate();
+                        notifFetch(API_URL, false);
+                      } catch { /* ignore */ }
                     }
                   }}
                   aria-label={`Notifications ${

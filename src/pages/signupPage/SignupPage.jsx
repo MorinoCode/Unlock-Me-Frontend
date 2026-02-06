@@ -166,7 +166,7 @@ const SignupPage = () => {
 
     try {
       // ✅ Security Fix: Remove confirmPassword before sending to backend
-      const { confirmPassword, ...signupData } = formData;
+      const { confirmPassword: _confirmPassword, ...signupData } = formData;
       
       const response = await fetch(`${API_URL}/api/user/signup`, {
         method: "POST",

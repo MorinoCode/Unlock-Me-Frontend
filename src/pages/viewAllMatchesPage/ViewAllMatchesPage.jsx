@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import UserCard from "../../components/userCard/UserCard";
 import ExploreBackgroundLayout from "../../components/layout/exploreBackgroundLayout/ExploreBackgroundLayout";
@@ -19,7 +19,14 @@ const ViewAllMatchesPage = () => {
   const userId = currentUser?._id;
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [title, setTitle] = useState("");
+
+  const title = useMemo(() => {
+    if (type === "mutual") return "Mutual Matches";
+    if (type === "sent") return "People You Liked";
+    if (type === "incoming") return "People Who Liked You";
+    if (type === "superlikes") return "Super Likes ⭐";
+    return "";
+  }, [type]);
 
   const cacheKey = `${userId ?? ""}:${type ?? ""}:${currentPage}`;
   const entry = useMatchesStore((state) => state.cache[cacheKey]);
@@ -31,13 +38,6 @@ const ViewAllMatchesPage = () => {
   const loading = useMatchesStore((state) => state.loading);
   const getViewAllCached = useMatchesStore((state) => state.getViewAllCached);
   const fetchViewAll = useMatchesStore((state) => state.fetchViewAll);
-
-  useEffect(() => {
-    if (type === "mutual") setTitle("Mutual Matches");
-    else if (type === "sent") setTitle("People You Liked");
-    else if (type === "incoming") setTitle("People Who Liked You");
-    else if (type === "superlikes") setTitle("Super Likes ⭐");
-  }, [type]);
 
   const loadViewAll = useCallback(
     async (forceRefresh = false) => {
@@ -55,15 +55,6 @@ const ViewAllMatchesPage = () => {
   }, [userId, type, currentPage, loadViewAll]);
 
   const userPlan = currentUser?.subscription?.plan || "free";
-
-  const limits = {
-    free: { mutual: 20, sent: 10, incoming: 0 },
-    premium: { mutual: 100, sent: 50, incoming: 10 },
-    gold: { mutual: 999, sent: 999, incoming: 999 },
-  };
-
-  const baseIndex = (currentPage - 1) * usersPerPage;
-  const currentLimit = limits[userPlan]?.[type] ?? 0;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -109,10 +100,6 @@ const ViewAllMatchesPage = () => {
 
         <div className="matches-page__grid">
           {users.map((user, index) => {
-            const isLocked = user.isLocked !== undefined
-              ? user.isLocked
-              : (type !== "superlikes" && (baseIndex + index) >= currentLimit);
-
             return (
               <div
                 className="matches-page__card-wrapper"

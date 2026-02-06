@@ -703,8 +703,8 @@ const ProfilePage = () => {
     }
   };
 
-  // Change plan
-  const handleChangePlan = async (priceId, planName) => {
+  // Change plan (reserved for subscription UI)
+  const _handleChangePlan = async (priceId, planName) => {
     setIsSaving(true);
     const loadingToast = toast.loading(t("profile.security.subscription.loading"));
     try {

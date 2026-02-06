@@ -121,7 +121,7 @@ const OnboardingStep2 = ({
     fetchLocations(API_URL, false);
   }, [API_URL, getLocationsCached, fetchLocations]);
   useEffect(() => {
-    if (locError) setErrorMessage("Failed to load locations.");
+    if (locError) queueMicrotask(() => setErrorMessage("Failed to load locations."));
   }, [locError]);
 
   // ✅ Mobile Optimization: Detect if running on mobile device
@@ -240,7 +240,8 @@ const OnboardingStep2 = ({
 
   // 2. Auto-request GPS Coordinates on mount
   useEffect(() => {
-    requestLocation();
+    const id = setTimeout(requestLocation, 0);
+    return () => clearTimeout(id);
   }, [requestLocation]);
 
   // ... (options logic remains the same) ...

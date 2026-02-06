@@ -36,13 +36,6 @@ const SwipeCard = React.forwardRef(
     const displayPhotos = photos.length > 0 ? photos : ["/default-avatar.png"];
     const matchPercentage = user.matchScore || 0;
 
-    const getTraitDisplay = (textTrait, numericTrait, fallback) => {
-      if (textTrait) return textTrait;
-      if (numericTrait !== undefined && numericTrait !== null)
-        return `${numericTrait}/100`;
-      return fallback;
-    };
-
     const controls = useAnimation();
     const x = useMotionValue(0);
     const y = useMotionValue(0);

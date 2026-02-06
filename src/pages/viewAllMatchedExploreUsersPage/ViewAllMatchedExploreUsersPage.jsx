@@ -44,7 +44,7 @@ const ViewAllMatchedUsersPage = () => {
 
   useEffect(() => {
     if (!country || !userId) {
-      setLoading(false);
+      queueMicrotask(() => setLoading(false));
       return;
     }
 
@@ -63,7 +63,7 @@ const ViewAllMatchedUsersPage = () => {
 
     if (cached) {
       applyCached(cached);
-      setLoading(false);
+      queueMicrotask(() => setLoading(false));
       fetchViewAll(
         API_URL,
         userId,
@@ -77,7 +77,7 @@ const ViewAllMatchedUsersPage = () => {
         if (mountedRef.current) applyCached(getCached(userId, cat, page));
       });
     } else {
-      setLoading(true);
+      queueMicrotask(() => setLoading(true));
       fetchViewAll(
         API_URL,
         userId,

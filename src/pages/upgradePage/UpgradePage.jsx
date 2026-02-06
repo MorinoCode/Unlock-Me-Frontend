@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  useRef,
 } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -118,7 +117,7 @@ function getCurrencyFromBrowser() {
     if (lang.startsWith("pt")) return "brl";
     if (lang.startsWith("hi")) return "inr";
     if (lang.startsWith("ru")) return "rub";
-  } catch (_) {}
+  } catch { /* ignore */ }
   return "usd";
 }
 

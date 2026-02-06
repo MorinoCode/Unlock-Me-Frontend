@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Filter, X, Calendar, User, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ const GoDatePage = () => {
 
   useEffect(() => {
     if (!userId) {
-      setLoading(false);
+      queueMicrotask(() => setLoading(false));
       return;
     }
 
@@ -56,7 +56,7 @@ const GoDatePage = () => {
 
     if (cached) {
       applyCached(cached);
-      setLoading(false);
+      queueMicrotask(() => setLoading(false));
       fetchDates(API_URL, userId, activeTab, city, category, true, null).then(
         () => {
           if (mountedRef.current)
@@ -64,7 +64,7 @@ const GoDatePage = () => {
         }
       );
     } else {
-      setLoading(true);
+      queueMicrotask(() => setLoading(true));
       fetchDates(API_URL, userId, activeTab, city, category, false, null)
         .then(() => {
           if (mountedRef.current) {

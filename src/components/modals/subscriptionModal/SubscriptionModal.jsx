@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
   RiVipCrownFill,
   RiCloseLine,
@@ -112,7 +112,7 @@ function getCurrencyFromBrowser() {
     if (lang.startsWith("pt")) return "brl";
     if (lang.startsWith("hi")) return "inr";
     if (lang.startsWith("ru")) return "rub";
-  } catch (_) {}
+  } catch { /* ignore */ }
   return "usd";
 }
 

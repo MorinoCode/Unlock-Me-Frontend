@@ -73,7 +73,7 @@ const loadTranslation = async (lang) => {
       translations.blindDate = { ...translations.blindDate, questions };
     }
     return translations;
-  } catch (error) {
+  } catch {
     console.warn(
       `Translation file for ${lang} not found, falling back to English`
     );
@@ -147,8 +147,8 @@ const initTranslations = async () => {
 
     // Change language after resources are loaded
     await i18n.changeLanguage(lang);
-  } catch (error) {
-    console.error("Error loading translations:", error);
+  } catch (err) {
+    console.error("Error loading translations:", err);
     // Fallback to English
     try {
       const translations = await loadTranslation("en");
@@ -174,8 +174,8 @@ export const changeLanguage = async (langCode) => {
   try {
     const translations = await loadTranslation(langCode);
     i18n.addResourceBundle(langCode, "common", translations, true, true);
-  } catch (error) {
-    console.error(`Error loading translation for ${langCode}:`, error);
+  } catch (err) {
+    console.error(`Error loading translation for ${langCode}:`, err);
     return;
   }
 

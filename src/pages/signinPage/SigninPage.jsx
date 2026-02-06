@@ -112,7 +112,7 @@ const SigninPage = () => {
         body: JSON.stringify(normalizedData),
       });
 
-      const data = await response.json();
+      const _data = await response.json();
 
       if (!response.ok) {
         // ✅ Security Fix: Generic error message to prevent user enumeration

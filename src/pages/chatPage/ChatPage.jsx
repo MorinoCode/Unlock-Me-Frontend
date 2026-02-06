@@ -133,7 +133,7 @@ const ChatPage = () => {
           });
         }
       } catch (err) {
-        if (err.name !== "AbortError") setIsSyncing(false);
+        if (err?.name !== "AbortError") setIsSyncing(false);
       } finally {
         if (!ac.signal.aborted) setTimeout(() => setIsSyncing(false), 500);
       }
@@ -273,7 +273,7 @@ const ChatPage = () => {
         };
         recorder.start();
         setIsRecording(true);
-      } catch (err) {
+      } catch {
         toast.error(t("chat.micDenied"));
       }
     } else {
@@ -324,7 +324,7 @@ const ChatPage = () => {
       } else {
         toast.error(t("chat.wingmanUnavailable"));
       }
-    } catch (err) {
+    } catch {
       toast.error(t("chat.connectionFailed"));
     } finally {
       setIsSparkLoading(false);
