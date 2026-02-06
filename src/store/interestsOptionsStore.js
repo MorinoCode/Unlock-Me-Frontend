@@ -5,7 +5,7 @@ const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 export const INTERESTS_OPTIONS_CACHE_TTL_MS = CACHE_TTL_MS;
 
 export const useInterestsOptionsStore = create((set, get) => ({
-  options: null,
+  options: [],
   list: null,
   fetchedAt: null,
   loading: false,
@@ -13,9 +13,10 @@ export const useInterestsOptionsStore = create((set, get) => ({
 
   getCached: () => {
     const { options, list, fetchedAt } = get();
-    const data = options ?? list;
-    if (!data) return null;
-    if (fetchedAt && Date.now() - fetchedAt > CACHE_TTL_MS) return null;
+    if (!fetchedAt) return null;
+    const data = options?.length ? options : list;
+    if (!data || !data.length) return null;
+    if (Date.now() - fetchedAt > CACHE_TTL_MS) return null;
     return data;
   },
 
@@ -33,7 +34,11 @@ export const useInterestsOptionsStore = create((set, get) => ({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.message || "Failed to fetch interests options");
-      const list = Array.isArray(data) ? data : [];
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.categories)
+          ? data.categories
+          : [];
       get().setCached(list);
       set({ loading: false, error: null });
     } catch (err) {
@@ -49,5 +54,5 @@ export const useInterestsOptionsStore = create((set, get) => ({
     return get().fetchInterestsOptions(apiUrl, silent, signal);
   },
 
-  reset: () => set({ options: null, list: null, fetchedAt: null, loading: false, error: null }),
+  reset: () => set({ options: [], list: null, fetchedAt: null, loading: false, error: null }),
 }));
