@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
-import { useInterestsOptionsStore } from "../../store/interestsOptionsStore";
 
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout";
 import InterestsHeader from "../../components/interestsHeader/InterestsHeader";
@@ -15,15 +14,14 @@ const InitialQuizzesInterestsPage = () => {
   const { currentUser, checkAuth } = useAuth();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
+  const [interestOptions, setInterestOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
   const abortControllerRef = useRef(null);
   const submitInProgressRef = useRef(false);
-
-  const interestOptions = useInterestsOptionsStore((state) => state.options ?? []);
-  const loading = useInterestsOptionsStore((state) => state.loading);
 
   const name = useMemo(() => {
     const userName = currentUser?.username;
@@ -32,28 +30,38 @@ const InitialQuizzesInterestsPage = () => {
       : "User";
   }, [currentUser?.username]);
 
-  // Run only once on mount to avoid React #185 (infinite loop from effect deps)
-  const mountedRef = useRef(false);
   useEffect(() => {
-    if (mountedRef.current) return;
-    mountedRef.current = true;
     const ac = new AbortController();
     abortControllerRef.current = ac;
-    const store = useInterestsOptionsStore.getState();
-    const cached = store.getCached();
-    const silent = !!cached;
-    if (cached) setErrorMessage("");
-    store.fetchOptions(API_URL, silent, ac.signal).catch((err) => {
-      if (err.name !== "AbortError") {
-        setErrorMessage("Failed to load interests. Please refresh.");
+
+    const loadOptions = async () => {
+      setLoading(true);
+      setErrorMessage("");
+      try {
+        const res = await fetch(`${API_URL}/api/user/onboarding/interests-options`, {
+          credentials: "include",
+          signal: ac.signal,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.message || "Failed to load interests");
+        const list = Array.isArray(data) ? data : Array.isArray(data?.categories) ? data.categories : [];
+        setInterestOptions(list);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setErrorMessage("Failed to load interests. Please refresh.");
+          setInterestOptions([]);
+        }
+      } finally {
+        setLoading(false);
       }
-    });
+    };
+
+    loadOptions();
     return () => {
       ac.abort();
       abortControllerRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount only to prevent React #185 loop
-  }, []);
+  }, [API_URL]);
 
   const toggleInterest = useCallback((label) => {
     setSelectedInterests((prev) => {
