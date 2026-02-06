@@ -29,9 +29,27 @@
   </url>
   <url>
     <loc>https://unlock-me.app/about-us</loc>
-    <lastmod>2026-01-23</lastmod>
+    <lastmod>2026-02-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://unlock-me.app/contact-us</loc>
+    <lastmod>2026-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://unlock-me.app/help-center</loc>
+    <lastmod>2026-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://unlock-me.app/upgrade</loc>
+    <lastmod>2026-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://unlock-me.app/privacypolicy</loc>
@@ -41,7 +59,19 @@
   </url>
   <url>
     <loc>https://unlock-me.app/termsofservice</loc>
-    <lastmod>2026-01-23</lastmod>
+    <lastmod>2026-02-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://unlock-me.app/cookie-policy</loc>
+    <lastmod>2026-02-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://unlock-me.app/community-guidelines</loc>
+    <lastmod>2026-02-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
