@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
 
@@ -26,42 +26,11 @@ const InitialQuizzesPage = () => {
     avatar: null,
     location: {
       type: "Point",
-      coordinates: [0, 0], 
-    }
+      coordinates: [0, 0],
+    },
   });
-useEffect(() => {
-  console.log("Current Step:", step); // برای تست در کنسول ببینید که استپ چند است
-
-  if (step === 2) {
-    if ("geolocation" in navigator) {
-      console.log("Requesting location..."); // چک کنید آیا این پیام در کنسول چاپ می‌شود؟
-      
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log("Location detected!", position.coords);
-          setFormData((prev) => ({
-            ...prev,
-            location: {
-              type: "Point",
-              coordinates: [position.coords.longitude, position.coords.latitude],
-            },
-          }));
-        },
-        (error) => {
-          console.error("Error getting location:", error.message);
-          // اگر ارور "User denied Geolocation" داد یعنی شما قبلاً بلاک کردید
-        },
-        { 
-          enableHighAccuracy: true, 
-          timeout: 10000, // زمان را به ۱۰ ثانیه افزایش دادیم
-          maximumAge: 0 
-        }
-      );
-    } else {
-      console.log("Geolocation not supported by this browser.");
-    }
-  }
-}, [step]);
+  // ✅ Removed: Location request is now handled in OnboardingStep2 component
+  // This ensures better mobile compatibility and permission handling
   const capitalizeFirstLetter = (str) =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : "User";
 
@@ -74,7 +43,7 @@ useEffect(() => {
       let body;
       let headers = { "Content-Type": "application/json" };
 
-     switch (step) {
+      switch (step) {
         case 1:
           endpoint = "birthday";
           body = JSON.stringify({ birthday: formData.birthday });
@@ -85,8 +54,8 @@ useEffect(() => {
             location: {
               ...formData.location,
               country: formData.country,
-              city: formData.city
-            }
+              city: formData.city,
+            },
           });
           break;
         case 3:

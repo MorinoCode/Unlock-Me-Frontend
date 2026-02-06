@@ -3,8 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import AIInsightSection from "../../components/aiInsightSection/AIInsightSection";
 import HeartBeatLoader from "../../components/heartbeatLoader/HeartbeatLoader";
 import { useAuth } from "../../context/useAuth.js";
-import { getDailyDmLimit } from "../../utils/subscriptionRules.js"; // ✅ 1. Import Rules
+import { getDailyDmLimit } from "../../utils/subscriptionRules.js";
 import SubscriptionModal from "../../components/modals/subscriptionModal/SubscriptionModal.jsx";
+import { useUserDetailsStore } from "../../store/userDetailsStore";
 import "./UserDetailPage.css";
 import { FaLock } from "react-icons/fa6";
 
@@ -13,8 +14,13 @@ const UserDetailPage = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const myId = currentUser?._id;
+  const detailsKey = `${myId ?? ""}:${userId ?? ""}`;
+  const cachedUser = useUserDetailsStore((s) => s.cache[detailsKey]?.user);
+  const user = cachedUser ?? null;
+  const loading = useUserDetailsStore((s) => s.loading);
+  const getCached = useUserDetailsStore((s) => s.getCached);
+  const fetchUserDetails = useUserDetailsStore((s) => s.fetchUserDetails);
 
   // ✅ 2. State for Subscription Modal
   const [showSubModal, setShowSubModal] = useState(false);
@@ -65,22 +71,11 @@ const UserDetailPage = () => {
   }, [currentUser, userId]);
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`${API_URL}/api/user/details/${userId}`, {
-          credentials: "include",
-        });
-        const data = await res.json();
-        setUser(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserDetails();
-  }, [userId, API_URL]);
+    if (!userId || !myId) return;
+    const cached = getCached(myId, userId);
+    const silent = !!cached;
+    fetchUserDetails(API_URL, myId, userId, silent);
+  }, [userId, myId, API_URL, getCached, fetchUserDetails]);
 
   const handleToggleAction = async (type) => {
     if (isProcessing) return;
@@ -120,7 +115,7 @@ const UserDetailPage = () => {
     }
   };
 
-  if (loading) return <HeartBeatLoader />;
+  if (loading && !user) return <HeartBeatLoader />;
   if (!user) return <div className="user-detail-error">Profile not found.</div>;
 
   const age = user.birthday?.year

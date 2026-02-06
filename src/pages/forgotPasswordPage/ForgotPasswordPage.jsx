@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import FormInput from "../../components/formInput/FormInput";
 import BackgroundLayout from "../../components/layout/backgroundLayout/BackgroundLayout.jsx";
 import "./ForgotPasswordPage.css";
 
 const ForgotPassword = () => {
+  const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
 
@@ -106,7 +108,7 @@ const ForgotPassword = () => {
           <FormInput
             name="email"
             type="email"
-            placeholder="Email"
+            placeholder={t("auth.email")}
             value={email}
             onChange={handleChange}
             onBlur={handleBlur}

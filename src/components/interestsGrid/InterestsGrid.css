@@ -34,6 +34,10 @@
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   outline: none;
+  /* ✅ Mobile: Minimum touch target size (44x44px recommended) */
+  min-height: 44px;
+  /* ✅ Performance: Will-change for smoother animations */
+  will-change: transform, background-color;
 }
 
 .interests-grid__item-category:hover {
@@ -77,54 +81,91 @@
   flex: 1;
 }
 
-@media (max-width: 768px) {
+/* ✅ Responsive: Tablet */
+@media (max-width: 1024px) {
   .interests-grid {
     gap: 10px;
-  }
-
-  .interests-grid__item {
-    padding: 0.8rem;
+    max-height: 400px;
   }
 }
 
-@media (max-width: 480px) {
+/* ✅ Responsive: Mobile Tablet */
+@media (max-width: 768px) {
   .interests-grid {
-    gap: 8px;
-    padding: 4px;
-    max-height: 400px;
+    gap: clamp(8px, 2vw, 10px);
+    padding: clamp(4px, 1.5vw, 8px);
   }
 
-  .interests-grid__item {
-    padding: 0.7rem 0.8rem;
-    gap: 6px;
-    border-radius: 12px;
+  .interests-grid__item-category {
+    padding: clamp(0.75rem, 3vw, 0.8rem);
+    gap: clamp(8px, 2vw, 10px);
+    min-height: 44px; /* ✅ Mobile: Maintain touch target */
   }
 
   .interests-grid__icon {
-    font-size: 1.1rem;
+    font-size: clamp(1.1rem, 4vw, 1.2rem);
   }
 
   .interests-grid__label {
-    font-size: 0.8rem;
+    font-size: clamp(0.85rem, 3vw, 0.9rem);
   }
 }
 
-@media (orientation: landscape) and (max-height: 700px) {
+/* ✅ Responsive: Mobile */
+@media (max-width: 480px) {
   .interests-grid {
-    max-height: 280px;
+    gap: clamp(6px, 2vw, 8px);
+    padding: clamp(2px, 1vw, 4px);
+    max-height: clamp(350px, 60vh, 400px);
+  }
+
+  .interests-grid__item-category {
+    padding: clamp(0.7rem, 3vw, 0.8rem);
+    gap: clamp(6px, 2vw, 8px);
+    border-radius: clamp(10px, 2vw, 12px);
+    min-height: 48px; /* ✅ Mobile: Larger touch target for better UX */
+  }
+
+  .interests-grid__icon {
+    font-size: clamp(1rem, 4vw, 1.1rem);
+  }
+
+  .interests-grid__label {
+    font-size: clamp(0.8rem, 3vw, 0.85rem);
+  }
+}
+
+/* ✅ Responsive: Small Mobile */
+@media (max-width: 360px) {
+  .interests-grid {
+    grid-template-columns: 1fr; /* ✅ Single column on very small screens */
     gap: 8px;
   }
 
   .interests-grid__item-category {
-    padding: 0.6rem 0.7rem;
-    gap: 8px;
+    padding: 0.75rem;
+    min-height: 44px;
+  }
+}
+
+/* ✅ Responsive: Landscape Mobile */
+@media (orientation: landscape) and (max-height: 700px) {
+  .interests-grid {
+    max-height: clamp(250px, 50vh, 280px);
+    gap: clamp(6px, 1.5vw, 8px);
+  }
+
+  .interests-grid__item-category {
+    padding: clamp(0.6rem, 2vw, 0.7rem);
+    gap: clamp(6px, 1.5vw, 8px);
+    min-height: 40px; /* ✅ Smaller in landscape but still accessible */
   }
 
   .interests-grid__icon {
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 3vw, 1.1rem);
   }
 
   .interests-grid__label {
-    font-size: 0.85rem;
+    font-size: clamp(0.8rem, 2.5vw, 0.85rem);
   }
 }

@@ -1,9 +1,10 @@
 import React, { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Route, Routes, Outlet, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider.jsx";
 import { SocketProvider } from "./context/SocketProvider.jsx";
 import { Toaster } from "react-hot-toast";
 import HeartbeatLoader from "./components/heartbeatLoader/HeartbeatLoader.jsx";
+import ErrorBoundary from "./components/errorBoundary/ErrorBoundary.jsx";
 
 import PublicRoute from "./context/PublicRoute.jsx";
 import ProtectedRoute from "./context/ProtectedRoute.jsx";
@@ -17,6 +18,8 @@ const HowItWorksPage = lazy(() =>
   import("./pages/howItWorksPage/HowItWorksPage")
 );
 const AboutPage = lazy(() => import("./pages/aboutPage/AboutPage"));
+const ContactUsPage = lazy(() => import("./pages/contactUsPage/ContactUsPage"));
+const HelpCenterPage = lazy(() => import("./pages/helpCenterPage/HelpCenterPage"));
 const InitialQuizzesPage = lazy(() =>
   import("./pages/initialQuizzesPage/InitialQuizzesPage")
 );
@@ -60,6 +63,12 @@ const TermsOfService = lazy(() =>
 const PrivacyPolicy = lazy(() =>
   import("./pages/PrivacyPolicyPage/PrivacyPolicy.jsx")
 );
+const CookiePolicy = lazy(() =>
+  import("./pages/cookiePolicyPage/CookiePolicy")
+);
+const CommunityGuidelines = lazy(() =>
+  import("./pages/communityGuidelinesPage/CommunityGuidelines")
+);
 const UpgradePage = lazy(() =>
   import("./pages/upgradePage/UpgradePage.jsx")
 );
@@ -72,25 +81,42 @@ const GoDatePage = lazy(() =>
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+  
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // بهبود Performance: استفاده از requestAnimationFrame برای smooth scroll
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant' // بهبود Performance: instant به جای smooth
+      });
+    });
   }, [pathname]);
+  
+  // بهبود Performance: رفع back/forward cache issue
+  useEffect(() => {
+    // Cleanup برای جلوگیری از memory leaks
+    return () => {
+      // Cleanup listeners if any
+    };
+  }, []);
+  
   return null;
 };
 
 /**
  * AppContent Component:
  * We move the routing logic here so it sits INSIDE the Providers.
- * This allows us to use global hooks like useNotifications.
+ * ErrorBoundary with key={pathname} so "Go to Explore" gets a fresh boundary.
  */
 const AppContent = () => {
-  // Global listener for socket notifications (Toasts)
-  // useNotifications();
+  const location = useLocation();
 
   return (
-    <Suspense fallback={<HeartbeatLoader />}>
-      <ScrollToTop />
-      <Routes>
+    <ErrorBoundary key={location.pathname}>
+      <Suspense fallback={<HeartbeatLoader />}>
+        <ScrollToTop />
+        <Routes>
         {/* Public Pages */}
         <Route element={<PublicRoute />}>
           <Route element={<MainLayout />}>
@@ -99,9 +125,14 @@ const AppContent = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/about-us" element={<AboutPage />} />
+            <Route path="/contact-us" element={<ContactUsPage />} />
+            <Route path="/help-center" element={<HelpCenterPage />} />
+            <Route path="/report-problem" element={<ReportProblemPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/privacypolicy" element={<PrivacyPolicy />} />
             <Route path="/termsofservice" element={<TermsOfService />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            <Route path="/community-guidelines" element={<CommunityGuidelines />} />
           </Route>
         </Route>
 
@@ -144,10 +175,10 @@ const AppContent = () => {
         </Route>
 
         {/* Other Routes */}
-        <Route path="/report-problem" element={<ReportProblemPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
+    </ErrorBoundary>
   );
 };
 

@@ -8,7 +8,11 @@ const FormSelect = ({
   onBlur, 
   error, 
   options, 
-  defaultText 
+  defaultText,
+  "aria-label": ariaLabel,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
+  ...rest
 }) => {
   return (
     <div className="form-select">
@@ -17,7 +21,11 @@ const FormSelect = ({
         value={value}
         onChange={onChange}
         onBlur={onBlur}
-        className="form-select__field" 
+        className="form-select__field"
+        aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={ariaInvalid}
+        {...rest}
       >
         <option className="form-select__option" value="">{defaultText}</option>
         {options.map((opt) => (
@@ -26,7 +34,7 @@ const FormSelect = ({
           </option>
         ))}
       </select>
-      {error && <span className="form-select__error">{error}</span>}
+      {error && <span className="form-select__error" role="alert">{error}</span>}
     </div>
   );
 };

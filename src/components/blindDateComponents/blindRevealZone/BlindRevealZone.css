@@ -1,25 +1,27 @@
-/* Container اصلی */
 .unique-reveal-zone {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 20px;
+  padding: max(clamp(12px, 3vw, 20px), env(safe-area-inset-top))
+    clamp(12px, 3vw, 20px)
+    max(clamp(12px, 3vw, 20px), env(safe-area-inset-bottom));
   animation: fadeInZone 0.6s ease-out;
+  box-sizing: border-box;
 }
 
-/* کارت اصلی */
 .unique-reveal-zone__card {
   background: linear-gradient(145deg, #1e293b, #0f172a);
   border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 30px;
-  padding: 40px;
+  border-radius: clamp(20px, 4vw, 30px);
+  padding: clamp(24px, 5vw, 40px);
   text-align: center;
-  max-width: 500px;
+  max-width: min(500px, 100%);
   width: 100%;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* درصد مچ */
@@ -92,13 +94,15 @@
 
 .unique-reveal-zone__btn {
   flex: 1;
-  padding: 16px;
-  border-radius: 16px;
+  padding: clamp(14px, 3.5vw, 18px);
+  min-height: 48px;
+  border-radius: clamp(12px, 3vw, 16px);
   border: none;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2.2vw, 1rem);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .unique-reveal-zone__btn--yes {
@@ -150,10 +154,18 @@
 }
 
 @keyframes zoneSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeInZone {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

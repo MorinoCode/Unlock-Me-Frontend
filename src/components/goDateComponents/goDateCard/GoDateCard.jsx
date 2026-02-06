@@ -1,24 +1,79 @@
-import React, { useState } from "react";
-import { MapPin, Calendar, DollarSign, Trash2 } from "lucide-react"; // آیکون Trash2
-import { useNavigate } from "react-router-dom"; // برای نویگیشن
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  MapPin,
+  Calendar,
+  DollarSign,
+  Trash2,
+  Clock,
+  Check,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
+  X,
+  ZoomIn,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import "./GoDateCard.css";
 
-const GoDateCard = ({ date, isOwner, onApply, onAccept, onDelete }) => {
+const GoDateCard = ({
+  date,
+  isOwner,
+  onApply,
+  onWithdraw,
+  onAccept,
+  onCancel,
+  onDelete,
+}) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [showDesc, setShowDesc] = useState(false);
+  const [isImageExpanded, setIsImageExpanded] = useState(false);
   const navigate = useNavigate();
+
+  const [canCancelByTime, setCanCancelByTime] = useState(false);
+  useEffect(() => {
+    if (!date?.dateTime) {
+      queueMicrotask(() => setCanCancelByTime(false));
+      return;
+    }
+    const dt = new Date(date.dateTime);
+    const hoursLeft = (dt.getTime() - Date.now()) / (1000 * 60 * 60);
+    queueMicrotask(() => setCanCancelByTime(hoursLeft >= 24));
+  }, [date?.dateTime]);
 
   const formatDate = (dateString) => {
     const d = new Date(dateString);
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const formatTime = (dateString) => {
+    const d = new Date(dateString);
+    return d.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const getCategoryIcon = (cat) => {
-    switch(cat) {
-      case 'coffee': return '☕';
-      case 'food': return '🍽️';
-      case 'drink': return '🍷';
-      case 'movie': return '🎬';
-      case 'activity': return '🏃';
-      default: return '📅';
+    switch (cat) {
+      case "coffee":
+        return "☕";
+      case "food":
+        return "🍽️";
+      case "drink":
+        return "🍷";
+      case "movie":
+        return "🎬";
+      case "activity":
+        return "🏃";
+      default:
+        return "📅";
     }
   };
 
@@ -28,116 +83,276 @@ const GoDateCard = ({ date, isOwner, onApply, onAccept, onDelete }) => {
     setLoading(false);
   };
 
-  const handleAcceptClick = async (applicantId) => {
-    if(!window.confirm("Accept this person? A chat will be opened.")) return;
+  const handleWithdrawClick = async () => {
     setLoading(true);
-    await onAccept(date._id, applicantId);
+    await onWithdraw(date._id);
     setLoading(false);
   };
 
-  // ✅ Profile Navigation Handler
+  const handleAcceptClick = (applicantId) => {
+    toast(
+      (toastId) => (
+        <span className="godate-toast-wrap">
+          {t("goDate.acceptPerson")}
+          <div className="godate-toast-btns">
+            <button
+              type="button"
+              className="godate-toast-confirm-btn"
+              onClick={async () => {
+                toast.dismiss(toastId.id);
+                setLoading(true);
+                await onAccept(date._id, applicantId);
+                setLoading(false);
+              }}
+            >
+              {t("goDate.accept")}
+            </button>
+            <button
+              type="button"
+              className="godate-toast-cancel-btn"
+              onClick={() => toast.dismiss(toastId.id)}
+            >
+              {t("common.cancel")}
+            </button>
+          </div>
+        </span>
+      ),
+      { duration: 10000 }
+    );
+  };
+
+  const handleCancelClick = async () => {
+    if (!onCancel) return;
+    setLoading(true);
+    await onCancel(date._id);
+    setLoading(false);
+  };
+
   const handleProfileClick = (userId) => {
-      navigate(`/user-profile/${userId}`);
+    navigate(`/user-profile/${userId}`);
   };
 
   return (
-    <div className="go-date-card">
-      <div 
-        className={`go-date-card__header ${!date.image ? 'go-date-card__header--no-img' : ''}`}
-        style={date.image ? { backgroundImage: `url(${date.image})` } : {}}
+    <>
+      {/* Full Screen Image Modal */}
+      {isImageExpanded && date.image && (
+        <div
+          className="godate-image-expanded-overlay"
+          onClick={() => setIsImageExpanded(false)}
+        >
+          <button
+            className="godate-close-expanded-btn"
+            onClick={() => setIsImageExpanded(false)}
+          >
+            <X size={24} />
+          </button>
+          <img
+            src={date.image}
+            alt={date.title}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
+      <div
+        className={`godate-card ${
+          date.status === "closed" ? "godate-card--closed" : ""
+        }`}
       >
-        <div className="go-date-card__category-badge">
-          {getCategoryIcon(date.category)} {date.category}
-        </div>
-        
-        {/* ✅ DELETE BUTTON (Only for Owner) */}
-        {isOwner && (
-            <button 
-                className="go-date-card__delete-btn"
-                onClick={(e) => { e.stopPropagation(); onDelete(date._id); }}
-                title="Delete Date"
+        <div
+          className={`godate-card-header ${
+            !date.image ? "godate-header-gradient" : ""
+          }`}
+          style={date.image ? { backgroundImage: `url(${date.image})` } : {}}
+          onClick={() => date.image && setIsImageExpanded(true)}
+        >
+          <div className="godate-badge">
+            {getCategoryIcon(date.category)} {date.category}
+          </div>
+
+          {date.image && (
+            <div className="godate-zoom-hint">
+              <ZoomIn size={16} />
+            </div>
+          )}
+
+          {isOwner && date.status !== "cancelled" && (
+            <button
+              className="godate-delete-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(date._id);
+              }}
+              title={t("goDate.deleteDatePlanTitle")}
             >
-                <Trash2 size={16} color="white" />
+              <Trash2 size={16} />
             </button>
-        )}
-      </div>
-
-      <div className="go-date-card__body">
-        <h3 className="go-date-card__title">{date.title}</h3>
-        
-        <div className="go-date-card__info-row">
-          <Calendar size={14} /> {formatDate(date.dateTime)}
-        </div>
-        <div className="go-date-card__info-row">
-          <MapPin size={14} /> {date.location?.city} - {date.location?.generalArea}
-        </div>
-        
-        <div className="go-date-card__payment-pill">
-          <DollarSign size={12} style={{display:'inline'}}/> 
-          {date.paymentType === 'me' ? 'I pay' : date.paymentType === 'you' ? 'You pay' : 'Split 50/50'}
+          )}
         </div>
 
-        {!isOwner && (
-            <div 
-                style={{marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}}
-                onClick={() => handleProfileClick(date.creator?._id)} // ✅ Clickable Creator
+        <div className="godate-body">
+          <h3 className="godate-title">{date.title}</h3>
+
+          <div className="godate-meta">
+            <div className="godate-meta-item">
+              <Calendar size={14} className="godate-icon" />{" "}
+              <span>{formatDate(date.dateTime)}</span>
+            </div>
+            <div className="godate-meta-item">
+              <Clock size={14} className="godate-icon" />{" "}
+              <span>{formatTime(date.dateTime)}</span>
+            </div>
+            <div className="godate-meta-item">
+              <MapPin size={14} className="godate-icon" />{" "}
+              <span>{date.location?.generalArea}</span>
+            </div>
+          </div>
+
+          <div className="godate-payment">
+            <DollarSign size={14} />
+            <span>
+              {date.paymentType === "me"
+                ? t("goDate.iPay")
+                : date.paymentType === "you"
+                ? t("goDate.youPay")
+                : t("goDate.split5050")}
+            </span>
+          </div>
+
+          {/* Description Toggle */}
+          {date.description && (
+            <div className="godate-description-wrapper">
+              <button
+                className="godate-desc-toggle"
+                onClick={() => setShowDesc(!showDesc)}
+              >
+                {showDesc ? t("goDate.hideDetails") : t("goDate.seeDescription")}
+                {showDesc ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+              {showDesc && (
+                <p className="godate-description-text">{date.description}</p>
+              )}
+            </div>
+          )}
+
+          {!isOwner && (
+            <div
+              className="godate-creator"
+              onClick={() => handleProfileClick(date.creator?._id)}
             >
-                <img src={date.creator?.avatar || '/default-avatar.png'} alt="creator" style={{width: 24, height: 24, borderRadius: '50%'}} />
-                <span style={{fontSize: '0.85rem', color: '#64748b'}}>{date.creator?.name}, {date.creator?.age}</span>
+              <img
+                src={date.creator?.avatar || "/default-avatar.png"}
+                alt="creator"
+              />
+              <div className="godate-creator-info">
+                <span className="creator-name">{date.creator?.name}</span>
+              </div>
             </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      <div className="go-date-card__footer">
-        {isOwner ? (
-            <div style={{width: '100%'}}>
-                <div style={{fontSize: '0.9rem', fontWeight: '600', marginBottom: '8px'}}>
-                    Applicants ({date.applicants?.length || 0})
-                </div>
-                {date.applicants?.length > 0 ? (
-                    <div className="go-date-card__applicants">
-                        {date.applicants.map(app => (
-                            <div key={app._id} className="go-date-card__applicant-item">
-                                <div 
-                                    className="go-date-card__user-info"
-                                    onClick={() => handleProfileClick(app._id)} // ✅ Clickable Applicant
-                                    style={{cursor: 'pointer'}}
-                                >
-                                    <img src={app.avatar} className="go-date-card__avatar" alt={app.name}/>
-                                    <div>
-                                        <div style={{fontWeight: 'bold', fontSize: '0.9rem'}}>{app.name}, {app.age}</div>
-                                    </div>
-                                </div>
-                                <button 
-                                    className="go-date-card__accept-btn"
-                                    onClick={() => handleAcceptClick(app._id)}
-                                    disabled={loading}
-                                >
-                                    Accept
-                                </button>
-                            </div>
-                        ))}
+        <div className="godate-footer">
+          {isOwner ? (
+            <div className="godate-applicants-wrapper">
+              {date.status === "cancelled" ? (
+                <div className="date-cancelled-badge">{t("goDate.cancelled")}</div>
+              ) : date.acceptedUser ? (
+                <div className="accepted-user-box">
+                  <div className="accepted-label">{t("goDate.matchedWith")}</div>
+                  <div className="applicant-row accepted-row">
+                    <div
+                      className="applicant-info"
+                      onClick={() => handleProfileClick(date.acceptedUser._id)}
+                    >
+                      <img
+                        src={date.acceptedUser.avatar || "/default-avatar.png"}
+                        alt={date.acceptedUser.name}
+                      />
+                      <div className="applicant-details">
+                        <span className="app-name">
+                          {date.acceptedUser.name}
+                        </span>
+                      </div>
                     </div>
-                ) : (
-                    <span style={{color: '#94a3b8', fontSize: '0.85rem'}}>No requests yet.</span>
-                )}
+                    <button
+                      className="chat-btn"
+                      onClick={() => navigate(`/chat/${date.acceptedUser._id}`)}
+                    >
+                      <MessageSquare size={14} /> {t("goDate.chat")}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                    <div className="applicants-header">
+                    {t("goDate.requests")} ({date.applicants?.length || 0})
+                  </div>
+                  {date.applicants?.length > 0 ? (
+                    <div className="applicants-list">
+                      {date.applicants.map((app) => (
+                        <div key={app._id} className="applicant-row">
+                          <div
+                            className="applicant-info"
+                            onClick={() => handleProfileClick(app._id)}
+                          >
+                            <img
+                              src={app.avatar || "/default-avatar.png"}
+                              alt={app.name}
+                            />
+                            <div className="applicant-details">
+                              <span className="app-name">
+                                {app.name}, {app.age}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            className="accept-btn"
+                            onClick={() => handleAcceptClick(app._id)}
+                            disabled={loading}
+                          >
+                            <Check size={14} /> {t("goDate.accept")}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-applicants">{t("goDate.waitingForRequests")}</div>
+                  )}
+                </>
+              )}
+              {date.status !== "cancelled" && canCancelByTime && (
+                <button
+                  className="godate-cancel-date-btn"
+                  onClick={handleCancelClick}
+                  disabled={loading}
+                  type="button"
+                >
+                  {t("goDate.cancelDate")}
+                </button>
+              )}
             </div>
-        ) : (
-            <div style={{width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-               <span style={{fontSize: '0.8rem', color: '#94a3b8'}}>
-                  {date.hasApplied ? "Request Sent" : "Interested?"}
-               </span>
-               <button 
-                 className="go-date-card__btn"
-                 onClick={handleApplyClick}
-                 disabled={date.hasApplied || loading}
-               >
-                 {date.hasApplied ? "Pending..." : "I'm In! ✋"}
-               </button>
+          ) : (
+            <div className="godate-actions">
+              {date.status === "cancelled" ? (
+                <div className="date-closed-badge">{t("goDate.cancelled")}</div>
+              ) : date.status === "closed" ? (
+                <div className="date-closed-badge">{t("goDate.dateClosed")}</div>
+              ) : (
+                <button
+                  className={`apply-btn ${date.hasApplied ? "applied" : ""}`}
+                  onClick={
+                    date.hasApplied ? handleWithdrawClick : handleApplyClick
+                  }
+                  disabled={loading}
+                >
+                  {date.hasApplied ? t("goDate.withdrawRequest") : t("goDate.imInterested")}
+                </button>
+              )}
             </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

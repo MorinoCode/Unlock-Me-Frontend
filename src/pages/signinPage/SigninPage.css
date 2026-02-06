@@ -1,14 +1,17 @@
 .signin-card {
   width: 100%;
   max-width: 420px;
-  padding: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
+  /* ✅ Glassy effect: Semi-transparent background with blur */
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   animation: signin-fade-in 0.5s ease-out;
   will-change: opacity, transform;
+  margin: 6rem auto;
 }
 
 @keyframes signin-fade-in {
@@ -23,7 +26,7 @@
 }
 
 .signin-card__title {
-  font-size: 2.2rem;
+  font-size: clamp(1.8rem, 4vw, 2.2rem);
   font-weight: 800;
   text-align: center;
   margin-bottom: 0.5rem;
@@ -32,22 +35,41 @@
 }
 
 .signin-card__subtitle {
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
   color: #94a3b8;
   margin-bottom: 2rem;
   text-align: center;
+  line-height: 1.5;
 }
 .signin-card__forgot-text{
   color: #94a3b8;
-  font-size: .7rem;
+  font-size: clamp(0.65rem, 1.5vw, 0.7rem);
+  margin: 0.5rem 0;
+  text-align: right;
+}
+
+[dir="rtl"] .signin-card__forgot-text {
+  text-align: left;
 }
 .signin-card__forgot-link{
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.8rem);
   color: #818cf8;
+  min-height: 44px; /* بهبود Accessibility: حداقل touch target */
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
 }
+
 .signin-card__forgot-link:hover{
   color: #6366f1;
+  text-decoration: underline;
+}
+
+.signin-card__forgot-link:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .signin-card__form {
@@ -69,12 +91,12 @@
 
 .signin-card__btn {
   margin-top: 1rem;
-  padding: 1rem;
+  padding: clamp(0.875rem, 2vw, 1rem);
   border-radius: 12px;
   border: none;
   background: #6366f1;
   color: white;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1rem);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -84,6 +106,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  min-height: 44px; /* بهبود Accessibility: حداقل touch target */
 }
 
 .signin-card__btn:hover:not(:disabled) {
@@ -136,6 +159,9 @@
   transition: color 0.2s ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  min-height: 44px; /* بهبود Accessibility: حداقل touch target */
+  display: inline-flex;
+  align-items: center;
 }
 
 .signin-card__footer-link:hover {
@@ -147,49 +173,69 @@
   color: #c7d2fe;
 }
 
+.signin-card__footer-link:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* بهبود Performance: استفاده از will-change برای animations */
+.signin-card {
+  will-change: opacity, transform;
+}
+
+/* بهبود Accessibility: Focus states */
+.signin-card__btn:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* بهبود Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .signin-card {
+    animation: none;
+  }
+  
+  .signin-card__btn,
+  .signin-card__footer-link,
+  .signin-card__forgot-link {
+    transition: none;
+  }
+  
+  .signin-card__spinner {
+    animation: none;
+  }
+}
+
 @media (max-width: 768px) {
   .signin-card {
     max-width: 90%;
-    padding: 2rem;
-  }
-
-  .signin-card__title {
-    font-size: 2rem;
+    padding: clamp(1.5rem, 4vw, 2rem);
   }
 }
 
 @media (max-width: 480px) {
   .signin-card {
-    margin-top: 3rem;
-    padding: 2rem 1.5rem;
+    margin-top: 2rem;
+    padding: clamp(1.25rem, 3vw, 1.5rem);
   }
 
-  .signin-card__title {
-    font-size: 1.8rem;
+  .signin-card__form {
+    gap: clamp(0.75rem, 2vw, 0.875rem);
   }
-
-  .signin-card__btn {
-    padding: 0.875rem;
-    font-size: 0.95rem;
+  
+  .signin-card__forgot-text {
+    font-size: clamp(0.65rem, 1.5vw, 0.7rem);
   }
 }
 
 @media (orientation: landscape) and (max-height: 600px) {
   .signin-card {
-    padding: 1.5rem;
+    padding: clamp(1.25rem, 2vw, 1.5rem);
     max-width: 380px;
   }
 
-  .signin-card__title {
-    font-size: 1.6rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .signin-card__subtitle {
-    margin-bottom: 1rem;
-  }
-
   .signin-card__form {
-    gap: 0.75rem;
+    gap: clamp(0.65rem, 1.5vw, 0.75rem);
   }
 }

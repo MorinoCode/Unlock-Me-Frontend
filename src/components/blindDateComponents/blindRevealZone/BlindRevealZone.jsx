@@ -1,21 +1,30 @@
-import React from 'react';
-import './BlindRevealZone.css';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import "./BlindRevealZone.css";
 
-const BlindRevealZone = ({ session, currentUser, socketRef, matchPercentage }) => {
+const BlindRevealZone = ({
+  session,
+  currentUser,
+  socketRef,
+  matchPercentage,
+}) => {
+  const { t } = useTranslation();
   if (!session || !currentUser) return null;
 
   // پیدا کردن وضعیت من
   const p1Id = session.participants[0]._id || session.participants[0];
   const isUser1 = p1Id.toString() === currentUser._id.toString();
-  
-  const myDecision = isUser1 ? session.u1RevealDecision : session.u2RevealDecision;
-  const isWaiting = myDecision !== 'pending'; // اگر تصمیم گرفتم، یعنی منتظرم
+
+  const myDecision = isUser1
+    ? session.u1RevealDecision
+    : session.u2RevealDecision;
+  const isWaiting = myDecision !== "pending"; // اگر تصمیم گرفتم، یعنی منتظرم
 
   const handleDecision = (decision) => {
     if (socketRef.current) {
-      socketRef.current.emit('submit_reveal_decision', {
+      socketRef.current.emit("submit_reveal_decision", {
         sessionId: session._id,
-        decision: decision 
+        decision: decision,
       });
     }
   };
@@ -23,23 +32,28 @@ const BlindRevealZone = ({ session, currentUser, socketRef, matchPercentage }) =
   return (
     <div className="unique-reveal-zone">
       <div className="unique-reveal-zone__card">
-        
         {/* هدر: نمایش درصد مچ */}
         <div className="unique-reveal-zone__header">
           <div className="unique-reveal-zone__score-circle">
-            <span className="unique-reveal-zone__score-num">{matchPercentage}%</span>
-            <span className="unique-reveal-zone__score-label">MATCH</span>
+            <span className="unique-reveal-zone__score-num">
+              {matchPercentage}%
+            </span>
+            <span className="unique-reveal-zone__score-label">
+              {t("blindDate.match")}
+            </span>
           </div>
-          
-          <h2 className="unique-reveal-zone__title">The Moment of Truth</h2>
+
+          <h2 className="unique-reveal-zone__title">
+            {t("blindDate.momentOfTruth")}
+          </h2>
           <p className="unique-reveal-zone__desc">
-            Based on your answers, you have a <strong>{matchPercentage}% compatibility</strong> score!
+            {t("blindDate.compatibilityScore", { percent: matchPercentage })}
           </p>
           <p className="unique-reveal-zone__question">
-            Do you want to reveal your full profile and photos?
+            {t("blindDate.revealProfileQuestion")}
           </p>
           <p className="unique-reveal-zone__note">
-            ⚠️ Both must say <strong>YES</strong> for a successful reveal.
+            {t("blindDate.bothMustSayYes")}
           </p>
         </div>
 
@@ -47,32 +61,33 @@ const BlindRevealZone = ({ session, currentUser, socketRef, matchPercentage }) =
         <div className="unique-reveal-zone__content">
           {!isWaiting ? (
             <div className="unique-reveal-zone__actions">
-              <button 
+              <button
                 className="unique-reveal-zone__btn unique-reveal-zone__btn--yes"
-                onClick={() => handleDecision('yes')}
+                onClick={() => handleDecision("yes")}
               >
-                Yes, I'm ready! 🔓
+                {t("blindDate.yesReady")}
               </button>
-              <button 
+              <button
                 className="unique-reveal-zone__btn unique-reveal-zone__btn--no"
-                onClick={() => handleDecision('no')}
+                onClick={() => handleDecision("no")}
               >
-                No, maybe later ❌
+                {t("blindDate.noMaybeLater")}
               </button>
             </div>
           ) : (
             <div className="unique-reveal-zone__waiting">
               <div className="unique-reveal-zone__spinner"></div>
               <p className="unique-reveal-zone__waiting-text">
-                You chose <strong>{myDecision?.toUpperCase()}</strong>
+                {t("blindDate.youChose", {
+                  decision: myDecision?.toUpperCase(),
+                })}
               </p>
               <p className="unique-reveal-zone__waiting-sub">
-                Waiting for partner's decision...
+                {t("blindDate.waitingPartnerDecision")}
               </p>
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

@@ -1,44 +1,49 @@
 .blind-game-card {
   width: 100%;
-  max-width: 450px;
+  max-width: min(450px, 100%);
   margin: 0 auto;
   perspective: 1000px;
+  box-sizing: border-box;
 }
 
 .blind-game-card__question-box {
   background: rgba(30, 41, 59, 0.8);
-  padding: 30px;
-  border-radius: 20px;
-  margin-bottom: 25px;
+  padding: clamp(20px, 4vw, 30px);
+  border-radius: clamp(16px, 3vw, 20px);
+  margin-bottom: clamp(16px, 3vw, 25px);
   border: 1px solid rgba(139, 92, 246, 0.3);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .blind-game-card__text {
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 2.8vw, 1.25rem);
   line-height: 1.5;
   color: #f8fafc;
   text-align: center;
   font-weight: 600;
+  word-break: break-word;
 }
 
 .blind-game-card__options-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(10px, 2vw, 12px);
 }
 
 .blind-game-card__option-btn {
   position: relative;
-  padding: 18px 24px;
-  border-radius: 15px;
+  padding: clamp(14px, 3.5vw, 18px) clamp(18px, 4vw, 24px);
+  min-height: 48px;
+  border-radius: clamp(12px, 3vw, 15px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: #1e293b;
   color: #94a3b8;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  word-break: break-word;
 }
 
 .blind-game-card__option-btn:hover:not(:disabled) {
@@ -88,5 +93,7 @@
 }
 
 @keyframes blind-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

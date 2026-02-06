@@ -10,7 +10,7 @@ const UserCard = ({ user }) => {
   const { currentUser } = useAuth();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // ✅ 1. Read Server-Side Locking Data
+  // وضعیت قفل بودن از سمت سرور می‌آید
   const isLocked = user.isLocked || false; 
   const score = user.matchScore || 0;
 
@@ -28,7 +28,7 @@ const UserCard = ({ user }) => {
 
   const age = user.birthday?.year ? new Date().getFullYear() - parseInt(user.birthday.year) : "";
 
-  // Client-side limit check for swiping
+  // چک کردن محدودیت لایک در سمت کلاینت
   const checkLikeLimit = () => {
     const userPlan = currentUser?.subscription?.plan || "free";
     const limit = getSwipeLimit(userPlan);
@@ -36,6 +36,7 @@ const UserCard = ({ user }) => {
     return limit !== Infinity && usage >= limit;
   };
 
+  // هندلر کلیک روی کارت
   const handleCardClick = () => {
     if (isLocked) {
         setModalMessage(`This user is a ${score}% match! Upgrade to unlock high matches.`);
@@ -45,23 +46,17 @@ const UserCard = ({ user }) => {
     }
   };
 
-  const handleUnlockClick = (e) => {
-    e.stopPropagation();
-    setModalMessage(`This user is a ${score}% match! Upgrade to unlock.`);
-    setShowModal(true);
-  };
-
   const handleLikeClick = async (e) => {
     e.stopPropagation();
     
-    // 1. If Locked -> Show Modal
+    // اگر قفل است -> باز کردن مودال
     if (isLocked) {
         setModalMessage("Upgrade to unlock and like high matches!");
         setShowModal(true);
         return;
     }
 
-    // 2. If Like Limit Reached -> Show Modal
+    // اگر محدودیت لایک پر شده -> باز کردن مودال
     if (!liked && checkLikeLimit()) {
         setModalMessage("You've reached your daily like limit! Upgrade to swipe more.");
         setShowModal(true);
@@ -104,7 +99,7 @@ const UserCard = ({ user }) => {
         onClick={handleCardClick}
       >
         
-        {/* ✅ Like Button (Only if not locked) */}
+        {/* دکمه لایک فقط وقتی باز است نشان داده شود */}
         {!isLocked && (
             <button 
               className={`user-card__like-btn ${liked ? "user-card__like-btn--active" : ""}`} 
@@ -120,24 +115,28 @@ const UserCard = ({ user }) => {
            <img 
             src={user.avatar || "/default-avatar.png"} 
             alt={user.name} 
-            className="user-card__image"
+            className={`user-card__image ${isLocked ? "user-card__image--blur" : ""}`}
             loading="lazy" 
           />
           
-          {/* ✅ Blur Overlay */}
+          {/* لایه بلور و قفل */}
           {isLocked && (
-            <div className="user-card__blur-overlay" onClick={handleUnlockClick}>
-                <span className="user-card__lock-icon">🔒</span>
-                <p className="user-card__lock-text">High Match! ({score}%)</p>
-                <small className="user-card__lock-sub">Upgrade to view</small>
+            <div className="user-card__blur-overlay">
+                <div className="user-card__lock-icon-bg">
+                    🔒
+                </div>
             </div>
           )}
+          
+          {/* گرادینت پایین */}
+          <div className="user-card__overlay-gradient"></div>
         </div>
 
         <div className="user-card__content">
             <div className="user-card__text-group">
                 <h3 className="user-card__name">
-                    {isLocked ? "Hidden User" : `${user.name}, ${age}`}
+                    {/* اگر قفل بود بنویس Hidden User */}
+                    {isLocked ? "Locked User" : `${user.name}, ${age}`}
                     {!isLocked && user.isVerified && <span className="user-card__verified">🔹</span>}
                 </h3>
                 <span className="user-card__location">
@@ -145,7 +144,8 @@ const UserCard = ({ user }) => {
                 </span>
             </div>
 
-            {!isLocked && (
+            {/* اگر قفل بود دکمه‌ها را نشان نده */}
+            {!isLocked ? (
                 <div className="user-card__actions">
                     <button className="user-card__action-btn">
                         View Profile
@@ -153,6 +153,12 @@ const UserCard = ({ user }) => {
                     <div className="user-card__match-pill" style={{ borderColor: getMatchColor(score) }}>
                         <span style={{ color: getMatchColor(score) }}>{score}%</span>
                     </div>
+                </div>
+            ) : (
+                <div className="user-card__actions">
+                    <button className="user-card__action-btn user-card__action-btn--unlock">
+                        Unlock Match
+                    </button>
                 </div>
             )}
         </div>

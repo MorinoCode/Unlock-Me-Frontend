@@ -10,7 +10,7 @@
 }
 
 .report-problem-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 80px); /* فضا برای Navbar و Footer */
   width: 100%;
   background: var(--rp-bg-dark);
   background-image: radial-gradient(circle at 50% 0%, #312e81 0%, #0f172a 60%);
@@ -18,7 +18,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 100px 20px 80px; /* padding بالا برای Navbar، پایین برای Footer */
   box-sizing: border-box;
   font-family: 'Inter', system-ui, sans-serif;
 }
@@ -69,28 +69,53 @@
 }
 
 .report-problem-page__title {
-  font-size: 1.8rem;
+  font-size: clamp(1.5rem, 5vw, 1.8rem);
   font-weight: 800;
   margin: 0 0 8px 0;
   background: linear-gradient(to right, #fff, #cbd5e1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .report-problem-page__subtitle {
   color: var(--rp-text-muted);
   margin-bottom: 32px;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: clamp(0.9rem, 2.5vw, 0.95rem);
+  line-height: 1.6;
 }
 
 .report-problem-page__label {
   display: block;
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 2.2vw, 0.9rem);
   font-weight: 700;
   margin-bottom: 12px;
   color: #e2e8f0;
   letter-spacing: 0.5px;
+}
+
+.report-problem-page__fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 32px 0;
+}
+
+.report-problem-page__fieldset legend {
+  display: block;
+  font-size: clamp(0.85rem, 2.2vw, 0.9rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #e2e8f0;
+  letter-spacing: 0.5px;
+}
+
+.report-problem-page__form-group {
+  margin-bottom: 24px;
+}
+
+.report-problem-page__required {
+  color: #ec4899;
+  font-weight: 700;
 }
 
 .report-problem-page__grid {
@@ -113,6 +138,14 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  min-height: 44px; /* Touch target accessibility */
+  font-family: inherit;
+  text-align: center;
+}
+
+.report-problem-page__card:focus-visible {
+  outline: 2px solid var(--rp-primary);
+  outline-offset: 2px;
 }
 
 .report-problem-page__card:hover {
@@ -138,7 +171,7 @@
 }
 
 .report-problem-page__card-text {
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 2.2vw, 0.9rem);
   font-weight: 600;
   color: var(--rp-text-muted);
 }
@@ -155,18 +188,24 @@
   padding: 16px;
   color: #fff;
   font-family: inherit;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  resize: none;
+  font-size: clamp(0.9rem, 2.5vw, 0.95rem);
+  line-height: 1.6;
+  resize: vertical;
   box-sizing: border-box;
   outline: none;
   margin-bottom: 10px;
   transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 120px;
 }
 
 .report-problem-page__textarea:focus {
   border-color: var(--rp-primary);
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.report-problem-page__textarea:focus-visible {
+  outline: 2px solid var(--rp-primary);
+  outline-offset: 2px;
 }
 
 .report-problem-page__textarea::placeholder {
@@ -175,14 +214,15 @@
 
 .report-problem-page__error-message {
   color: #f43f5e;
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 2.2vw, 0.9rem);
   margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 6px;
   background: rgba(244, 63, 94, 0.1);
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
+  border: 1px solid rgba(244, 63, 94, 0.3);
 }
 
 .report-problem-page__actions {
@@ -191,18 +231,24 @@
 
 .report-problem-page__button--primary {
   width: 100%;
-  padding: 16px;
+  padding: clamp(14px, 4vw, 16px);
   background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   color: white;
   border: none;
   border-radius: 99px;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2.5vw, 1rem);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
   position: relative;
   overflow: hidden;
+  min-height: 44px; /* Touch target accessibility */
+}
+
+.report-problem-page__button--primary:focus-visible {
+  outline: 2px solid var(--rp-primary);
+  outline-offset: 2px;
 }
 
 .report-problem-page__button--primary:disabled {
@@ -236,7 +282,7 @@
 }
 
 .report-problem-page__success-title {
-  font-size: 1.8rem;
+  font-size: clamp(1.5rem, 5vw, 1.8rem);
   font-weight: 800;
   color: white;
   margin: 0 0 12px 0;
@@ -244,19 +290,91 @@
 
 .report-problem-page__success-message {
   color: var(--rp-text-muted);
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2.5vw, 1rem);
   margin-bottom: 40px;
   line-height: 1.6;
 }
 
+/* Tablet and below */
+@media (max-width: 968px) {
+  .report-problem-page {
+    padding: 90px 16px 70px;
+  }
+
+  .report-problem-page__container {
+    padding: 28px 24px;
+  }
+
+  .report-problem-page__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .report-problem-page__card {
+    padding: 16px;
+  }
+}
+
+/* Mobile (small screens) */
 @media (max-width: 480px) {
   .report-problem-page {
-    padding: 10px;
+    padding: 80px 12px 60px; /* padding کمتر در موبایل */
+    min-height: calc(100vh - 60px);
   }
+
   .report-problem-page__container {
     padding: 24px 20px;
   }
-  .report-problem-page__title {
+
+  .report-problem-page__container--success {
+    padding: 40px 24px;
+  }
+
+  .report-problem-page__grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .report-problem-page__card {
+    padding: 16px;
+    min-height: 60px;
+  }
+
+  .report-problem-page__card-icon-wrapper {
     font-size: 1.5rem;
+  }
+
+  .report-problem-page__back-btn {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+
+  .report-problem-page__success-icon-wrapper {
+    font-size: 4rem;
+    margin-bottom: 20px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .report-problem-page__container {
+    animation: none;
+  }
+
+  .report-problem-page__success-icon-wrapper {
+    animation: none;
+  }
+
+  .report-problem-page__card,
+  .report-problem-page__button--primary {
+    transition: none;
+  }
+
+  .report-problem-page__card:hover {
+    transform: none;
+  }
+
+  .report-problem-page__button--primary:not(:disabled):hover {
+    transform: none;
   }
 }

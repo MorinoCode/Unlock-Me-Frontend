@@ -1,77 +1,279 @@
 .mobile-bottom-nav {
   position: fixed;
-  bottom: 0; 
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   max-width: 100%;
-  height: calc(70px + env(safe-area-inset-bottom));
-  background: transparent; 
+  height: clamp(65px, 10vw, 75px); /* ✅ Responsive height */
+  min-height: clamp(65px, 10vw, 75px);
+  background: rgba(
+    10,
+    15,
+    30,
+    0.85
+  ); /* ✅ Better background for glassy effect */
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); /* ✅ iOS Safari support */
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 25px 25px 0 0; 
+  border-radius: clamp(20px, 4vw, 25px) clamp(20px, 4vw, 25px) 0 0; /* ✅ Responsive border-radius */
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5);
+  padding-bottom: max(
+    env(safe-area-inset-bottom),
+    clamp(8px, 2vw, 12px)
+  ); /* ✅ Responsive padding + safe area */
+  padding-top: clamp(8px, 2vw, 12px);
+  box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5),
+    0 -2px 10px rgba(99, 102, 241, 0.1); /* ✅ Enhanced shadow */
+  /* ✅ Performance: Will-change for smoother animations */
+  will-change: transform, opacity;
+  /* ✅ Mobile: Prevent text selection */
+  -webkit-user-select: none;
+  user-select: none;
+  /* ✅ Mobile: Prevent pull-to-refresh interference */
+  touch-action: pan-y;
 }
 
 .mobile-bottom-nav__container {
   display: flex;
   width: 100%;
+  max-width: 100%;
   justify-content: space-around;
   align-items: center;
+  padding: 0 clamp(0.5rem, 2vw, 1rem); /* ✅ Responsive padding */
+  gap: clamp(0.25rem, 1vw, 0.5rem); /* ✅ Responsive gap */
 }
 
 .mobile-bottom-nav__item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-decoration: none;
   position: relative;
   flex: 1;
+  /* ✅ Mobile: Minimum touch target */
+  min-width: clamp(60px, 15vw, 80px);
+  min-height: clamp(60px, 15vw, 80px);
+  /* ✅ Mobile: Touch optimization */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  /* ✅ Accessibility: Focus visible */
+  border-radius: clamp(12px, 2vw, 16px);
+  transition: background-color 0.2s ease;
+}
+
+.mobile-bottom-nav__item:active {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.mobile-bottom-nav__item:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
 }
 
 .mobile-bottom-nav__icon-wrapper {
   position: relative;
   z-index: 2;
   color: #94a3b8;
-  transition: all 0.3s ease;
-  width: 50px;
-  height: 50px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* ✅ Smoother transition */
+  width: clamp(44px, 8vw, 50px); /* ✅ Responsive size */
+  height: clamp(44px, 8vw, 50px);
+  min-width: 44px; /* ✅ Minimum touch target */
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* ✅ Performance: Will-change for smoother animations */
+  will-change: transform, color;
 }
 
-/* آیکون اکتیو کمی بالاتر می‌رود */
+/* ✅ Active icon moves up slightly */
 .mobile-bottom-nav__icon-wrapper.active {
   color: #ffffff;
-  transform: translateY(-5px);
+  transform: translateY(clamp(-4px, -1vw, -5px)); /* ✅ Responsive transform */
+  filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.4)); /* ✅ Enhanced glow */
 }
 
 .mobile-bottom-nav__bubble {
   position: absolute;
-  width: 55px;
-  height: 55px;
+  width: clamp(50px, 9vw, 55px); /* ✅ Responsive size */
+  height: clamp(50px, 9vw, 55px);
   background: linear-gradient(135deg, #6366f1, #a855f7);
   border-radius: 50%;
   z-index: -1;
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 clamp(6px, 1.5vw, 8px) clamp(16px, 3vw, 20px)
+      rgba(99, 102, 241, 0.4),
+    0 0 clamp(20px, 4vw, 30px) rgba(168, 85, 247, 0.3); /* ✅ Enhanced glow */
+  /* ✅ Performance: Will-change for smoother animations */
+  will-change: transform, opacity;
+  /* ✅ iOS Safari: Better rendering */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
-/* اصلاح فضای خالی انتهای محتوا */
+/* ✅ Responsive: Fix content spacing at bottom */
 @media (max-width: 1053px) {
   .main-content.with-bottom-nav {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    padding-bottom: calc(
+      clamp(75px, 12vw, 85px) + env(safe-area-inset-bottom)
+    ); /* ✅ Responsive padding */
   }
 }
 
+/* ✅ Desktop: Hide bottom nav */
 @media (min-width: 1054px) {
   .mobile-bottom-nav {
-    display: none;
+    display: none !important;
+  }
+}
+
+/* ✅ Responsive: Tablet */
+@media (max-width: 768px) and (min-width: 481px) {
+  .mobile-bottom-nav {
+    height: clamp(60px, 9vw, 70px);
+    min-height: clamp(60px, 9vw, 70px);
+  }
+
+  .mobile-bottom-nav__icon-wrapper {
+    width: clamp(42px, 7vw, 48px);
+    height: clamp(42px, 7vw, 48px);
+  }
+
+  .mobile-bottom-nav__bubble {
+    width: clamp(48px, 8vw, 53px);
+    height: clamp(48px, 8vw, 53px);
+  }
+}
+
+/* ✅ Responsive: Mobile */
+@media (max-width: 480px) {
+  .mobile-bottom-nav {
+    height: clamp(60px, 10vw, 70px);
+    min-height: clamp(60px, 10vw, 70px);
+    border-radius: clamp(18px, 4vw, 22px) clamp(18px, 4vw, 22px) 0 0;
+  }
+
+  .mobile-bottom-nav__container {
+    padding: 0 clamp(0.25rem, 1.5vw, 0.75rem);
+    gap: clamp(0.125rem, 0.5vw, 0.25rem);
+  }
+
+  .mobile-bottom-nav__item {
+    min-width: clamp(55px, 14vw, 70px);
+    min-height: clamp(55px, 14vw, 70px);
+  }
+
+  .mobile-bottom-nav__icon-wrapper {
+    width: clamp(40px, 7vw, 46px);
+    height: clamp(40px, 7vw, 46px);
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .mobile-bottom-nav__icon-wrapper.active {
+    transform: translateY(clamp(-3px, -0.8vw, -4px));
+  }
+
+  .mobile-bottom-nav__bubble {
+    width: clamp(46px, 8vw, 50px);
+    height: clamp(46px, 8vw, 50px);
+  }
+}
+
+/* ✅ Responsive: Very Small Mobile */
+@media (max-width: 360px) {
+  .mobile-bottom-nav {
+    height: clamp(58px, 9vw, 65px);
+    min-height: clamp(58px, 9vw, 65px);
+  }
+
+  .mobile-bottom-nav__container {
+    padding: 0 clamp(0.125rem, 1vw, 0.5rem);
+  }
+
+  .mobile-bottom-nav__item {
+    min-width: clamp(50px, 13vw, 65px);
+    min-height: clamp(50px, 13vw, 65px);
+  }
+
+  .mobile-bottom-nav__icon-wrapper {
+    width: clamp(38px, 6vw, 44px);
+    height: clamp(38px, 6vw, 44px);
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  .mobile-bottom-nav__bubble {
+    width: clamp(44px, 7vw, 48px);
+    height: clamp(44px, 7vw, 48px);
+  }
+}
+
+/* ✅ Responsive: Landscape Mobile */
+@media (orientation: landscape) and (max-height: 600px) {
+  .mobile-bottom-nav {
+    height: clamp(55px, 8vw, 65px);
+    min-height: clamp(55px, 8vw, 65px);
+    padding-bottom: max(env(safe-area-inset-bottom), clamp(6px, 1.5vw, 10px));
+    padding-top: clamp(6px, 1.5vw, 10px);
+  }
+
+  .mobile-bottom-nav__icon-wrapper {
+    width: clamp(38px, 6vw, 44px);
+    height: clamp(38px, 6vw, 44px);
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  .mobile-bottom-nav__icon-wrapper.active {
+    transform: translateY(clamp(-2px, -0.5vw, -3px));
+  }
+
+  .mobile-bottom-nav__bubble {
+    width: clamp(42px, 7vw, 48px);
+    height: clamp(42px, 7vw, 48px);
+  }
+
+  .main-content.with-bottom-nav {
+    padding-bottom: calc(clamp(60px, 10vw, 70px) + env(safe-area-inset-bottom));
+  }
+}
+
+/* ✅ iOS Safari: Better safe area handling */
+@supports (padding: max(0px)) {
+  .mobile-bottom-nav {
+    padding-bottom: max(env(safe-area-inset-bottom), clamp(8px, 2vw, 12px));
+  }
+
+  .main-content.with-bottom-nav {
+    padding-bottom: max(
+      calc(clamp(75px, 12vw, 85px) + env(safe-area-inset-bottom)),
+      calc(clamp(75px, 12vw, 85px) + clamp(8px, 2vw, 12px))
+    );
+  }
+}
+
+/* ✅ Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-bottom-nav,
+  .mobile-bottom-nav__icon-wrapper,
+  .mobile-bottom-nav__bubble {
+    transition: none;
+    animation: none;
+  }
+
+  .mobile-bottom-nav__icon-wrapper.active {
+    transform: none;
+  }
+}
+
+/* ✅ Windows: Better rendering */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .mobile-bottom-nav {
+    background: rgba(10, 15, 30, 0.95); /* ✅ Fallback for IE/Edge */
   }
 }
