@@ -1,0 +1,248 @@
+.create-date-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+
+.create-date-modal {
+  background: rgba(255, 255, 255, 0.95);
+  width: 100%;
+  max-width: 500px;
+  border-radius: 24px;
+  padding: 24px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Custom Scrollbar */
+.create-date-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.create-date-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.create-date-modal::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.create-date-modal::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.create-date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: sticky;
+  top: -24px;
+  background: rgba(255,255,255,0.95);
+  padding-top: 10px;
+  padding-bottom: 10px;
+  z-index: 10;
+  margin-top: -10px;
+}
+
+.create-date-header h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.create-date-close-btn {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.create-date-close-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.create-date-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Image Upload */
+.image-upload-label {
+    width: 100%;
+    cursor: pointer;
+    display: block;
+}
+
+.image-upload-placeholder {
+    width: 100%;
+    height: 160px;
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.image-upload-placeholder:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+    background: #eef2ff;
+}
+
+.image-preview-wrapper {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.date-image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-preview-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.image-preview-wrapper:hover .image-preview-overlay {
+    opacity: 1;
+}
+.image-preview-overlay span {
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    backdrop-filter: blur(4px);
+}
+
+.create-date-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.create-date-group input,
+.create-date-group select,
+.create-date-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: all 0.2s;
+  outline: none;
+  font-family: inherit;
+}
+
+.create-date-textarea {
+    resize: none;
+    padding-left: 40px;
+}
+
+.create-date-group input:focus,
+.create-date-group select:focus,
+.create-date-textarea:focus {
+  border-color: #6366f1;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.create-date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.input-with-icon, .select-wrapper, .textarea-wrapper {
+  position: relative;
+}
+
+.input-with-icon svg, 
+.textarea-wrapper .textarea-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.textarea-wrapper .textarea-icon {
+    top: 20px;
+}
+
+.input-with-icon input {
+  padding-left: 40px;
+}
+
+.create-date-submit-btn {
+  margin-top: 8px;
+  padding: 14px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.create-date-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+}
+
+.create-date-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}

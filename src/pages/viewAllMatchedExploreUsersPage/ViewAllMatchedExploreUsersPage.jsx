@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
 
@@ -10,63 +10,105 @@ import { Pagination } from "../../components/pagination/Pagination";
 
 // Utils
 import { getPromoBannerConfig } from "../../utils/subscriptionRules";
+import { useExploreViewAllStore } from "../../store/exploreViewAllStore";
 
 import "./ViewAllMatchedExploreUsersPage.css";
+
+const usersPerPage = 20;
 
 const ViewAllMatchedUsersPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const { currentUser } = useAuth();
+  const userId = currentUser?._id || currentUser?.userId;
+  const country = currentUser?.location?.country;
 
-  // State های جدید برای Pagination سمت سرور
+  const getCached = useExploreViewAllStore((s) => s.getCached);
+  const fetchViewAll = useExploreViewAllStore((s) => s.fetchViewAll);
+
   const [users, setUsers] = useState([]);
   const [userPlan, setUserPlan] = useState("free");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const usersPerPage = 20;
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        setLoading(true);
-        const country = currentUser?.location.country;
-        if (!country) return;
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
-        const queryParams = new URLSearchParams({
-          country: country,
-          category: category,
-          page: currentPage,
-          limit: usersPerPage,
-        });
-        const res = await fetch(
-          `${API_URL}/api/explore/matches?${queryParams}`,
-          {
-            credentials: "include",
-          }
-        );
+  useEffect(() => {
+    if (!country || !userId) {
+      setLoading(false);
+      return;
+    }
 
-        if (!res.ok) throw new Error("Failed to fetch matches");
+    const ac = new AbortController();
+    const cat = category || "";
+    const page = currentPage;
 
-        const data = await res.json();
-        setUserPlan(data.userPlan || "free");
-        setUsers(data.users || []); // آرایه کاربران صفحه جاری
-
-        // تنظیم تعداد کل صفحات برای کامپوننت Pagination
-        if (data.pagination) {
-          setTotalPages(data.pagination.totalPages);
-        }
-      } catch (error) {
-        console.error("Error fetching matches:", error);
-      } finally {
-        setLoading(false);
-      }
+    const applyCached = (c) => {
+      if (!c || !mountedRef.current) return;
+      setUsers(c.users ?? []);
+      setUserPlan(c.userPlan ?? "free");
+      setTotalPages(c.totalPages ?? 1);
     };
 
-    fetchMatches();
-  }, [category, currentPage, API_URL, currentUser?.location?.country]);
+    const cached = getCached(userId, cat, page);
+
+    if (cached) {
+      applyCached(cached);
+      setLoading(false);
+      fetchViewAll(
+        API_URL,
+        userId,
+        country,
+        cat,
+        page,
+        usersPerPage,
+        true,
+        ac.signal
+      ).then(() => {
+        if (mountedRef.current) applyCached(getCached(userId, cat, page));
+      });
+    } else {
+      setLoading(true);
+      fetchViewAll(
+        API_URL,
+        userId,
+        country,
+        cat,
+        page,
+        usersPerPage,
+        false,
+        ac.signal
+      )
+        .then(() => {
+          if (mountedRef.current) {
+            applyCached(getCached(userId, cat, page));
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (mountedRef.current) setLoading(false);
+        });
+    }
+
+    return () => ac.abort();
+  }, [
+    category,
+    currentPage,
+    API_URL,
+    country,
+    userId,
+    getCached,
+    fetchViewAll,
+  ]);
 
   // تنظیمات بنر تبلیغاتی
   const banners = getPromoBannerConfig(userPlan);
@@ -115,8 +157,15 @@ const ViewAllMatchedUsersPage = () => {
 
         <div className="matches-view__grid">
           {users.length > 0 ? (
-            users.map((user) => (
-              <div key={user._id} className="matches-view__grid-item">
+            users.map((user, index) => (
+              <div 
+                key={user._id || `user-${index}`} 
+                className="matches-view__grid-item"
+                style={{ 
+                  animationDelay: `${index * 0.05}s`,
+                  willChange: 'transform, opacity'
+                }}
+              >
                 {/* کاربرانی که از بک‌اند می‌آیند already filtered هستند */}
                 <UserCard user={user} userPlan={userPlan} />
               </div>

@@ -1,25 +1,33 @@
-import React, { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './BlindFinalReveal.css';
-import Confetti from 'react-confetti'; // پیشنهاد: نصب کنید برای افکت جشن (npm i react-confetti)
+import React, { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "./BlindFinalReveal.css";
+import Confetti from "react-confetti";
 
 const BlindFinalReveal = ({ session, currentUser }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // پیدا کردن پارتنر از بین شرکت‌کنندگان
-  const partner = useMemo(() => {
-    if (!session || !session.participants) return null;
-    return session.participants.find(p => p._id.toString() !== currentUser._id.toString());
+  // پارتنر = کاربر دیگر (participants ممکن است string یا object با _id, name, avatar باشد)
+  const { partnerId, partner } = useMemo(() => {
+    if (!session?.participants?.length || !currentUser?._id)
+      return { partnerId: null, partner: null };
+    const myId = String(currentUser._id);
+    const other = session.participants.find(
+      (p) => String(p?._id ?? p) !== myId
+    );
+    const id = other != null ? String(other?._id ?? other) : null;
+    return { partnerId: id, partner: typeof other === "object" ? other : null };
   }, [session, currentUser]);
 
-  if (!partner) return null;
+  if (!partnerId) return null;
 
   const handleGoToChat = () => {
-    navigate(`/chat/${partner._id}`); 
+    navigate(`/chat/${partnerId}`);
   };
 
   const handleViewProfile = () => {
-    navigate(`/user-profile/${partner._id}`);
+    navigate(`/user-profile/${partnerId}`);
   };
 
   return (
@@ -28,25 +36,29 @@ const BlindFinalReveal = ({ session, currentUser }) => {
       <Confetti recycle={false} numberOfPieces={500} gravity={0.1} />
 
       <div className="blind-final-reveal__container">
-        
         <header className="blind-final-reveal__header">
           <span className="blind-final-reveal__icon">✨</span>
-          <h1 className="blind-final-reveal__title">It's a Match!</h1>
-          <p className="blind-final-reveal__subtitle">You both said YES. It's time to meet.</p>
+          <h1 className="blind-final-reveal__title">
+            {t("blindDate.itsAMatch")}
+          </h1>
+          <p className="blind-final-reveal__subtitle">
+            {t("blindDate.bothSaidYes")}
+          </p>
         </header>
 
         <div className="blind-final-reveal__profiles">
-          
           {/* کارت من (سمت چپ/بالا) */}
           <div className="reveal-card reveal-card--me">
             <div className="reveal-card__image-box">
-              <img 
-                src={currentUser.avatar || "/default-avatar.png"} 
-                alt={currentUser.name} 
-                className="reveal-card__img" 
+              <img
+                src={currentUser.avatar || "/default-avatar.png"}
+                alt={currentUser.name}
+                className="reveal-card__img"
               />
             </div>
-            <h3 className="reveal-card__name">{currentUser.name} (You)</h3>
+            <h3 className="reveal-card__name">
+              {currentUser.name} {t("blindDate.you")}
+            </h3>
           </div>
 
           {/* آیکون اتصال وسط */}
@@ -59,28 +71,32 @@ const BlindFinalReveal = ({ session, currentUser }) => {
           {/* کارت پارتنر (سمت راست/پایین) */}
           <div className="reveal-card reveal-card--partner">
             <div className="reveal-card__image-box">
-              <img 
-                src={partner.avatar || "/default-avatar.png"} 
-                alt={partner.name} 
-                className="reveal-card__img reveal-card__img--animate" 
+              <img
+                src={partner?.avatar || "/default-avatar.png"}
+                alt={partner?.name ?? ""}
+                className="reveal-card__img reveal-card__img--animate"
               />
             </div>
-            <h3 className="reveal-card__name">{partner.name}</h3>
+            <h3 className="reveal-card__name">{partner?.name ?? "Partner"}</h3>
           </div>
-
         </div>
 
         <div className="blind-final-reveal__actions">
-          <button className="reveal-btn reveal-btn--chat" onClick={handleGoToChat}>
+          <button
+            className="reveal-btn reveal-btn--chat"
+            onClick={handleGoToChat}
+          >
             <span className="btn-icon">💬</span>
-            Start Chatting & Break the Ice
+            {t("blindDate.startChatting")}
           </button>
-          
-          <button className="reveal-btn reveal-btn--profile" onClick={handleViewProfile}>
-            View Full Profile
+
+          <button
+            className="reveal-btn reveal-btn--profile"
+            onClick={handleViewProfile}
+          >
+            {t("blindDate.viewFullProfile")}
           </button>
         </div>
-
       </div>
     </div>
   );

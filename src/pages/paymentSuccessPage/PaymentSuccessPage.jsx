@@ -1,31 +1,64 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Confetti from 'react-confetti'; 
-import { useAuth } from '../../context/useAuth.js'; // ⚠️ مسیر ایمپورت را چک کنید
+import { useAuth } from '../../context/useAuth.js';
+import toast from 'react-hot-toast';
 import './PaymentSuccessPage.css';
 
 const PaymentSuccessPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const [verifying, setVerifying] = useState(true);
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // ✅ اصلاح ۱: هوک باید اینجا (بالای تابع) باشد، نه داخل useEffect
-  const { refreshUser } = useAuth(); 
+  const { checkAuth } = useAuth(); 
 
   useEffect(() => {
-    // ✅ اصلاح ۲: تابع را باید اجرا کنیم (پرانتز بگذاریم)
-    if (refreshUser) {
-      console.log("🔄 Refreshing user data...");
-      refreshUser(); 
-    }
+    const verifyAndUpdateSubscription = async () => {
+      if (!sessionId) {
+        setVerifying(false);
+        return;
+      }
 
-    // ریدایرکت بعد از ۱۰ ثانیه
+      try {
+        // Verify payment session and update subscription
+        const res = await fetch(`${API_URL}/api/payment/verify-session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ sessionId }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          console.log('✅ Subscription updated:', data);
+          // Refresh user data
+          await checkAuth();
+        } else {
+          const errorData = await res.json().catch(() => ({}));
+          console.error('Failed to verify payment:', errorData);
+          // Still refresh user data in case webhook already processed it
+          await checkAuth();
+        }
+      } catch (err) {
+        console.error('Error verifying payment:', err);
+        // Still refresh user data
+        await checkAuth();
+      } finally {
+        setVerifying(false);
+      }
+    };
+
+    verifyAndUpdateSubscription();
+
+    // Redirect after 10 seconds
     const timer = setTimeout(() => {
       navigate('/');
     }, 10000);
 
     return () => clearTimeout(timer);
-  }, [navigate, refreshUser]); // وابستگی‌ها را اضافه کردیم
+  }, [sessionId, navigate, checkAuth, API_URL]);
 
   return (
     <div className="payment-success">

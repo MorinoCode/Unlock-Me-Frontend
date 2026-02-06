@@ -28,7 +28,11 @@
   margin-bottom: 20px;
 }
 
-@keyframes inbox-page-spin { to { transform: rotate(360deg); } }
+@keyframes inbox-page-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* Element: .inbox-page__loading-text */
 .inbox-page__loading-text {
@@ -46,8 +50,14 @@
 }
 
 @keyframes inbox-page-fade-in-down {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Element: .inbox-page__header-content */
@@ -98,12 +108,19 @@
 }
 
 @keyframes inbox-page-dot-pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.5); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
-
-
 
 /* Element: .inbox-page__list */
 .inbox-page__list {
@@ -131,8 +148,14 @@
 }
 
 @keyframes inbox-page-slide-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .inbox-page__card:hover {
@@ -246,9 +269,73 @@
   box-shadow: 0 0 15px rgba(167, 139, 250, 0.5);
 }
 
-/* Element: .inbox-page__arrow */
-.inbox-page__arrow {
-  /* Add arrow styling here if needed, or rely on pseudo-elements */
+/* Element: .inbox-page__card-actions */
+.inbox-page__card-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.inbox-page__card-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.inbox-page__card-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.inbox-page__card-actions button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Delete (Active Chats) */
+.inbox-page__delete-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+.inbox-page__delete-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+.inbox-page__delete-btn:focus-visible {
+  outline-color: #f87171;
+}
+
+/* Accept (Requests) */
+.inbox-page__accept-btn {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+.inbox-page__accept-btn:hover:not(:disabled) {
+  background: rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+}
+.inbox-page__accept-btn:focus-visible {
+  outline-color: #22c55e;
+}
+
+/* Reject (Requests) */
+.inbox-page__reject-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+.inbox-page__reject-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+.inbox-page__reject-btn:focus-visible {
+  outline-color: #f87171;
 }
 
 /* Element: .inbox-page__empty-state */
@@ -324,24 +411,38 @@
 }
 
 .inbox-tab--active {
-  background: var(--primary-gradient, linear-gradient(135deg, #ff4b4b 0%, #ff9068 100%));
+  background: var(
+    --primary-gradient,
+    linear-gradient(135deg, #ff4b4b 0%, #ff9068 100%)
+  );
   color: white;
   box-shadow: 0 4px 15px rgba(255, 75, 75, 0.3);
 }
 
 .inbox-page__count-badge {
-    margin: 1rem 0;
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.5);
-    padding-left: 0.5rem;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  padding-left: 0.5rem;
 }
 
 /* بقیه استایل‌های قبلی شما سر جایشان می‌مانند... */
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  .inbox-page__title { font-size: 2.5rem; }
-  .inbox-page__header { flex-direction: column; align-items: flex-start; gap: 15px; }
-  .inbox-page__card { padding: 12px 15px; }
-  .inbox-page__avatar-wrapper { width: 55px; height: 55px; }
+  .inbox-page__title {
+    font-size: 2.5rem;
+  }
+  .inbox-page__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .inbox-page__card {
+    padding: 12px 15px;
+  }
+  .inbox-page__avatar-wrapper {
+    width: 55px;
+    height: 55px;
+  }
 }

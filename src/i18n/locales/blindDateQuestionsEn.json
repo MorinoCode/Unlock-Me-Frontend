@@ -1,0 +1,362 @@
+{
+  "s1_0": {
+    "text": "If you could win a free trip right now, where would you go?",
+    "o0": "A remote cabin in the woods",
+    "o1": "A luxury penthouse in a busy city",
+    "o2": "A van-life road trip across the coast"
+  },
+  "s1_1": {
+    "text": "What is your absolute favorite way to spend a Friday night?",
+    "o0": "Dancing and socializing at a club",
+    "o1": "Ordering pizza and watching movies",
+    "o2": "Working on a personal hobby or project"
+  },
+  "s1_2": {
+    "text": "Which superpower would be most useful for a first date?",
+    "o0": "Mind reading",
+    "o1": "Truth detection",
+    "o2": "Time travel (to fix awkward moments)"
+  },
+  "s1_3": {
+    "text": "How do you usually handle a Sunday morning?",
+    "o0": "Early gym session and productivity",
+    "o1": "Sleep until noon",
+    "o2": "Long brunch with friends"
+  },
+  "s1_4": {
+    "text": "If your life was a movie genre, which one would it be?",
+    "o0": "A fast-paced Action movie",
+    "o1": "A slow-burn Indie Drama",
+    "o2": "A chaotic Comedy"
+  },
+  "s1_5": {
+    "text": "What is your 'guilty pleasure' when it comes to food?",
+    "o0": "Midnight fast food run",
+    "o1": "Expensive gourmet desserts",
+    "o2": "Eating a whole jar of Nutella/Peanut butter"
+  },
+  "s1_6": {
+    "text": "If you could have dinner with any historical figure, who would you pick?",
+    "o0": "An iconic artist or musician",
+    "o1": "A brilliant scientist",
+    "o2": "A powerful world leader"
+  },
+  "s1_7": {
+    "text": "What is your stance on 'Social Media' in a relationship?",
+    "o0": "Post everything together",
+    "o1": "Keep it completely private",
+    "o2": "Only post on special occasions"
+  },
+  "s1_8": {
+    "text": "Which animal best represents your social energy?",
+    "o0": "An outgoing Golden Retriever",
+    "o1": "A selective and independent Cat",
+    "o2": "A wise and quiet Owl"
+  },
+  "s1_9": {
+    "text": "How do you react to a spontaneous plan?",
+    "o0": "Love it! Let's go now",
+    "o1": "I need at least 24 hours notice",
+    "o2": "Depends on who else is coming"
+  },
+  "s1_10": {
+    "text": "What is your favorite season of the year?",
+    "o0": "Summer vibes and beaches",
+    "o1": "Cozy Winter nights",
+    "o2": "Fresh Spring or Autumn walks"
+  },
+  "s1_11": {
+    "text": "If you won $1 million today, what is the first thing you'd buy?",
+    "o0": "A dream house",
+    "o1": "A luxury car",
+    "o2": "A ticket to travel the world"
+  },
+  "s1_12": {
+    "text": "What kind of music controls your mood?",
+    "o0": "Upbeat Pop/Electronic",
+    "o1": "Deep Jazz/Classical",
+    "o2": "Raw Rock/Alternative"
+  },
+  "s1_13": {
+    "text": "Are you a morning person or a night owl?",
+    "o0": "Early bird catches the worm",
+    "o1": "Night owl - my brain starts at 10 PM",
+    "o2": "I'm tired all day regardless"
+  },
+  "s1_14": {
+    "text": "Which of these is a total 'deal-breaker' for you?",
+    "o0": "Rudeness to waiters",
+    "o1": "No sense of humor",
+    "o2": "Being constantly late"
+  },
+  "s1_15": {
+    "text": "If you could live in any fictional world, which would it be?",
+    "o0": "A world of Magic (Harry Potter style)",
+    "o1": "A high-tech Future (Cyberpunk)",
+    "o2": "A peaceful Fantasy land (Lord of the Rings)"
+  },
+  "s1_16": {
+    "text": "What is your dream job if money didn't matter?",
+    "o0": "Professional traveler/Explorer",
+    "o1": "Artist/Creative creator",
+    "o2": "Helping people/Animal rescuer"
+  },
+  "s1_17": {
+    "text": "How do you usually discover new music or movies?",
+    "o0": "Algorithm recommendations",
+    "o1": "Recommendations from friends",
+    "o2": "Spending hours digging myself"
+  },
+  "s1_18": {
+    "text": "What is your favorite type of weather?",
+    "o0": "Thunderstorms and rain",
+    "o1": "Perfectly clear sunny sky",
+    "o2": "Cool breeze and cloudy"
+  },
+  "s1_19": {
+    "text": "If you were a color, which one would you be?",
+    "o0": "Bold and passionate Red",
+    "o1": "Calm and deep Blue",
+    "o2": "Energetic and bright Yellow"
+  },
+  "s1_20": {
+    "text": "What is your biggest 'pet peeve' in a conversation?",
+    "o0": "People interrupting me",
+    "o1": "People on their phones",
+    "o2": "People talking too much about themselves"
+  },
+  "s1_21": {
+    "text": "How do you handle stress?",
+    "o0": "Exercise and movement",
+    "o1": "Isolation and silence",
+    "o2": "Talking it out with someone"
+  },
+  "s1_22": {
+    "text": "What is your favorite 'Small Talk' topic?",
+    "o0": "Current events/News",
+    "o1": "Movies and TV shows",
+    "o2": "Deep 'What if' questions"
+  },
+  "s1_23": {
+    "text": "If you could learn any language instantly, what would it be?",
+    "o0": "A romantic language (French/Italian)",
+    "o1": "A complex language (Chinese/Japanese)",
+    "o2": "A fictional language (Elvish/Klingon)"
+  },
+  "s1_24": {
+    "text": "What is your ideal first date activity?",
+    "o0": "Classic dinner and drinks",
+    "o1": "Something active like Bowling or Mini-golf",
+    "o2": "A quiet walk in a park or gallery"
+  },
+  "s1_25": {
+    "text": "Do you prefer big parties or small gatherings?",
+    "o0": "The more the merrier!",
+    "o1": "Just a few close friends",
+    "o2": "I'm a solo traveler"
+  },
+  "s1_26": {
+    "text": "What is the best way to cheer you up?",
+    "o0": "Food and snacks",
+    "o1": "Funny memes or videos",
+    "o2": "A long hug and support"
+  },
+  "s1_27": {
+    "text": "If you could change one thing about your past, would you?",
+    "o0": "Yes, to avoid a specific mistake",
+    "o1": "No, it made me who I am",
+    "o2": "Only if I could keep my current knowledge"
+  },
+  "s1_28": {
+    "text": "What is your most used Emoji?",
+    "o0": "The laughing face 😂",
+    "o1": "The heart/eyes 😍",
+    "o2": "The 'cool' sunglasses 😎"
+  },
+  "s1_29": {
+    "text": "What is your 'comfort movie' that you can watch forever?",
+    "o0": "A classic childhood animation",
+    "o1": "A cheesy romantic comedy",
+    "o2": "A mind-bending sci-fi"
+  },
+  "s2_0": {
+    "text": "What is the most important foundation for a long-term relationship?",
+    "o0": "Complete honesty",
+    "o1": "Physical chemistry",
+    "o2": "Shared life goals"
+  },
+  "s2_1": {
+    "text": "How do you prefer to resolve a disagreement?",
+    "o0": "Discuss it immediately",
+    "o1": "Take some time to cool off first",
+    "o2": "Write down my feelings"
+  },
+  "s2_2": {
+    "text": "What does 'loyalty' mean to you in one word?",
+    "o0": "Protection",
+    "o1": "Consistency",
+    "o2": "Transparency"
+  },
+  "s2_3": {
+    "text": "If you had to move to another country tomorrow, what would you miss most?",
+    "o0": "Your family and friends",
+    "o1": "Your comfort and routine",
+    "o2": "The food and culture"
+  },
+  "s2_4": {
+    "text": "What is your biggest fear regarding a serious relationship?",
+    "o0": "Losing my independence",
+    "o1": "Being betrayed",
+    "o2": "Growing apart over time"
+  },
+  "s2_5": {
+    "text": "How do you view 'Money' in a partnership?",
+    "o0": "Everything should be shared",
+    "o1": "Total financial independence",
+    "o2": "Common pool for bills, separate for personal"
+  },
+  "s2_6": {
+    "text": "What is your 'Love Language'?",
+    "o0": "Words of affirmation",
+    "o1": "Quality time",
+    "o2": "Physical touch/Acts of service"
+  },
+  "s2_7": {
+    "text": "How much 'Alone Time' do you need when living with someone?",
+    "o0": "A lot - I need my own space",
+    "o1": "Very little - I love being together",
+    "o2": "Just a few hours a week"
+  },
+  "s2_8": {
+    "text": "What is your opinion on 'White Lies' to protect a partner's feelings?",
+    "o0": "Sometimes necessary",
+    "o1": "Never acceptable - truth always",
+    "o2": "Depends on how big the lie is"
+  },
+  "s2_9": {
+    "text": "What are you most proud of in your life so far?",
+    "o0": "My career achievements",
+    "o1": "My personal growth/healing",
+    "o2": "The relationships I've built"
+  },
+  "s2_10": {
+    "text": "How do you handle a partner who has very different political views?",
+    "o0": "We can agree to disagree",
+    "o1": "It's a deal-breaker for me",
+    "o2": "I enjoy the debate"
+  },
+  "s2_11": {
+    "text": "What is the best piece of advice you’ve ever received?",
+    "o0": "Focus on yourself first",
+    "o1": "Treat others as you want to be treated",
+    "o2": "Take risks while you're young"
+  },
+  "s2_12": {
+    "text": "How do you want to be remembered by people?",
+    "o0": "As someone successful and powerful",
+    "o1": "As someone kind and helpful",
+    "o2": "As someone unique and creative"
+  },
+  "s2_13": {
+    "text": "What is your definition of a 'Soulmate'?",
+    "o0": "One perfect person exists for everyone",
+    "o1": "Someone you choose to build a life with",
+    "o2": "A spiritual connection from a past life"
+  },
+  "s2_14": {
+    "text": "How do you feel about your partner staying friends with their Ex?",
+    "o0": "Perfectly fine - shows maturity",
+    "o1": "I’m uncomfortable with it",
+    "o2": "Only if I meet them too"
+  },
+  "s2_15": {
+    "text": "If you could change one personality trait of yours, what would it be?",
+    "o0": "Be more confident",
+    "o1": "Be less anxious/overthinking",
+    "o2": "Be more disciplined"
+  },
+  "s2_16": {
+    "text": "What is your ultimate goal for the next 5 years?",
+    "o0": "Building a family",
+    "o1": "Reaching the top of my career",
+    "o2": "Living a life of freedom and travel"
+  },
+  "s2_17": {
+    "text": "How do you handle failure?",
+    "o0": "I get discouraged and quit",
+    "o1": "I analyze and try again",
+    "o2": "I ignore it and move on"
+  },
+  "s2_18": {
+    "text": "What makes you feel the most 'vulnerable'?",
+    "o0": "Sharing my secrets",
+    "o1": "Physical intimacy",
+    "o2": "Asking for help"
+  },
+  "s2_19": {
+    "text": "What is your view on 'Having Kids'?",
+    "o0": "Definitely want them",
+    "o1": "Definitely don't want them",
+    "o2": "Still undecided"
+  },
+  "s2_20": {
+    "text": "How do you show someone you care about them?",
+    "o0": "Giving gifts",
+    "o1": "Helping them with tasks",
+    "o2": "Listening deeply to them"
+  },
+  "s2_21": {
+    "text": "What is the bravest thing you've ever done?",
+    "o0": "Moving to a new city alone",
+    "o1": "Standing up for someone else",
+    "o2": "Admitting I was wrong"
+  },
+  "s2_22": {
+    "text": "Do you believe in 'Love at first sight'?",
+    "o0": "Yes, I've felt it",
+    "o1": "No, it's just lust",
+    "o2": "It's only possible in movies"
+  },
+  "s2_23": {
+    "text": "What is your relationship with your parents like now?",
+    "o0": "Very close - they are my best friends",
+    "o1": "Respectful but distant",
+    "o2": "Complicated"
+  },
+  "s2_24": {
+    "text": "How do you deal with jealousy?",
+    "o0": "I get quiet and withdraw",
+    "o1": "I talk about it openly",
+    "o2": "I try to hide it"
+  },
+  "s2_25": {
+    "text": "What is the most 'attractive' quality a person can have?",
+    "o0": "Intelligence",
+    "o1": "Kindness",
+    "o2": "Confidence"
+  },
+  "s2_26": {
+    "text": "If you could tell your younger self one thing, what would it be?",
+    "o0": "Don't worry so much",
+    "o1": "Take that big risk",
+    "o2": "Listen to your intuition"
+  },
+  "s2_27": {
+    "text": "What is your biggest 'Unpopular Opinion'?",
+    "o0": "Something about food",
+    "o1": "Something about modern dating",
+    "o2": "Something about work culture"
+  },
+  "s2_28": {
+    "text": "What does 'Home' feel like to you?",
+    "o0": "A specific place or city",
+    "o1": "A specific person",
+    "o2": "A feeling of safety within myself"
+  },
+  "s2_29": {
+    "text": "What is the one thing you would never sacrifice for a relationship?",
+    "o0": "My career/dreams",
+    "o1": "My self-respect",
+    "o2": "My relationships with friends/family"
+  }
+}

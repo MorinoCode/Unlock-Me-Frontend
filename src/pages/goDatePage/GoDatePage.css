@@ -1,310 +1,320 @@
-.go-date-page {
-  padding: 20px;
+.go-date-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 20px 50px;
+  padding-top: max(100px, env(safe-area-inset-top, 0px) + 80px);
+  padding-bottom: max(50px, env(safe-area-inset-bottom, 0px) + 20px);
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
   min-height: 100vh;
-  padding-bottom: 80px; /* Space for bottom nav */
-  margin-top: 3rem;
+  min-height: 100dvh;
+  box-sizing: border-box;
 }
 
-/* --- Header & Tabs --- */
-.go-date-header {
-  margin-bottom: 20px;
-}
-
-.go-date-title{
+.go-date-header-tabs {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.8rem;
-
-}
-.go-date-title-heaading {
-  font-weight: 800;
-  background: linear-gradient(135deg, #6366f1, #a855f7); /* Sunset Gradient */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 15px;
-}
-
-.go-date-tabs {
-  display: flex;
-  background: rgba(255, 255, 255, 0.5);
-  padding: 5px;
-  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.8);
   backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 90px;
+  z-index: 100;
 }
 
 .go-date-tab {
   flex: 1;
-  padding: 12px;
-  border: none;
-  background: transparent;
-  font-weight: 600;
-  color: #64748b;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.go-date-tab--active {
-  background: #fff;
-  color: #ff4b1f;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-/* --- FAB (Floating Action Button) --- */
-.go-date-fab {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff4b1f, #ff9068);
-  color: white;
-  border: none;
-  box-shadow: 0 10px 25px rgba(255, 75, 31, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  gap: 8px;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
   cursor: pointer;
-  z-index: 100;
-  transition: transform 0.2s;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
-.go-date-fab:active {
-  transform: scale(0.9);
+.go-date-tab.active {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
-/* --- GRID --- */
+.go-date-filters-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.go-date-filter-pill {
+  background: rgba(30, 41, 41, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.go-date-filter-pill:focus-within {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.filter-icon {
+  color: #6366f1;
+}
+
+.go-date-filter-select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.go-date-filter-select option {
+  background: #1e293b;
+  color: white;
+}
+
+.go-date-filter-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  min-width: 150px;
+}
+
+.go-date-filter-input::placeholder {
+  color: #94a3b8;
+}
+
+.clear-filter-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-filter-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
 .go-date-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
 }
 
-/* --- CARD --- */
-.go-date-card {
-  background: #fff;
+.go-date-loading-state {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(99, 102, 241, 0.3);
+  border-radius: 50%;
+  border-top-color: #6366f1;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.go-date-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  font-size: 1.1rem;
+}
+
+.go-date-fab {
+  position: fixed;
+  bottom: max(40px, env(safe-area-inset-bottom, 0px) + 16px);
+  right: max(40px, env(safe-area-inset-right, 0px) + 16px);
+  width: 64px;
+  height: 64px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.go-date-fab:hover {
+  transform: scale(1.1) rotate(90deg);
+}
+
+@media (max-width: 1024px) {
+  .go-date-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .go-date-wrapper {
+    padding-top: max(85px, env(safe-area-inset-top, 0px) + 70px);
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+  }
+
+  .go-date-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+    gap: 16px;
+  }
+
+  .go-date-header-tabs {
+    top: 80px;
+  }
+
+  .go-date-tab {
+    padding: clamp(10px, 3vw, 14px);
+    min-height: 44px;
+  }
+
+  .go-date-fab {
+    bottom: max(30px, env(safe-area-inset-bottom, 0px) + 10px);
+    right: max(20px, env(safe-area-inset-right, 0px) + 10px);
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (max-width: 360px) {
+  .go-date-wrapper {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+/* Toast confirm (react-hot-toast) – Accept / Cancel / Delete */
+.godate-toast-wrap {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #000000;
+  min-width: 280px;
 }
 
-.go-date-card__header {
-  height: 120px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
+.godate-toast-text {
   display: flex;
-  align-items: flex-end;
-  padding: 15px;
-}
-/* Fallback gradient if no image */
-.go-date-card__header--no-img {
-  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-}
-
-.go-date-card__category-badge {
-  background: rgba(255,255,255,0.9);
-  padding: 5px 12px;
-  border-radius: 50px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.go-date-card__body {
-  padding: 15px;
-}
-
-.go-date-card__title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 5px;
-}
-
-.go-date-card__info-row {
-  display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 6px;
-  font-size: 0.9rem;
-  color: #64748b;
-  margin-bottom: 4px;
 }
 
-.go-date-card__payment-pill {
-  display: inline-block;
-  font-size: 0.75rem;
-  background: #f1f5f9;
-  padding: 4px 10px;
-  border-radius: 6px;
-  color: #475569;
-  margin-top: 10px;
-}
-
-.go-date-card__footer {
-  padding: 15px;
-  border-top: 1px solid #f1f5f9;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.go-date-card__btn {
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-.go-date-card__btn:disabled {
-  background: #cbd5e1;
-  cursor: not-allowed;
-}
-
-/* Applicants Section */
-.go-date-card__applicants {
-  margin-top: 15px;
-  background: #f8fafc;
-  padding: 10px;
-  border-radius: 12px;
-}
-.go-date-card__applicant-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 8px;
-}
-.go-date-card__user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.go-date-card__avatar {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-.go-date-card__accept-btn {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-/* --- MODAL FORM --- */
-.go-date-modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end; /* Bottom sheet style on mobile */
-}
-@media (min-width: 768px) {
-  .go-date-modal-overlay { align-items: center; justify-content: center; }
-}
-
-.go-date-modal {
-  background: #fff;
-  width: 100%;
-  max-width: 500px;
-  border-radius: 20px 20px 0 0;
-  padding: 25px;
-  max-height: 90vh;
-  overflow-y: auto;
-  animation: slideUp 0.3s ease;
-}
-@media (min-width: 768px) {
-  .go-date-modal { border-radius: 20px; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.go-date-form-group { margin-bottom: 15px; }
-.go-date-label { display: block; font-weight: 600; margin-bottom: 5px; color: #334155; }
-.go-date-input, .go-date-select, .go-date-textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+.godate-toast-text strong {
+  color: #000000;
+  font-weight: 700;
   font-size: 1rem;
 }
-.go-date-submit-btn {
-  width: 100%;
-  padding: 15px;
-  background: linear-gradient(135deg, #ff4b1f, #ff9068);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-/* ... existing CSS ... */
 
-/* Filters */
-.go-date-filters {
+.godate-toast-subtext {
+  color: #000000;
+  font-size: 0.875rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.godate-toast-btns {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  justify-content: flex-end;
   flex-wrap: wrap;
 }
-.go-date-filter-item {
-    background: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    border: 1px solid #e2e8f0;
-}
-.go-date-filter-select, .go-date-filter-input {
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 0.9rem;
-    color: #475569;
+
+.godate-toast-confirm-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
 }
 
-/* Delete Button on Card */
-.go-date-card__delete-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(239, 68, 68, 0.9); /* Red */
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.2s;
-    z-index: 2; /* Ensure it's above image */
+.godate-toast-confirm-btn:hover {
+  background: #16a34a;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+  transform: translateY(-1px);
 }
-.go-date-card__delete-btn:hover {
-    transform: scale(1.1);
-    background: red;
+
+.godate-toast-confirm-btn--danger {
+  background: #ef4444;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.godate-toast-confirm-btn--danger:hover {
+  background: #dc2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.godate-toast-cancel-btn {
+  background: rgba(148, 163, 184, 0.2);
+  color: #000000;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 10px 20px;
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.godate-toast-cancel-btn:hover {
+  background: rgba(148, 163, 184, 0.3);
+  border-color: rgba(0, 0, 0, 0.3);
+  color: #000000;
+  transform: translateY(-1px);
 }

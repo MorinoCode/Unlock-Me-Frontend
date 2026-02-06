@@ -1,5 +1,6 @@
 import React from 'react';
 import HowItWorksComponent from '../../components/howItWorksComponent/HowItWorksComponent';
+import SEO from '../../components/seo/SEO';
 import { 
   IoAnalytics, 
   IoHeart, 
@@ -64,9 +65,16 @@ const HowItWorksPage = () => {
   ];
 
   return (
-    <div className="how-it-works-page">
-      <HowItWorksComponent features={featuresList} />
-    </div>
+    <>
+      <SEO
+        title="How It Works | Unlock Me - Find Your Perfect Match"
+        description="Learn how Unlock Me uses DNA-level personality matching to connect you with your perfect partner. Discover our advanced algorithm, compatibility scoring, and unique features."
+        keywords="how it works, dating app, personality matching, DNA matching, compatibility, matchmaking, find love, dating platform"
+      />
+      <div className="how-it-works-page">
+        <HowItWorksComponent features={featuresList} />
+      </div>
+    </>
   );
 };
 
