@@ -24,8 +24,6 @@ const InitialQuizzesInterestsPage = () => {
 
   const interestOptions = useInterestsOptionsStore((state) => state.options ?? []);
   const loading = useInterestsOptionsStore((state) => state.loading);
-  const getCached = useInterestsOptionsStore((state) => state.getCached);
-  const fetchOptions = useInterestsOptionsStore((state) => state.fetchOptions);
 
   const name = useMemo(() => {
     const userName = currentUser?.username;
@@ -34,22 +32,28 @@ const InitialQuizzesInterestsPage = () => {
       : "User";
   }, [currentUser?.username]);
 
+  // Run only once on mount to avoid React #185 (infinite loop from effect deps)
+  const mountedRef = useRef(false);
   useEffect(() => {
-    abortControllerRef.current = new AbortController();
-    const cached = getCached();
+    if (mountedRef.current) return;
+    mountedRef.current = true;
+    const ac = new AbortController();
+    abortControllerRef.current = ac;
+    const store = useInterestsOptionsStore.getState();
+    const cached = store.getCached();
     const silent = !!cached;
     if (cached) setErrorMessage("");
-    fetchOptions(API_URL, silent, abortControllerRef.current.signal).catch((err) => {
+    store.fetchOptions(API_URL, silent, ac.signal).catch((err) => {
       if (err.name !== "AbortError") {
         setErrorMessage("Failed to load interests. Please refresh.");
       }
     });
     return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      ac.abort();
+      abortControllerRef.current = null;
     };
-  }, [API_URL, getCached, fetchOptions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount only to prevent React #185 loop
+  }, []);
 
   const toggleInterest = useCallback((label) => {
     setSelectedInterests((prev) => {
