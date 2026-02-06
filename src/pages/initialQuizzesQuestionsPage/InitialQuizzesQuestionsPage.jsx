@@ -6,8 +6,6 @@ import QuizCard from "../../components/quizCard/QuizCard.jsx";
 import HeartbeatLoader from "../../components/heartbeatLoader/HeartbeatLoader.jsx";
 import "./InitialQuizzesQuestionsPage.css";
 import { useAuth } from "../../context/useAuth.js";
-import { useQuestionsStore } from "../../store/questionsStore";
-import { useUserInterestsStore } from "../../store/userInterestsStore";
 
 const InitialQuizzesQuestionsPage = () => {
   const navigate = useNavigate();
@@ -21,67 +19,59 @@ const InitialQuizzesQuestionsPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const submitInProgressRef = useRef(false);
   const abortControllerRef = useRef(null);
+  const timeoutIdRef = useRef(null);
 
   useEffect(() => {
-    abortControllerRef.current = new AbortController();
+    const ac = new AbortController();
+    abortControllerRef.current = ac;
+
     const timeoutId = setTimeout(() => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
         setErrorMessage("Request timeout. Please refresh the page.");
         setLoading(false);
       }
-    }, 20000); // ✅ 20 seconds timeout for mobile
+    }, 20000);
+    timeoutIdRef.current = timeoutId;
 
     const fetchAllData = async () => {
       try {
         setLoading(true);
         setErrorMessage("");
 
-        const userInterestsStore = useUserInterestsStore.getState();
-        let interestData = userInterestsStore.getCached();
-        if (!interestData) {
-          const payload = await userInterestsStore.fetchUserInterests(
-            API_URL,
-            false,
-            abortControllerRef.current.signal
-          );
-          interestData = payload ?? userInterestsStore.getCached();
-        }
-        const categories = interestData?.userInterestedCategories;
+        const interestsRes = await fetch(
+          `${API_URL}/api/user/onboarding/get-user-interests`,
+          { credentials: "include", signal: ac.signal }
+        );
+        const interestsData = await interestsRes.json();
+        const categories = interestsData?.userInterestedCategories;
 
-        if (!categories || categories.length === 0) {
-          navigate("/initial-quizzes/interests");
+        if (!categories || !Array.isArray(categories) || categories.length === 0) {
+          navigate("/initial-quizzes/interests", { replace: true });
           return;
         }
 
-        const store = useQuestionsStore.getState();
-        const cached = store.getCached(categories);
-        let questionsData = cached;
-
-        if (!cached) {
-          const questionsRes = await fetch(
-            `${API_URL}/api/user/onboarding/questions-by-category`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ selectedCategories: categories }),
-              credentials: "include",
-              signal: abortControllerRef.current.signal,
-            }
-          );
-
-          if (!questionsRes.ok) {
-            throw new Error("Failed to fetch questions");
+        const questionsRes = await fetch(
+          `${API_URL}/api/user/onboarding/questions-by-category`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ selectedCategories: categories }),
+            credentials: "include",
+            signal: ac.signal,
           }
+        );
 
-          questionsData = await questionsRes.json();
-          store.setCached(categories, questionsData);
+        if (!questionsRes.ok) {
+          throw new Error("Failed to fetch questions");
         }
 
-        const flattened = questionsData.flatMap((cat) =>
-          cat.questions.map((q) => ({
+        const questionsData = await questionsRes.json();
+        const list = Array.isArray(questionsData) ? questionsData : [];
+        const flattened = list.flatMap((cat) =>
+          (cat.questions || []).map((q) => ({
             ...q,
-            category: cat.categoryLabel,
+            category: cat.categoryLabel || cat.category || "",
           }))
         );
 
@@ -100,7 +90,10 @@ const InitialQuizzesQuestionsPage = () => {
           );
         }
       } finally {
-        clearTimeout(timeoutId);
+        if (timeoutIdRef.current) {
+          clearTimeout(timeoutIdRef.current);
+          timeoutIdRef.current = null;
+        }
         setLoading(false);
       }
     };
@@ -108,14 +101,12 @@ const InitialQuizzesQuestionsPage = () => {
     fetchAllData();
 
     return () => {
-      clearTimeout(timeoutId);
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current);
+      ac.abort();
+      abortControllerRef.current = null;
     };
   }, [API_URL, navigate]);
 
-  // ✅ Performance: useCallback for submitFinalResults (defined first to avoid circular dependency)
   const submitFinalResults = useCallback(
     async (finalAnswers) => {
       if (submitInProgressRef.current) return;
@@ -140,9 +131,8 @@ const InitialQuizzesQuestionsPage = () => {
           throw new Error(errorData.message || "Failed to save results");
         }
 
-        useUserInterestsStore.getState().invalidate();
         await checkAuth();
-        navigate("/explore");
+        navigate("/explore", { replace: true });
       } catch (err) {
         console.error("Final submit error:", err);
         setErrorMessage(
@@ -156,7 +146,6 @@ const InitialQuizzesQuestionsPage = () => {
     [API_URL, checkAuth, navigate]
   );
 
-  // ✅ Performance: useCallback for handleAnswer (defined after submitFinalResults)
   const handleAnswer = useCallback(
     (option) => {
       if (!allQuestions[currentIndex] || !option) return;
@@ -175,11 +164,9 @@ const InitialQuizzesQuestionsPage = () => {
       setAnswers((prevAnswers) => {
         const updatedAnswers = [...prevAnswers, newAnswer];
 
-        // ✅ Auto-submit when last question answered
         if (currentIdx < totalQuestions - 1) {
           setCurrentIndex((prevIndex) => prevIndex + 1);
         } else {
-          // ✅ Use setTimeout to avoid state update during render
           setTimeout(() => {
             submitFinalResults(updatedAnswers);
           }, 0);
@@ -191,7 +178,6 @@ const InitialQuizzesQuestionsPage = () => {
     [allQuestions, currentIndex, submitFinalResults]
   );
 
-  // ✅ Performance: useMemo for currentQuestion and progress
   const currentQuestion = useMemo(() => {
     return allQuestions[currentIndex] || null;
   }, [allQuestions, currentIndex]);
